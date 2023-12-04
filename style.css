@@ -1,5 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+:root {
+    --primary: #029AE0;
+    --primary-100: #073044;
+    --primary-200: #415A66;
+    --primary-300: #017CB3;
+    --primary-400: #50B6E6;
+    --background: #202124;
+    --background-100: #26282b;
+    --background-200: #3b3c3f;
+    --font-xs: 10px;
+    --font-sm: 12px;
+    --font-base: 14px;
+    --font-lg: 16px;
+    --font-xl: 18px;
+    --font-2xl: 20px;
+    --font-3xl: 22px;
+  }
+
+
 * {
   font-family: 'Inter', sans-serif;
   margin: 0;
@@ -13,15 +32,33 @@ body {
     grid-template-columns: 300px 1fr;
     grid-template-areas: 'sidebar content';
     height: 100vh;
-    background-color: #202124;
+    background-color: var(--background);
     color: #ffffff;
 
 }
 
+/* General styles */
+button {
+    padding: 8px 15px;
+    cursor: pointer;
+    height: 40px;
+    font-size: 14px;
+    background-color: var(--primary);
+    color: #ffffff;
+    border-radius: 50px;
+    border: none;
+    
+}
 
+button:hover {
+    background-color: var(--primary-200);
+}
+
+
+/* Sidebar styles */
 
 #sidebar {
-    background-color: #26282b;
+    background-color: var(--background-100);
     padding: 25px;
     display: flex;
     flex-direction: column;
@@ -32,12 +69,15 @@ body {
     height: 65px;
 }
 
-#nav-buttons {
- 
-}
 
+#nav-buttons {
+    
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
 #nav-buttons li {
-    background-color: #3573cf;
+    background-color: var(--primary);
     list-style-type: none;
     padding: 15px;
     border-radius: 10px;
@@ -46,7 +86,19 @@ body {
     display: flex;
     align-items: center;
     column-gap: 10px;
-    margin-top: 10px;
+    
+}
+#nav-buttons li:hover {
+    background-color: var(--primary-200);
+}
+
+/* Content styles */
+
+header {
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 #content {
