@@ -38,14 +38,21 @@ body {
 }
 
 /* General styles */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 button {
-    padding: 8px 15px;
+    padding: 10px ;
     cursor: pointer;
-    height: 40px;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    font-size: var(--font-base);
     background-color: var(--primary);
     color: #ffffff;
-    border-radius: 50px;
+    border-radius: 10px;
     border: none;
     
 }
@@ -148,3 +155,79 @@ header {
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
   
+/* Form Styles */
+
+dialog {
+  background-color: transparent; 
+  border: none;
+	margin: auto;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+form {
+  width: 450px; 
+  border-radius: 10px; 
+  background-color: var(--background-100);
+  color: white;
+}
+
+form h2 {
+  padding: 20px; 
+  border-bottom: 2px solid var(--background-200);
+}
+
+form .input-list {
+  display: flex; 
+  flex-direction: column; 
+  padding: 20px; 
+  row-gap: 25px;
+}
+
+form .form-field-container {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: var(--font-base);
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: rgba(150,150,150,1);
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+
+input, textarea, select {
+  color: white; 
+	background-color: var(--background-200);
+  padding: 15px; 
+  border-radius: 8px; 
+  border: none;
+  font-size: var(--font-base);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+}
+
+/* Project details page */
+
+.dashboard-card {
+  background-color: var(--background-100);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+#project-details > .main-page-content {
+  display: grid;
+  padding: 20px 40px;
+  gap: 30px;
+  grid-template-columns: 475px 1fr;
+  height: 100%;
+}

@@ -20,43 +20,103 @@
     </ul>
   </aside>
   <main id="content">
-    <header>
-      <h2><span class="material-symbols-rounded">
-        folder_copy
-        </span> Projects</h2>
-      <div>
-        <button><span class="material-symbols-rounded">
-          note_add
-          </span> New project</button>
+    <div class="page" id="projects-page" style="display: none">
+      <dialog id="new-project-modal">
+        <form>
+          <h2>New Project</h2>
+          <div class="input-list">
+            <div class="form-field-container">
+              <label><span class="material-icons-round">apartment</span>Name</label>
+              <input type="text" placeholder="What's the name of your project?">
+              <p style="color: gray; font-size: var(--font-sm); margin-top: 5px; font-style: italic;">TIP: Give it a short name</p>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-icons-round">subject</span>Description</label>
+              <textarea cols="30" rows="5" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-icons-round">person</span>Role</label>
+              <select>
+                <option>Architect</option>
+                <option>Engineer</option>
+                <option>Developer</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-icons-round">not_listed_location</span>Status</label>
+              <select>
+                <option>Pending</option>
+                <option>Active</option>
+                <option>Finished</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label for="finishDate">
+                <span class="material-icons-round">calendar_month</span>
+                Finish Date
+              </label>
+              <input type="date" name="finishDate"></input>
+            </div>
+            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+              <button style="background-color: transparent;">Cancel</button>
+              <button style="background-color: rgb(18, 145, 18);">Accept</button>
+            </div>
+          </div>
+        </form>
+      </dialog>
+      <header>
+        <h2><span class="material-symbols-rounded">
+          folder_copy
+          </span> Projects</h2>
+        <div>
+          <button><span class="material-symbols-rounded">
+            note_add
+            </span> New project</button>
+        </div>
+      </header>
+      <div id="projects-list">
+        <div class="project-card">
+          <div class="card-header">
+            <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">HC</p>
+            <div>
+              <h4>Project Name</h4>
+              <p>Project Description Goes Here...</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-property">
+              <p style="color: #969696;">Status</p>
+              <p>Active</p>
+            </div>
+            <div class="card-property">
+              <p style="color: #969696;">Role</p>
+              <p>Engineer</p>
+            </div>
+            <div class="card-property">
+              <p style="color: #969696;">Cost</p>
+              <p>$2'000.000</p>
+            </div>
+            <div class="card-property">
+              <p style="color: #969696;">Estimated Progress</p>
+              <p>45%</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </header>
-    <div id="projects-list">
-      <div class="project-card">
-        <div class="card-header">
-          <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">HC</p>
-          <div>
-            <h4>Project Name</h4>
-            <p>Project Description Goes Here...</p>
-          </div>
+    </div>
+    <div class="page" id="project-details">
+      <header>
+        <div>
+          <h2>Hospital Center</h2>
+          <p style="color: #969696">Community hospital located at downtown</p>
         </div>
-        <div class="card-content">
-          <div class="card-property">
-            <p style="color: #969696;">Status</p>
-            <p>Active</p>
-          </div>
-          <div class="card-property">
-            <p style="color: #969696;">Role</p>
-            <p>Engineer</p>
-          </div>
-          <div class="card-property">
-            <p style="color: #969696;">Cost</p>
-            <p>$2'000.000</p>
-          </div>
-          <div class="card-property">
-            <p style="color: #969696;">Estimated Progress</p>
-            <p>45%</p>
-          </div>
+      </header>
+      <div class="main-page-content">
+        <div style="display: flex; flex-direction: column; row-gap: 30px;">
+          <div class="dashboard-card">Project Information</div>
+          <div class="dashboard-card">To-do List</div>
         </div>
+        <div id="viewer-container" class="dashboard-card"></div>
       </div>
     </div>
   </div>
