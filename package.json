@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "typescript": "^5.3.3",
     "vite": "^5.0.10"
   }
 }
