@@ -22,21 +22,21 @@
   <main id="content">
     <div class="page" id="projects-page" >
       <dialog id="new-project-modal">
-        <form>
+        <form id="new-project-form">
           <h2>New Project</h2>
           <div class="input-list">
             <div class="form-field-container">
               <label><span class="material-icons-round">apartment</span>Name</label>
-              <input type="text" placeholder="What's the name of your project?">
+              <input name="name" type="text" placeholder="What's the name of your project?">
               <p style="color: gray; font-size: var(--font-sm); margin-top: 5px; font-style: italic;">TIP: Give it a short name</p>
             </div>
             <div class="form-field-container">
               <label><span class="material-icons-round">subject</span>Description</label>
-              <textarea cols="30" rows="5" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+              <textarea cols="30" rows="5" name="description" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
             </div>
             <div class="form-field-container">
               <label><span class="material-icons-round">person</span>Role</label>
-              <select>
+              <select name="userRole">
                 <option>Architect</option>
                 <option>Engineer</option>
                 <option>Developer</option>
@@ -44,7 +44,7 @@
             </div>
             <div class="form-field-container">
               <label><span class="material-icons-round">not_listed_location</span>Status</label>
-              <select>
+              <select name="status">
                 <option>Pending</option>
                 <option>Active</option>
                 <option>Finished</option>
