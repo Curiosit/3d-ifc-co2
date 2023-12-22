@@ -1,5 +1,5 @@
-import { Project } from "./classes/Project"
-import { IProject } from "./classes/Project"
+import { Project, IProject, UserRole, ProjectStatus } from "./classes/Project"
+import { ProjectsManager } from "./classes/ProjectsManager"
 function showModal(id) {
   const modal = document.getElementById(id)
   if (modal && modal instanceof HTMLDialogElement) {
@@ -8,6 +8,19 @@ function showModal(id) {
     console.warn("The provided modal wasn't found. ID: ", id)
   }
 }
+
+function closeModal(id) {
+  const modal = document.getElementById(id)
+  if (modal && modal instanceof HTMLDialogElement) {
+    modal.close()
+  } else {
+    console.warn("The provided modal wasn't found. ID: ", id)
+  }
+}
+
+
+const projectsListUI = document.getElementById("projects-list") as HTMLElement
+const projectsManager = new ProjectsManager(projectsListUI)
 
 // This document object is provided by the browser, and its main purpose is to help us interact with the DOM.
 const newProjectBtn = document.getElementById("new-project-btn")
@@ -24,12 +37,15 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     const formData = new FormData(projectForm)
     const projectData: IProject = {
       name: formData.get("name") as string,
-      description: formData.get("description"),
-      status: formData.get("status"),
-      userRole: formData.get("userRole"),
-      finishDate: formData.get("finishDate")
+      description: formData.get("description") as string,
+      status: formData.get("status") as ProjectStatus,
+      userRole: formData.get("userRole") as UserRole,
+      finishDate: new Date(formData.get("finishDate") as string)
     }
-    const project = new Project(projectData)
+    const project = projectsManager.newProject(projectData)
+    projectForm.reset()
+    closeModal("new-project-modal")
+
     console.log(project)
   })
 } else {
