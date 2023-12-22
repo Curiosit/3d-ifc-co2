@@ -1,5 +1,5 @@
 import { Project } from "./classes/Project"
-
+import { IProject } from "./classes/Project"
 function showModal(id) {
   const modal = document.getElementById(id)
   if (modal && modal instanceof HTMLDialogElement) {
@@ -22,8 +22,8 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
   projectForm.addEventListener("submit", (e) => {
     e.preventDefault()
     const formData = new FormData(projectForm)
-    const projectData = {
-      name: formData.get("name"),
+    const projectData: IProject = {
+      name: formData.get("name") as string,
       description: formData.get("description"),
       status: formData.get("status"),
       userRole: formData.get("userRole"),
