@@ -1,9 +1,15 @@
 import { Project, IProject, UserRole, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
-function showModal(id) {
+import { ErrorModal } from "./classes/ErrorModal"
+function showModal(id, errorModal = false, msg = '') {
   const modal = document.getElementById(id)
+  console.log(id)
   if (modal && modal instanceof HTMLDialogElement) {
+    if (errorModal) {
+      const errorModal = new ErrorModal(modal, msg)
+    }
     modal.showModal()
+    
   } else {
     console.warn("The provided modal wasn't found. ID: ", id)
   }
@@ -32,6 +38,13 @@ if (newProjectBtn) {
 
 const projectForm = document.getElementById("new-project-form")
 if (projectForm && projectForm instanceof HTMLFormElement) {
+
+  const closeNewProjectBtn = document.getElementById("close-new-project-modal")
+  if (closeNewProjectBtn) {
+    closeNewProjectBtn.addEventListener("click", () => {closeModal("new-project-modal")})
+  } else {
+    console.warn("Close modal button was not found")
+  }
   projectForm.addEventListener("submit", (e) => {
     e.preventDefault()
     const formData = new FormData(projectForm)
@@ -48,13 +61,15 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
       closeModal("new-project-modal")
     }
     catch (err) {
-      alert(err)
+      showModal("error-modal", true, `A project with name '<i>${projectData.name}</i> ' already exists!`)
     }
     
     
 
     
   })
+
+  
 } else {
 	console.warn("The project form was not found. Check the ID!")
 }

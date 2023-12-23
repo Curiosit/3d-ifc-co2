@@ -6,6 +6,7 @@
     --primary-200: #415A66;
     --primary-300: #017CB3;
     --primary-400: #50B6E6;
+    --warning: #E97451;
     --background: #202124;
     --background-100: #26282b;
     --background-200: #3b3c3f;
@@ -168,11 +169,18 @@ dialog::backdrop {
   backdrop-filter: blur(3px);
 }
 
-form {
+.popup, form {
   width: 450px; 
   border-radius: 10px; 
   background-color: var(--background-100);
   color: white;
+}
+
+
+.popup h2 {
+  padding: 20px;
+  align-items: baseline; 
+  border-bottom: 2px solid var(--background-200);
 }
 
 form h2 {
@@ -180,11 +188,15 @@ form h2 {
   border-bottom: 2px solid var(--background-200);
 }
 
+.popup-content {
+  padding: 20px; 
+}
+
 form .input-list {
   display: flex; 
   flex-direction: column; 
   padding: 20px; 
-  row-gap: 25px;
+  row-gap: 14px;
 }
 
 form .form-field-container {
@@ -253,4 +265,16 @@ input:focus, textarea:focus, select:focus {
 
 .todo-item:hover {
   background-color: var(--primary);
+}
+
+
+
+.inline-icon {
+  vertical-align:middle;
+  margin-bottom: 5px;
+  
+}
+
+.warning {
+  background-color: var(--warning);
 }

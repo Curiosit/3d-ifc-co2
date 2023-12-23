@@ -20,22 +20,36 @@
     </ul>
   </aside>
   <main id="content">
-    <div class="page" id="projects-page" >
+    <dialog id="error-modal" class="popup">
+        <h2>
+          <span class="material-symbols-rounded inline-icon">error</span> Error</h2>
+        <div class="popup-content">
+            
+            
+            
+            <p id="error-msg">
+            </p>
+            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+            <button type="button" id="close-error-modal" class="warning">OK</button>
+            </div>
+        </div>
+    </dialog>
+    <div class="page" id="projects-page" > 
       <dialog id="new-project-modal">
         <form id="new-project-form">
           <h2>New Project</h2>
           <div class="input-list">
             <div class="form-field-container">
-              <label><span class="material-icons-round">apartment</span>Name</label>
+              <label><span class="material-symbols-rounded">apartment</span>Name</label>
               <input name="name" type="text" placeholder="What's the name of your project?">
               <p style="color: gray; font-size: var(--font-sm); margin-top: 5px; font-style: italic;">TIP: Give it a short name</p>
             </div>
             <div class="form-field-container">
-              <label><span class="material-icons-round">subject</span>Description</label>
-              <textarea cols="30" rows="5" name="description" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+              <label><span class="material-symbols-rounded">subject</span>Description</label>
+              <textarea cols="30" rows="3" name="description" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
             </div>
             <div class="form-field-container">
-              <label><span class="material-icons-round">person</span>Role</label>
+              <label><span class="material-symbols-rounded">person</span>Role</label>
               <select name="userRole">
                 <option>Architect</option>
                 <option>Engineer</option>
@@ -43,7 +57,7 @@
               </select>
             </div>
             <div class="form-field-container">
-              <label><span class="material-icons-round">not_listed_location</span>Status</label>
+              <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
               <select name="status">
                 <option>Pending</option>
                 <option>Active</option>
@@ -52,13 +66,13 @@
             </div>
             <div class="form-field-container">
               <label for="finishDate">
-                <span class="material-icons-round">calendar_month</span>
+                <span class="material-symbols-rounded">calendar_month</span>
                 Finish Date
               </label>
               <input type="date" name="finishDate"></input>
             </div>
             <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
-              <button type="button" style="background-color: transparent;">Cancel</button>
+              <button id="close-new-project-modal" type="button" style="background-color: transparent;">Cancel</button>
               <button type="submit" style="background-color: rgb(18, 145, 18);">Accept</button>
             </div>
           </div>
