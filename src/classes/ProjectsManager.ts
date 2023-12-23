@@ -2,11 +2,13 @@ import { IProject, Project } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
 export class ProjectsManager {
     list: Project [] = []
-
+    id: string
     ui: HTMLElement
 
     constructor(container: HTMLElement) {
         this.ui = container
+        this.id = uuidv4()
+        console.log(`Project Manager is running, with id: ${this.id}`)
     }
 
     newProject(data:IProject) {
@@ -18,8 +20,10 @@ export class ProjectsManager {
             throw new Error(`A project with the name "${data.name}" already exists`)
         }
         const project = new Project(data)
+        console.log(this.ui)
         this.ui.append(project.ui)
         this.list.push(project)
+        console.log(this.list)
         return project
     }
 

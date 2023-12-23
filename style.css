@@ -6,6 +6,7 @@
     --primary-200: #415A66;
     --primary-300: #017CB3;
     --primary-400: #50B6E6;
+    --positive: #90e733;
     --warning: #E97451;
     --background: #202124;
     --background-100: #26282b;
@@ -277,4 +278,7 @@ input:focus, textarea:focus, select:focus {
 
 .warning {
   background-color: var(--warning);
+}
+.positive {
+  background-color: var(--positive);
 }
