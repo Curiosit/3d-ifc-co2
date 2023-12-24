@@ -18,6 +18,11 @@
     --font-xl: 18px;
     --font-2xl: 20px;
     --font-3xl: 22px;
+
+    --accent1: #ca8134;
+    --accent2: #8cc13c;
+    --accent3: #4b48de;
+    --accent4: #ca348e;
   }
 
 
@@ -111,6 +116,17 @@ header {
 }
 
 
+.initials {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  font-size: 16px;
+  background-color: #ca8134;
+  width: 2em;
+  height: 2em;
+  border-radius: 0.4em;
+  padding: 8px;
+}
 
 
 .project-card {

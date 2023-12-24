@@ -5,13 +5,11 @@ export class ProjectsManager {
     list: Project [] = []
     id: string
     ui: HTMLElement
-
     constructor(container: HTMLElement) {
         this.ui = container
         this.id = uuidv4()
         console.log(`Project Manager is running, with id: ${this.id}`)
     }
-
     newProject(data:IProject) {
         const projectNames = this.list.map((project) => {
             return project.name
@@ -28,11 +26,7 @@ export class ProjectsManager {
             projectsPage.style.display = "none"
             detailsPage.style.display = "flex"
             this.setDetailsPage(project)
-
         })
-
-
-
         this.ui.append(project.ui)
         this.list.push(project)
         

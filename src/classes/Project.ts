@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
+import { getRandomColorFromList, uppercaseInitials } from '../utils/utils'
+import { HexColor } from '../types/types'
 
 export type ProjectStatus = "pending" | "active" | "finished"
 export type UserRole = "architect" | "engineer" | "developer"
@@ -24,13 +26,17 @@ export class Project implements IProject {
   cost: number = 0
   progress: number = 0
   id: string
+  initials: string
+  inColor: HexColor = '#3b3c3f'
   constructor(data: IProject) {
     //Project data
 
     for (const key in data) {
       this[key] = data[key]
     }
-    
+    this.inColor = getRandomColorFromList()
+    console.log(this.inColor)
+    this.initials = uppercaseInitials(this.name)
     this.id = uuidv4()
     this.setUI()
   }
@@ -41,7 +47,7 @@ export class Project implements IProject {
     this.ui.className = "project-card"
     this.ui.innerHTML = `
         <div class="card-header">
-            <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">HC</p>
+            <p class="initials" style="background: ${this.inColor}">${this.initials}</p>
             <div>
               <h4>${this.name}</h4>
               <p>${this.description}</p>
