@@ -26,17 +26,17 @@ export class Project implements IProject {
   id: string
   constructor(data: IProject) {
     //Project data
-    this.name = data.name
-    this.description = data.description
-    this.status = data.status
-    this.userRole = data.userRole
-    this.finishDate = data.finishDate
+
+    for (const key in data) {
+      this[key] = data[key]
+    }
+    
     this.id = uuidv4()
     this.setUI()
   }
 
   setUI() {
-    if (this.ui) {return}
+    //if (this.ui) {return}
     this.ui = document.createElement("div")
     this.ui.className = "project-card"
     this.ui.innerHTML = `

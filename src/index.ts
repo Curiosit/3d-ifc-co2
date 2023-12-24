@@ -60,6 +60,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     try {
       console.log("trying...")
       const project = projectsManager.newProject(projectData)
+      console.log(project)
       projectForm.reset()
       closeModal("new-project-modal")
     }
@@ -75,4 +76,19 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
   
 } else {
 	console.warn("The project form was not found. Check the ID!")
+}
+
+
+const exportProjectsBtn= document.getElementById("export-projects-btn")
+if (exportProjectsBtn) {
+  exportProjectsBtn.addEventListener("click", () => {
+    projectsManager.exportToJSON()
+  })
+}
+
+const importProjectsBtn = document.getElementById("import-projects-btn")
+if (importProjectsBtn) {
+  importProjectsBtn.addEventListener("click", () => {
+    projectsManager.importFromJSON()
+  })
 }

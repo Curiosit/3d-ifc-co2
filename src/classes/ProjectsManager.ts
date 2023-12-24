@@ -46,13 +46,42 @@ export class ProjectsManager {
         
     }
 
-    exportToJSON() {
-
-    }
-
-    importFromJSON() {
-
-    }
+    exportToJSON(fileName: string = "projects") {
+        const json = JSON.stringify(this.list, null, 2)
+        const blob = new Blob([json], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+      
+      importFromJSON() {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'application/json'
+        const reader = new FileReader()
+        reader.addEventListener("load", () => {
+          const json = reader.result
+          if (!json) { return }
+          const projects: IProject[] = JSON.parse(json as string)
+          for (const project of projects ) {
+            try {
+              const projectSetup = this.newProject(project)
+              console.log(projectSetup)
+            } catch (error) {
+              console.log(error)
+            }
+          }
+        })
+        input.addEventListener('change', () => {
+          const filesList = input.files
+          if (!filesList) { return }
+          reader.readAsText(filesList[0])
+        })
+        input.click()
+      }
 
 
 }

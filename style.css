@@ -110,9 +110,7 @@ header {
     justify-content: space-between;
 }
 
-#content {
 
-}
 
 
 .project-card {
@@ -155,6 +153,19 @@ header {
     padding: 20px 40px;
     gap: 30px;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+
+  .action-icon {
+    color: darkgray;
+    border-radius: 100%;
+    padding: 4px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .action-icon:hover {
+    color: white;
+    background-color: var(--primary);
   }
   
 /* Form Styles */
