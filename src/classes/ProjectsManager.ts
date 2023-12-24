@@ -1,5 +1,6 @@
 import { IProject, Project } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
+import { formatDate } from "../utils/utils"
 export class ProjectsManager {
     list: Project [] = []
     id: string
@@ -26,7 +27,7 @@ export class ProjectsManager {
             if (!projectsPage || !detailsPage) {return}
             projectsPage.style.display = "none"
             detailsPage.style.display = "flex"
-
+            this.setDetailsPage(project)
 
         })
 
@@ -36,6 +37,32 @@ export class ProjectsManager {
         this.list.push(project)
         
         return project
+    }
+
+    private setDetailsPage(project: Project) {
+        const detailsPage = document.getElementById("project-details")
+        if (!detailsPage) {return}
+        const name = detailsPage.querySelector("[data-project-info='name']")
+        if (name) { name.textContent = project.name }
+        const description = detailsPage.querySelector("[data-project-info='description']")
+        if (description) { description.textContent = project.description }
+
+        const status = detailsPage.querySelector("[data-project-info='status']")
+        if (status) { status.textContent = project.status }
+
+        const userRole = detailsPage.querySelector("[data-project-info='userRole']")
+        if (userRole) { userRole.textContent = project.userRole }
+
+        const finishDate = detailsPage.querySelector("[data-project-info='finishDate']")
+        if (finishDate) { finishDate.textContent = formatDate(project.finishDate)}
+
+        const cost = detailsPage.querySelector("[data-project-info='cost']")
+        if (cost) { cost.textContent = '$ ' + project.cost }
+        
+        
+        
+        
+        
     }
 
     getProject(id: string) {
@@ -94,5 +121,6 @@ export class ProjectsManager {
         input.click()
       }
 
+    
 
 }
