@@ -20,10 +20,21 @@ export class ProjectsManager {
             throw new Error(`A project with the name "${data.name}" already exists`)
         }
         const project = new Project(data)
-        console.log(this.ui)
+        project.ui.addEventListener("click", () => {
+            const projectsPage = document.getElementById("projects-page")
+            const detailsPage = document.getElementById("project-details")
+            if (!projectsPage || !detailsPage) {return}
+            projectsPage.style.display = "none"
+            detailsPage.style.display = "flex"
+
+
+        })
+
+
+
         this.ui.append(project.ui)
         this.list.push(project)
-        console.log(this.list)
+        
         return project
     }
 

@@ -29,6 +29,26 @@ export function closeModal(id) {
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
 
+// Menu Buttons
+const menuProjectBtn = document.getElementById("menu-project-btn")
+if (menuProjectBtn) {
+  
+  menuProjectBtn.addEventListener("click", () => {showProjects()})
+} else {
+  console.warn("Menu project button was not found")
+}
+
+
+//
+function showProjects () {
+  console.log("clicked")
+  const projectsPage = document.getElementById("projects-page")
+  const detailsPage = document.getElementById("project-details")
+  if (!projectsPage || !detailsPage) {return}
+  detailsPage.style.display = "none"
+  projectsPage.style.display = "flex"
+}
+
 // This document object is provided by the browser, and its main purpose is to help us interact with the DOM.
 const newProjectBtn = document.getElementById("new-project-btn")
 if (newProjectBtn) {
