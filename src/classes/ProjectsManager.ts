@@ -65,6 +65,15 @@ export class ProjectsManager {
 
         const cost = detailsPage.querySelector("[data-project-info='cost']")
         if (cost) { cost.textContent = '$ ' + project.cost }
+
+        const initials = detailsPage.querySelector("[data-project-info='initials']")
+        if (initials) { 
+            initials.textContent = project.initials 
+            if (initials instanceof HTMLElement) {
+                initials.style.backgroundColor = project.inColor; 
+            } 
+        }
+        
         
         
         
