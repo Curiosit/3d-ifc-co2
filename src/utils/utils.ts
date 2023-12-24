@@ -59,5 +59,20 @@ export function isFirstCharacterLetterOrNumber(inputString: string): boolean {
     const firstCharacter = inputString.charAt(0);
 
     // Check if the first character is a letter or a number
-    return /^[a-zA-Z0-9]/.test(firstCharacter);
+    return (64 < firstCharacter.charCodeAt(0) && firstCharacter.charCodeAt(0) < 91);
 }
+
+export function modifyDateInput(input: HTMLInputElement, date: Date) {
+    // Create a new Date object for the desired date
+    
+
+    // Format the date as a string in the dd-mm-yyyy format
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+
+    const dateString = `${day}-${month}-${year}`;
+
+    // Set the value of the text input
+    input.value = dateString;
+  }

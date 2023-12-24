@@ -12,6 +12,7 @@ export interface IProject {
   status: ProjectStatus
   userRole: UserRole
   finishDate: Date
+  createdDate: Date 
 }
 export class Project implements IProject {
   //To satisfy IProject
@@ -19,7 +20,9 @@ export class Project implements IProject {
   description: string
   status: ProjectStatus
   userRole: UserRole
-  finishDate: Date
+  createdDate: Date = new Date()
+  finishDate: Date = this.createdDate
+  
   
   //Class internals
   ui: HTMLDivElement

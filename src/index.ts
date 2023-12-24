@@ -1,6 +1,7 @@
 import { Project, IProject, UserRole, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { ErrorModal } from "./classes/ErrorModal"
+import { formatDate, modifyDateInput } from "./utils/utils"
 console.log("index.ts started")
 function showModal(id, errorModal = false, msg = '') {
   const modal = document.getElementById(id)
@@ -59,6 +60,11 @@ if (newProjectBtn) {
 
 const projectForm = document.getElementById("new-project-form")
 if (projectForm && projectForm instanceof HTMLFormElement) {
+  const currentDateInput = document.getElementById("current-date") as HTMLInputElement
+  const today = new Date();
+  const nextYear = new Date(today.setFullYear(today.getFullYear() + 1));
+  modifyDateInput(currentDateInput, nextYear)
+  
   console.log("projectForm found")
   const closeNewProjectBtn = document.getElementById("close-new-project-modal-btn")
   if (closeNewProjectBtn) {
@@ -70,13 +76,24 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     console.log("event listener fired")
     e.preventDefault()
     const formData = new FormData(projectForm)
+    const finishDateInput = formData.get("finishDate") as string;
+
+    let finishDate;
+    if (finishDateInput) {
+      finishDate = new Date(finishDateInput);
+    } else {
+      
+      finishDate = nextYear;
+    }
+
     const projectData: IProject = {
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       status: formData.get("status") as ProjectStatus,
       userRole: formData.get("userRole") as UserRole,
-      finishDate: new Date(formData.get("finishDate") as string)
-    }
+      finishDate: finishDate,
+      createdDate: new Date(),
+    };
     try {
       console.log("trying...")
       const project = projectsManager.newProject(projectData)
@@ -85,7 +102,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
       closeModal("new-project-modal")
     }
     catch (err) {
-      showModal("error-modal", true, `A project with name: '<i>${projectData.name}</i> ' already exists!`)
+      showModal("error-modal", true, err)
     }
     
     

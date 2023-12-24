@@ -78,7 +78,7 @@
                 <span class="material-symbols-rounded">calendar_month</span>
                 Finish Date
               </label>
-              <input type="date" name="finishDate"></input>
+              <input id="current-date" type="date" name="finishDate"></input>
             </div>
             <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
               <button id="close-new-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
@@ -135,6 +135,10 @@
                 <div>
                   <p style="color: #969696; font-size: var(--font-sm)">Role</p>
                   <p data-project-info="userRole" >Engineer</p>
+                </div>
+                <div>
+                  <p  style="color: #969696; font-size: var(--font-sm)">Created</p>
+                  <p data-project-info="createdDate">2023-05-01</p>
                 </div>
                 <div>
                   <p  style="color: #969696; font-size: var(--font-sm)">Finish Date</p>

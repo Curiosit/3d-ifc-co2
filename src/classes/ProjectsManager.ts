@@ -9,6 +9,7 @@ export class ProjectsManager {
         this.ui = container
         this.id = uuidv4()
         console.log(`Project Manager is running, with id: ${this.id}`)
+        console.log(this.list)
     }
     newProject(data:IProject) {
         const projectNames = this.list.map((project) => {
@@ -26,6 +27,7 @@ export class ProjectsManager {
         if (isFirstCharacterLetterOrNumber(data.name)) {
             throw new Error(`Name "${data.name}" has to start with a letter or number!`)
         }
+
         const project = new Project(data)
         project.ui.addEventListener("click", () => {
             const projectsPage = document.getElementById("projects-page")
@@ -57,6 +59,9 @@ export class ProjectsManager {
 
         const finishDate = detailsPage.querySelector("[data-project-info='finishDate']")
         if (finishDate) { finishDate.textContent = formatDate(project.finishDate)}
+
+        const createdDate = detailsPage.querySelector("[data-project-info='createdDate']")
+        if (createdDate) { createdDate.textContent = formatDate(project.createdDate)}
 
         const cost = detailsPage.querySelector("[data-project-info='cost']")
         if (cost) { cost.textContent = '$ ' + project.cost }
