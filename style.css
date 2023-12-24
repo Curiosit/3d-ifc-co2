@@ -19,10 +19,12 @@
     --font-2xl: 20px;
     --font-3xl: 22px;
 
+    --white: #fff; 
     --accent1: #ca8134;
     --accent2: #8cc13c;
     --accent3: #4b48de;
     --accent4: #ca348e;
+    --accent5: #4fb2bf;
   }
 
 
@@ -44,7 +46,55 @@ body {
 
 }
 
+/* Bootstrap and slad.ai*/
+.container-fluid {
+  width: 100%;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color:  var(--white); 
+}
+
+.badge.rounded-pill.bg-danger {
+
+  border-radius: 0.8rem; 
+  background-color: var(--warning); 
+  color:  var(--white); 
+  padding: 0.2rem 0.4rem; 
+  font-size: var(--font-sm);
+}
+
+.logo-image {
+  margin-right: 5px;
+  width:30px;
+  height:30px;
+}
+
+.logo-image:hover {
+  margin-right: 5px;
+  width:30px;
+  height:30px;
+  transform: rotate(-15deg);
+  cursor: pointer;
+}
+.navbar-brand {
+  
+  font-size: 1.2rem; /* Adjust the font size as needed */
+  font-weight: bold; /* Adjust the font weight as needed */
+}
+
 /* General styles */
+
+a {
+  text-decoration: none;
+}
+a:visited {
+  color: inherit; /* or specify the color you want for visited links */
+  text-decoration: none; /* optional: remove underline for visited links */
+}
 .page {
   display: flex;
   flex-direction: column;

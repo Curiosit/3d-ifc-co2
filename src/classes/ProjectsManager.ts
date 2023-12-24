@@ -1,6 +1,6 @@
 import { IProject, Project } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
-import { formatDate } from "../utils/utils"
+import { formatDate, isFirstCharacterLetterOrNumber } from "../utils/utils"
 export class ProjectsManager {
     list: Project [] = []
     id: string
@@ -17,6 +17,14 @@ export class ProjectsManager {
         const nameInUse = projectNames.includes(data.name)
         if (nameInUse) {
             throw new Error(`A project with the name "${data.name}" already exists`)
+        }
+
+        if (data.name.length < 5) {
+            throw new Error(`Name "${data.name}" has to be 5 characters or longer!`)
+        }
+
+        if (isFirstCharacterLetterOrNumber(data.name)) {
+            throw new Error(`Name "${data.name}" has to start with a letter or number!`)
         }
         const project = new Project(data)
         project.ui.addEventListener("click", () => {

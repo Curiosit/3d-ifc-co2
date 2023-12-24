@@ -50,3 +50,14 @@ export function getRandomColorFromList(): string {
   
     return selectedColor.trim();
   }
+
+export function isFirstCharacterLetterOrNumber(inputString: string): boolean {
+    if (inputString.length === 0) {
+        return false; // Empty string, not a letter or number
+    }
+
+    const firstCharacter = inputString.charAt(0);
+
+    // Check if the first character is a letter or a number
+    return /^[a-zA-Z0-9]/.test(firstCharacter);
+}
