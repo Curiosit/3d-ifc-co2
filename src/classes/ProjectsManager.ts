@@ -82,6 +82,13 @@ export class ProjectsManager {
         const cost = detailsPage.querySelector("[data-project-info='cost']")
         if (cost) { cost.textContent = '$ ' + project.cost }
 
+        const progress = detailsPage.querySelector("[data-project-info='progress']") as HTMLElement
+        if (progress) { 
+            progress.textContent = project.progress*100 + '%'
+            progress.style.width = project.progress*100 +'%'
+            console.log(progress.style)
+    }
+
         const initials = detailsPage.querySelector("[data-project-info='initials']") as HTMLElement
         if (initials) { 
             initials.textContent = project.initials

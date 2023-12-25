@@ -345,7 +345,11 @@ input:focus, textarea:focus, select:focus {
   background-color: var(--primary);
 }
 
-
+.progress-bar {
+background-color: var(--positive);
+padding: 4px 0; 
+text-align: center;
+}
 
 .inline-icon {
   vertical-align:middle;
