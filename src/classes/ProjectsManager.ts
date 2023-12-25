@@ -50,6 +50,8 @@ export class ProjectsManager {
         if (!editModal) {return}
         const name = editModal.querySelector("[data-edit-project-info='name']") as HTMLInputElement
         if (name) { name.value =  this.currentProject.name }
+        const description = editModal.querySelector("[data-edit-project-info='description']") as HTMLInputElement
+        if (description) { description.value =  this.currentProject.description }
     }
 
     private setDetailsPage(project: Project) {
