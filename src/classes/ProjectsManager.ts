@@ -1,6 +1,7 @@
 import { IProject, Project } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
 import { formatDate, isFirstCharacterLetterOrNumber } from "../utils/utils"
+import { closeModal } from "../utils/utils"
 export class ProjectsManager {
     list: Project [] = []
     id: string
@@ -52,6 +53,41 @@ export class ProjectsManager {
         if (name) { name.value =  this.currentProject.name }
         const description = editModal.querySelector("[data-edit-project-info='description']") as HTMLInputElement
         if (description) { description.value =  this.currentProject.description }
+
+        const status = editModal.querySelector("[data-edit-project-info='status']") as HTMLInputElement
+        if (status) { status.value = this.currentProject.status }
+
+        const userRole = editModal.querySelector("[data-edit-project-info='userRole']") as HTMLInputElement
+        if (userRole) { userRole.value = this.currentProject.userRole }
+
+        const progress = editModal.querySelector("[data-edit-project-info='progress']") as HTMLInputElement
+        if (progress) { progress.value = this.currentProject.progress*100 + '%' }
+
+        
+
+        const finishDate = editModal.querySelector("[data-edit-project-info='finishDate']") as HTMLInputElement
+        if (finishDate) { finishDate.value = (new Date(this.currentProject.finishDate)).toLocaleDateString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          })}
+
+        const createdDate = editModal.querySelector("[data-edit-project-info='createdDate']") as HTMLInputElement
+        if (createdDate) { createdDate.value = (new Date(this.currentProject.createdDate)).toLocaleDateString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          })}
+
+        const cost = editModal.querySelector("[data-edit-project-info='cost']")
+        if (cost) { cost.textContent = '$ ' + this.currentProject.cost }
+
+        const closeEditProjectBtn = document.getElementById("close-edit-project-modal-btn")
+        if (closeEditProjectBtn) {
+            closeEditProjectBtn.addEventListener("click", () => {closeModal("edit-project-modal")})
+        } else {
+            console.warn("Close modal button was not found")
+        }
     }
 
     private setDetailsPage(project: Project) {

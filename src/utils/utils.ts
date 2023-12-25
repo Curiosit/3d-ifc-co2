@@ -82,12 +82,21 @@ export function modifyDateInput(input: HTMLInputElement, date: Date) {
     
 
     // Format the date as a string in the dd-mm-yyyy format
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-    const year = date.getFullYear();
-
-    const dateString = `${day}-${month}-${year}`;
+    
 
     // Set the value of the text input
-    input.value = dateString;
+    input.value = (new Date(date)).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+  }
+
+  export function closeModal(id) {
+    const modal = document.getElementById(id)
+    if (modal && modal instanceof HTMLDialogElement) {
+      modal.close()
+    } else {
+      console.warn("The provided modal wasn't found. ID: ", id)
+    }
   }

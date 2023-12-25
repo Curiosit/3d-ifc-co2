@@ -1,6 +1,7 @@
 import { Project, IProject, UserRole, ProjectStatus } from "./classes/Project"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { ErrorModal } from "./classes/ErrorModal"
+import { closeModal } from "./utils/utils"
 import { formatDate, modifyDateInput } from "./utils/utils"
 console.log("index.ts started")
 function showModal(id, errorModal = false, msg = '') {
@@ -17,14 +18,7 @@ function showModal(id, errorModal = false, msg = '') {
   }
 }
 
-export function closeModal(id) {
-  const modal = document.getElementById(id)
-  if (modal && modal instanceof HTMLDialogElement) {
-    modal.close()
-  } else {
-    console.warn("The provided modal wasn't found. ID: ", id)
-  }
-}
+
 
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
@@ -69,10 +63,15 @@ if (editProjectBtn) {
 
 const projectForm = document.getElementById("new-project-form")
 if (projectForm && projectForm instanceof HTMLFormElement) {
-  const currentDateInput = document.getElementById("current-date") as HTMLInputElement
+  const currentDateInput = document.getElementById("createdDate") as HTMLInputElement
+  const finishedDateInput = document.getElementById("finishDate") as HTMLInputElement
+  console.log(currentDateInput)
+  console.log(finishedDateInput)
   const today = new Date();
+  modifyDateInput(currentDateInput, today)
+
   const nextYear = new Date(today.setFullYear(today.getFullYear() + 1));
-  modifyDateInput(currentDateInput, nextYear)
+  modifyDateInput(finishedDateInput, nextYear)
   
   console.log("projectForm found")
   const closeNewProjectBtn = document.getElementById("close-new-project-modal-btn")

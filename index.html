@@ -78,17 +78,17 @@
                 <span class="material-symbols-rounded">calendar_month</span>
                 Created Date
               </label>
-              <input id="current-date" type="date" name="finishDate"></input>
+              <input id="createdDate" type="date" name="createdDate"></input>
             </div>
             <div class="form-field-container">
               <label for="finishDate">
                 <span class="material-symbols-rounded">calendar_month</span>
                 Finish Date
               </label>
-              <input id="current-date" type="date" name="finishDate"></input>
+              <input id="finishDate" type="date" name="finishDate"></input>
             </div>
             <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
-              <button id="close-new-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
+              <button id="close-edit-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
               <button type="submit" class="positive">Accept</button>
             </div>
           </div>
@@ -127,7 +127,7 @@
             </div>
             <div class="form-field-container">
               <label><span class="material-symbols-rounded">person</span>Role</label>
-              <select name="userRole">
+              <select data-edit-project-info="userRole" name="userRole">
                 <option>Architect</option>
                 <option>Engineer</option>
                 <option>Developer</option>
@@ -135,18 +135,33 @@
             </div>
             <div class="form-field-container">
               <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
-              <select name="status">
+              <select data-edit-project-info="status" name="status">
                 <option>Pending</option>
                 <option>Active</option>
                 <option>Finished</option>
               </select>
             </div>
             <div class="form-field-container">
+              <label><span class="material-symbols-rounded">monetization_on</span>Cost</label>
+              <input data-edit-project-info="cost" name="cost" type="text" placeholder="Cost of your project..."></input>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">clock_loader_40</span>Progress</label>
+              <input data-edit-project-info="progress" name="progress" type="text" placeholder="Progress in %"></input>
+            </div>
+            <div class="form-field-container">
+              <label for="finishDate">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Created Date
+              </label>
+              <input data-edit-project-info="createdDate" id="edit-created-date" type="date" name="createdDate"></input>
+            </div>
+            <div class="form-field-container">
               <label for="finishDate">
                 <span class="material-symbols-rounded">calendar_month</span>
                 Finish Date
               </label>
-              <input id="current-date" type="date" name="finishDate"></input>
+              <input data-edit-project-info="finishDate" id="edit-finish-date" type="date" name="finishDate"></input>
             </div>
             <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
               <button id="close-new-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
