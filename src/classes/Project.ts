@@ -20,8 +20,8 @@ export class Project implements IProject {
   description: string
   status: ProjectStatus
   userRole: UserRole
-  createdDate: Date = new Date()
-  finishDate: Date = this.createdDate
+  createdDate: Date
+  finishDate: Date 
   
   
   //Class internals

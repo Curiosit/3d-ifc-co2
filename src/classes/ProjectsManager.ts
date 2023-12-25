@@ -55,11 +55,14 @@ export class ProjectsManager {
     private setDetailsPage(project: Project) {
         const detailsPage = document.getElementById("project-details")
         if (!detailsPage) {return}
-        const name = detailsPage.querySelector("[data-project-info='name']")
-        if (name) { name.textContent = project.name }
+        const name = detailsPage.querySelector("[data-project-info='name']") as HTMLElement
+        if (name) { 
+            name.textContent = project.name 
+            
+        }
 
-        //const initialColor = detailsPage.querySelector("[data-project-info='name']")
-        //if (initialColor) { name.textContent = project.name }
+        
+       
 
         const description = detailsPage.querySelector("[data-project-info='description']")
         if (description) { description.textContent = project.description }
@@ -79,12 +82,12 @@ export class ProjectsManager {
         const cost = detailsPage.querySelector("[data-project-info='cost']")
         if (cost) { cost.textContent = '$ ' + project.cost }
 
-        const initials = detailsPage.querySelector("[data-project-info='initials']")
+        const initials = detailsPage.querySelector("[data-project-info='initials']") as HTMLElement
         if (initials) { 
-            initials.textContent = project.initials 
-            if (initials instanceof HTMLElement) {
-                initials.style.backgroundColor = project.inColor; 
-            } 
+            initials.textContent = project.initials
+            initials.style.backgroundColor = project.inColor; 
+                
+            console.log(initials.style)
         }
         
         

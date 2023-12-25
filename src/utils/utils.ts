@@ -1,6 +1,12 @@
-export function formatDate(date: Date): string {
+export function formatDate(readDate: Date): string {
     // Get day, month, and year components
-    const day: number = date.getDate();
+    console.log(readDate)
+    const date = new Date(readDate)
+    console.log(date)
+    if (!(date instanceof Date)) {
+        throw new Error("Invalid date object");
+    }
+    const day: number = date.getDate()
     const month: number = date.getMonth() + 1; // Note: Month is zero-based
     const year: number = date.getFullYear();
   
