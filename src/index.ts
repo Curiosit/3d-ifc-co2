@@ -57,6 +57,15 @@ if (newProjectBtn) {
 } else {
   console.warn("New projects button was not found")
 }
+const editProjectBtn = document.getElementById("edit-project-details-btn")
+if (editProjectBtn) {
+  editProjectBtn.addEventListener("click", () => {
+    showModal("edit-project-modal")
+    projectsManager.setupEditProjectModal();
+  })
+} else {
+  console.warn("Edit projects button was not found")
+}
 
 const projectForm = document.getElementById("new-project-form")
 if (projectForm && projectForm instanceof HTMLFormElement) {
@@ -129,3 +138,4 @@ if (importProjectsBtn) {
     projectsManager.importFromJSON()
   })
 }
+

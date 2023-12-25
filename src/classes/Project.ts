@@ -30,14 +30,14 @@ export class Project implements IProject {
   progress: number = 0
   id: string
   initials: string
-  inColor: HexColor = '#3b3c3f'
+  inColor: HexColor
   constructor(data: IProject) {
     //Project data
-
+    this.inColor = getRandomColorFromList()
     for (const key in data) {
       this[key] = data[key]
     }
-    this.inColor = getRandomColorFromList()
+    
     console.log(this.inColor)
     this.initials = uppercaseInitials(this.name)
     this.id = uuidv4()

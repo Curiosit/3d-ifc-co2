@@ -56,10 +56,19 @@ export function isFirstCharacterLetterOrNumber(inputString: string): boolean {
         return false; // Empty string, not a letter or number
     }
 
-    const firstCharacter = inputString.charAt(0);
-
+    const firstCharacter = inputString.charAt(0)
+    const str = firstCharacter
     // Check if the first character is a letter or a number
-    return (64 < firstCharacter.charCodeAt(0) && firstCharacter.charCodeAt(0) < 91);
+    
+    const code = str.charCodeAt(0);
+    console.log(str)
+    console.log(code)
+      if (!(code > 47 && code < 58) && // numeric (0-9)
+          !(code > 64 && code < 91) && // upper alpha (A-Z)
+          !(code > 96 && code < 123)) { // lower alpha (a-z)
+        return false;
+      }
+    return true;
 }
 
 export function modifyDateInput(input: HTMLInputElement, date: Date) {

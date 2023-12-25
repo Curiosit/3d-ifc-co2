@@ -55,7 +55,7 @@
             </div>
             <div class="form-field-container">
               <label><span class="material-symbols-rounded">subject</span>Description</label>
-              <textarea cols="30" rows="3" name="description" placeholder="Give your project a nice description! So people is jealous about it."></textarea>
+              <textarea cols="30" rows="3" name="description" placeholder="Give your project a nice description! So people are jealous about it."></textarea>
             </div>
             <div class="form-field-container">
               <label><span class="material-symbols-rounded">person</span>Role</label>
@@ -72,6 +72,13 @@
                 <option>Active</option>
                 <option>Finished</option>
               </select>
+            </div>
+            <div class="form-field-container">
+              <label for="createdDate">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Created Date
+              </label>
+              <input id="current-date" type="date" name="finishDate"></input>
             </div>
             <div class="form-field-container">
               <label for="finishDate">
@@ -106,11 +113,54 @@
       </div>
     </div>
     <div class="page" id="project-details" style="display: none">
+      <dialog id="edit-project-modal">
+        <form id="edit-project-form">
+          <h2>Edit Project</h2>
+          <div class="input-list">
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">apartment</span>Name</label>
+              <input data-edit-project-info="name" name="name" type="text" placeholder="What's the name of your project?"></input>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">subject</span>Description</label>
+              <textarea data-edit-project-info="description" cols="30" rows="3" name="description" placeholder="Give your project a nice description! So people are jealous about it."></textarea>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">person</span>Role</label>
+              <select name="userRole">
+                <option>Architect</option>
+                <option>Engineer</option>
+                <option>Developer</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
+              <select name="status">
+                <option>Pending</option>
+                <option>Active</option>
+                <option>Finished</option>
+              </select>
+            </div>
+            <div class="form-field-container">
+              <label for="finishDate">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Finish Date
+              </label>
+              <input id="current-date" type="date" name="finishDate"></input>
+            </div>
+            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+              <button id="close-new-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
+              <button type="submit" class="positive">Accept</button>
+            </div>
+          </div>
+        </form>
+      </dialog>
       <header>
         <div>
           
         </div>
       </header>
+
       <div class="main-page-content">
         <div style="display: flex; flex-direction: column; row-gap: 30px;">
           <div class="dashboard-card" style="padding: 30px 0;">

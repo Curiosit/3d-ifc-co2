@@ -5,6 +5,7 @@ export class ProjectsManager {
     list: Project [] = []
     id: string
     ui: HTMLElement
+    currentProject: Project
     constructor(container: HTMLElement) {
         this.ui = container
         this.id = uuidv4()
@@ -24,7 +25,7 @@ export class ProjectsManager {
             throw new Error(`Name "${data.name}" has to be 5 characters or longer!`)
         }
 
-        if (isFirstCharacterLetterOrNumber(data.name)) {
+        if (!isFirstCharacterLetterOrNumber(data.name)) {
             throw new Error(`Name "${data.name}" has to start with a letter or number!`)
         }
 
@@ -35,6 +36,7 @@ export class ProjectsManager {
             if (!projectsPage || !detailsPage) {return}
             projectsPage.style.display = "none"
             detailsPage.style.display = "flex"
+            this.currentProject = project
             this.setDetailsPage(project)
         })
         this.ui.append(project.ui)
@@ -43,11 +45,22 @@ export class ProjectsManager {
         return project
     }
 
+    setupEditProjectModal () {
+        const editModal = document.getElementById("edit-project-modal")
+        if (!editModal) {return}
+        const name = editModal.querySelector("[data-edit-project-info='name']") as HTMLInputElement
+        if (name) { name.value =  this.currentProject.name }
+    }
+
     private setDetailsPage(project: Project) {
         const detailsPage = document.getElementById("project-details")
         if (!detailsPage) {return}
         const name = detailsPage.querySelector("[data-project-info='name']")
         if (name) { name.textContent = project.name }
+
+        //const initialColor = detailsPage.querySelector("[data-project-info='name']")
+        //if (initialColor) { name.textContent = project.name }
+
         const description = detailsPage.querySelector("[data-project-info='description']")
         if (description) { description.textContent = project.description }
 
@@ -98,6 +111,12 @@ export class ProjectsManager {
         })
         this.list = remaining
         
+    }
+
+    editProject(id: string) {
+        const project = this.getProject(id)
+        if (!project) { return }
+
     }
 
     exportToJSON(fileName: string = "projects") {
