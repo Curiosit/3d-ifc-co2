@@ -25,6 +25,12 @@
     --accent3: #4b48de;
     --accent4: #ca348e;
     --accent5: #4fb2bf;
+
+    --active: var(--primary-300);
+    --pending: var(--background-200);
+    --finished: var(--background-100);
+
+    
   }
 
 
@@ -336,7 +342,7 @@ input:focus, textarea:focus, select:focus {
 
 .todo-item {
   padding: 20px;
-  background-color: var(--background-200);
+  
   border-radius: 10px;
   cursor: pointer;
 }

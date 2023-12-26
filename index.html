@@ -171,6 +171,51 @@
           </div>
         </form>
       </dialog>
+      <dialog id="add-to-do-modal">
+        <form id="add-to-do-form">
+          <h2>Add a new task</h2>
+          <div class="input-list">
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">tag</span>Name</label>
+              <input add-to-do-info="name" name="name" type="text" placeholder="What's the name of this task?"></input>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">subject</span>Description</label>
+              <textarea add-to-do-info="description" cols="30" rows="3" name="description" placeholder="Describe the task in details."></textarea>
+            </div>
+           
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
+              <select add-to-do-info="status" name="status">
+                <option>Pending</option>
+                <option>Active</option>
+                <option>Finished</option>
+              </select>
+            </div>
+
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">not_listed_location</span>Task Type</label>
+              <select add-to-do-info="status" name="status">
+                <option>construction</option>
+                <option>design</option>
+              </select>
+            </div>
+            
+            <div class="form-field-container">
+              <label for="dueDate">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Due Date
+              </label>
+              <input add-to-do-info="dueDate" id="due-date" type="date" name="dueDate"></input>
+            </div>
+            
+            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+              <button id="close-add-to-do-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
+              <button type="submit" class="positive">Accept</button>
+            </div>
+          </div>
+        </form>
+      </dialog>
       <header>
         <div>
           
@@ -221,22 +266,15 @@
               <h4>To-Do</h4>
               <div style="display: flex; align-items: center; justify-content: end; column-gap: 20px;">
                 <div style="display: flex; align-items: center; column-gap: 10px;">
-                  <span class="material-icons-round">search</span>
+                  
                   <input type="text" placeholder="Search To-Do's by name" style="width: 100%;">
                 </div>
-                <span class="material-icons-round">add</span>
+                <button id="add-to-do-btn" class="btn-secondary"><p style="width: 100%;">Add</p></button>
+                
               </div>
             </div>
-            <div style="display: flex; flex-direction: column; padding: 10px 30px; row-gap: 20px;">
-              <div class="todo-item">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div style="display: flex; column-gap: 15px; align-items: center;">
-                    <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span>
-                    <p>Make anything here as you want, even something longer.</p>
-                  </div>
-                  <p style="text-wrap: nowrap; margin-left: 10px;">Fri, 20 sep</p>
-                </div>
-              </div>
+            <div id="to-do-list" style="display: flex; flex-direction: column; padding: 10px 30px; row-gap: 20px;">
+              
             </div>
           </div>
         </div>

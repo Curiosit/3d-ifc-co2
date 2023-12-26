@@ -1,4 +1,5 @@
-import { Project, IProject, UserRole, ProjectStatus } from "./classes/Project"
+import { Project, IProject } from "./classes/Project"
+import { UserRole, Status } from "./types/types"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { ErrorModal } from "./classes/ErrorModal"
 import { closeModal } from "./utils/utils"
@@ -84,7 +85,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     const projectData: IProject = {
       name: formData.get("name") as string,
       description: formData.get("description") as string,
-      status: formData.get("status") as ProjectStatus,
+      status: formData.get("status") as Status,
       userRole: formData.get("userRole") as UserRole,
       finishDate: finishDate,
       createdDate: new Date(),
