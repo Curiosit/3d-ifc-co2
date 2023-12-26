@@ -1,8 +1,9 @@
 import { IProject, Project, UserRole } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
-import { formatDate, isFirstCharacterLetterOrNumber } from "../utils/utils"
+import { convertPercentageStringToNumber, formatDate, isFirstCharacterLetterOrNumber, convertCurrencyStringToNumber } from "../utils/utils"
 import { closeModal } from "../utils/utils"
 import { ProjectStatus } from "./Project"
+import { showModal } from "../utils/utils"
 export class ProjectsManager {
     list: Project [] = []
     id: string
@@ -14,6 +15,7 @@ export class ProjectsManager {
         console.log(`Project Manager is running, with id: ${this.id}`)
         console.log(this.list)
     }
+
     newProject(data:IProject) {
         const projectNames = this.list.map((project) => {
             return project.name
@@ -45,6 +47,47 @@ export class ProjectsManager {
         this.list.push(project)
         
         return project
+    }
+    createProjectFromData (projectData: Project) {
+        const project = new Project(projectData)
+        project.ui.addEventListener("click", () => {
+            const projectsPage = document.getElementById("projects-page")
+            const detailsPage = document.getElementById("project-details")
+            if (!projectsPage || !detailsPage) {return}
+            projectsPage.style.display = "none"
+            detailsPage.style.display = "flex"
+            this.currentProject = project
+            this.setDetailsPage(project)
+        })
+        this.ui.append(project.ui)
+        this.list.push(project)
+    }
+    
+
+    updateProjectData (projectData: Project, id: string) {
+        console.log("updating project data")
+        const foundProject = this.list.find(project => project.id === id);
+        
+        if(foundProject) {
+            console.log("Found project: ")
+            console.log(foundProject)
+            foundProject.updateProject(projectData)
+            const foundUI = document.getElementById(id)
+            if (foundUI) {
+                console.log (`Found UI of a project with id ${id} `)
+                console.log(foundUI)
+                foundUI.innerHTML = foundProject.ui.innerHTML
+            }
+            else {
+                console.log (`UI of a project with id ${id} not found!`)
+            }
+            
+            
+        }
+        else {
+            throw new Error(`A project with an id: ${id} has not been found`)
+        }
+        
     }
 
     setupEditProjectModal () {
@@ -80,8 +123,11 @@ export class ProjectsManager {
             day: '2-digit',
           })}
 
-        const cost = editModal.querySelector("[data-edit-project-info='cost']")
-        if (cost) { cost.textContent = '$ ' + this.currentProject.cost }
+        const cost = editModal.querySelector("[data-edit-project-info='cost']") as HTMLInputElement
+        if (cost) { 
+            cost.textContent = '$ ' + this.currentProject.cost
+            cost.value = '$ ' + this.currentProject.cost 
+        }
 
         const closeEditProjectBtn = document.getElementById("close-edit-project-modal-btn")
         if (closeEditProjectBtn) {
@@ -99,7 +145,10 @@ export class ProjectsManager {
                 console.log("event listener fired")
                 e.preventDefault()
                 const editFormData = new FormData(editProjectForm)
+                console.log("Cost:")
 
+                console.log( editFormData.get("cost"))
+                try {
                 const projectData: IProject = {
                     name: editFormData.get("name") as string,
                     description: editFormData.get("description") as string,
@@ -107,12 +156,25 @@ export class ProjectsManager {
                     userRole: editFormData.get("userRole") as UserRole,
                     finishDate: new Date(editFormData.get("finishDate") as string),
                     createdDate: new Date(editFormData.get("createdDate") as string ),
-                    cost: editFormData.get("cost") as unknown as number,
-                    progress: editFormData.get("progress") as unknown as number,
-                    toDoList: []
+                    cost: convertCurrencyStringToNumber( editFormData.get("cost") as string) as number,
+                    progress: convertPercentageStringToNumber(editFormData.get("progress") as string )  as number,
+                    toDoList: [],
+                    id: this.currentProject.id
                   };
 
-                this.currentProject.updateProject(projectData)
+                
+                    this.currentProject.updateProject(projectData)
+
+                    this.currentProject.replaceProjectById(this.list)
+
+                    this.setDetailsPage(this.currentProject)
+                    this.renderProjectList(this.list)
+                    closeModal("edit-project-modal")
+                }
+                catch (err) {
+                    showModal("error-modal", true, err)
+                }
+                
             })
         }
 
@@ -216,14 +278,8 @@ export class ProjectsManager {
           const json = reader.result
           if (!json) { return }
           const projects: IProject[] = JSON.parse(json as string)
-          for (const project of projects ) {
-            try {
-              const projectSetup = this.newProject(project)
-              console.log(projectSetup)
-            } catch (error) {
-              console.log(error)
-            }
-          }
+          this.renderProjectList(projects)
+          
         })
         input.addEventListener('change', () => {
           const filesList = input.files
@@ -234,5 +290,37 @@ export class ProjectsManager {
       }
 
     
+      renderProjectList(projects: IProject[]) {
+        console.log(projects)
+        for (const project of projects ) {
+            try {
+                console.log("trying rendering project list")
+                if (project.id != '') {
+                    console.log(`project id not empty: ${project.id}`)
+                    const foundProject = this.list.find(listedProject => listedProject.id === project.id);
+                    if (foundProject) {
+                        console.log("Found project with this id")
+                        const updatedProjectData = new Project(project)
+                        this.updateProjectData(updatedProjectData, project.id)
+                        console.log("updated project data")
+                    }
+                    else {
+                        const projectSetup = this.newProject(project)
+                        console.log(projectSetup)
+                    }
+                }
+                else {
+                    const projectSetup = this.newProject(project)
+                    console.log(projectSetup)
+                }
+            
+              
 
+            console.log(this.ui)
+            console.log(this.list)
+            } catch (error) {
+              console.log(error)
+            }
+          }
+      }
 }

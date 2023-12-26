@@ -16,6 +16,7 @@ export interface IProject {
   cost: number
   progress: number
   toDoList: IToDoTask[]
+  id: string
 }
 
 export interface IToDoTask {
@@ -36,10 +37,11 @@ export class Project implements IProject {
   cost: number = 0
   progress: number = 0
   toDoList: IToDoTask[]
+  id: string
 
   //Class internals
   ui: HTMLDivElement
-  id: string
+  
   initials: string
   inColor: HexColor
   constructor(data: IProject) {
@@ -57,17 +59,32 @@ export class Project implements IProject {
   }
 
   updateProject(data: IProject) {
-    this.inColor = getRandomColorFromList()
+    
     for (const key in data) {
       this[key] = data[key]
     }
+    this.initials = uppercaseInitials(this.name)
     this.setUI
+  }
+
+  replaceProjectById(projectList) {
+    const index = projectList.findIndex(project => project.id === this.id);
+  
+    if (index !== -1) {
+      // If the project with the given id is found, replace it with the new project
+      projectList[index] = this;
+      projectList[index].setUI()
+    } else {
+      // If the project is not found, you may want to push the new project to the list
+      //projectList.push(newProject);
+    }
   }
 
   setUI() {
     //if (this.ui) {return}
     this.ui = document.createElement("div")
     this.ui.className = "project-card"
+    this.ui.id = this.id
     this.ui.innerHTML = `
         <div class="card-header">
             <p class="initials" style="background: ${this.inColor}">${this.initials}</p>

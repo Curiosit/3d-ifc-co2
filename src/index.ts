@@ -3,23 +3,9 @@ import { ProjectsManager } from "./classes/ProjectsManager"
 import { ErrorModal } from "./classes/ErrorModal"
 import { closeModal } from "./utils/utils"
 import { formatDate, modifyDateInput } from "./utils/utils"
+import { showModal } from "./utils/utils"
+import { v4 as uuidv4 } from 'uuid'
 console.log("index.ts started")
-function showModal(id, errorModal = false, msg = '') {
-  const modal = document.getElementById(id)
-  console.log(id)
-  if (modal && modal instanceof HTMLDialogElement) {
-    if (errorModal) {
-      const errorModal = new ErrorModal(modal, msg, id)
-    }
-    modal.showModal()
-    
-  } else {
-    console.warn("The provided modal wasn't found. ID: ", id)
-  }
-}
-
-
-
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -104,7 +90,9 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
       createdDate: new Date(),
       cost: 0,
       progress: 0,
-      toDoList: []
+      toDoList: [],
+      id: uuidv4()
+
     };
     try {
       console.log("trying...")
@@ -116,10 +104,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
     catch (err) {
       showModal("error-modal", true, err)
     }
-    
-    
 
-    
   })
 
   

@@ -1,3 +1,4 @@
+import { ErrorModal } from "../classes/ErrorModal";
 export function formatDate(readDate: Date): string {
     // Get day, month, and year components
     console.log(readDate)
@@ -99,4 +100,49 @@ export function modifyDateInput(input: HTMLInputElement, date: Date) {
     } else {
       console.warn("The provided modal wasn't found. ID: ", id)
     }
+  }
+
+  export function showModal(id, errorModal = false, msg = '') {
+    const modal = document.getElementById(id)
+    console.log(id)
+    if (modal && modal instanceof HTMLDialogElement) {
+      if (errorModal) {
+        const errorModal = new ErrorModal(modal, msg, id)
+      }
+      modal.showModal()
+      
+    } else {
+      console.warn("The provided modal wasn't found. ID: ", id)
+    }
+  }
+
+  export function convertPercentageStringToNumber(value: string): number | null {
+    const percentageRegex = /^(\d+(\.\d+)?)%$/;
+    console.log(value)
+    const match = value.match(percentageRegex);
+    console.log(match)
+    if (match) {
+      const numericValue = parseFloat(match[1]);
+      return numericValue / 100; // convert percentage to decimal
+    }
+    else {
+      throw new Error (`A percentage value has to be written as X% or as a fraction value 0.X.`)
+    }
+  
+    // If the input doesn't match the expected format, return null or handle the error as needed
+    return null;
+  }
+
+  export function convertCurrencyStringToNumber(value: string): number | null {
+    const currencyRegex = /^(\$|\$ )?([0-9,]+(\.\d{1,2})?)$/;
+  
+    const match = value.match(currencyRegex);
+  
+    if (match) {
+      const numericValue = parseFloat(match[2].replace(',', '.')); // remove commas if present
+      return numericValue;
+    }
+  
+    // If the input doesn't match the expected format, return null or handle the error as needed
+    return null;
   }
