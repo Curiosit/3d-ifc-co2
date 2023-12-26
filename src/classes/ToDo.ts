@@ -36,12 +36,12 @@ export class ToDo implements IToDo {
     this.ui = document.createElement("div");
     this.ui.className = "";
     this.ui.innerHTML = `
-          <div class="todo-item" style="background-color: ${
+          <div class="todo-item tooltip" style="background-color: ${
             this.backgroundColor
           }">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="" style="display: flex; justify-content: space-between; align-items: center;">
               <div style="display: flex; column-gap: 15px; align-items: center;">
-                <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">${
+                <span class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">${
                   this.name
                 }</span>
                 <p></p>
@@ -50,7 +50,7 @@ export class ToDo implements IToDo {
                 this.dueDate
               )}</p>
             </div>
-            <div class="description-flag" style="display: none; position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #ccc; padding: 5px; border-radius: 5px;">
+            <div class="tooltiptext">
               ${this.description}
             </div>
           </div>
@@ -61,14 +61,14 @@ export class ToDo implements IToDo {
     let colorString = ''
     console.log(this.status)
     if (this.status == "active") {
-      colorString = "--active";
+      colorString = "--primary";
     } else if (this.status == "pending") {
       colorString = "--pending";
     } else if (this.status == "finished") {
       colorString = "--finished";
     }
     console.log(colorString)
-    this.backgroundColor = getComputedStyle(
+    this.backgroundColor =  getComputedStyle(
       document.documentElement
     ).getPropertyValue(colorString);
   }

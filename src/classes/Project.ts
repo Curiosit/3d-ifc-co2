@@ -57,7 +57,7 @@ export class Project implements IProject {
     console.log("adding a new task")
     const newTask = new ToDo(newTaskData)
 
-    this.toDoList.push(newTask)
+    console.log(this.toDoList.push(newTask))
     console.log(this.toDoList)
     this.setTaskUI ()
 

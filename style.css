@@ -1,13 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
-    --primary: #029AE0;
+    --primary: #57ca8d;
+    --main: #30de80;
     --primary-100: #073044;
     --primary-200: #415A66;
-    --primary-300: #017CB3;
-    --primary-400: #50B6E6;
-    --positive: #90e733;
-    --warning: #E97451;
+    --primary-300: #7fbd45;
+    --primary-400: #8eb161;
+    --dark: 
+    --secondary: #ffa929;
+    --positive: var(--primary-300);
+    --caution: #ffcf45;
+    --warning:  #ff2452;
+    --success: #00d02b;
+    --info: #00cecf;
     --background: #202124;
     --background-100: #26282b;
     --background-200: #3b3c3f;
@@ -20,15 +26,16 @@
     --font-3xl: 22px;
 
     --white: #fff; 
-    --accent1: #ca8134;
-    --accent2: #8cc13c;
-    --accent3: #4b48de;
-    --accent4: #ca348e;
-    --accent5: #4fb2bf;
+    --accent1: var(--caution);
+    --accent2: var(--success);
+    --accent3: var(--info);
+    --accent4: var(--warning);
+    --accent5: var(--primary);
 
     --active: var(--primary-300);
     --pending: var(--background-200);
     --finished: var(--background-100);
+
 
     
   }
@@ -86,8 +93,13 @@ body {
   transform: rotate(-15deg);
   cursor: pointer;
 }
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+}
 .navbar-brand {
-  
+
   font-size: 1.2rem; /* Adjust the font size as needed */
   font-weight: bold; /* Adjust the font weight as needed */
 }
@@ -357,11 +369,78 @@ padding: 4px 0;
 text-align: center;
 }
 
+.progress-bar text {
+  padding-left: 3px;
+}
+
 .inline-icon {
   vertical-align:middle;
   margin-bottom: 5px;
   
 }
+
+
+.flag-container {
+
+  transform-style: preserve3d;
+  perspective: 10em;
+  perspective-origin: center bottom;
+  position: relative;
+
+}
+
+/* Tooltip container */
+.tooltip {
+  
+  text-decoration: dotted;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+.tooltip:hover {
+  border-color: red;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+
+
 
 .warning {
   background-color: var(--warning);

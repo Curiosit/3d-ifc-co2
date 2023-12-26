@@ -292,12 +292,14 @@ export class ProjectsManager {
     }
 
     const addTaskButton = document.getElementById("add-to-do-btn");
+    const addTaskClickHandler = () => {
+      this.setupAddToDoModal();
+      showModal("add-to-do-modal");
+    };
     if (addTaskButton) {
-      addTaskButton.addEventListener("click", () => {
-        this.setupAddToDoModal();
-        showModal("add-to-do-modal");
-        
-      });
+      addTaskButton.removeEventListener("click", addTaskClickHandler);
+      addTaskButton.addEventListener("click", addTaskClickHandler);
+      
     }
 
     this.currentProject.setTaskUI () 
@@ -345,6 +347,7 @@ export class ProjectsManager {
                 console.log("addToDoForm event listener fired")
                 if(!fired) {
                     fired = 1;
+                    console.log(fired)
                     e.preventDefault()
                     const addToDoFormData = new FormData(addToDoForm)
                     try {
@@ -360,7 +363,7 @@ export class ProjectsManager {
                         console.log("trying to add a new task...")
                         
                         this.currentProject.addNewTask(newTask)
-                        addToDoForm.reset()
+                        //addToDoForm.reset()
                         closeModal("add-to-do-modal")
                         
                         
