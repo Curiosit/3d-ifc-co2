@@ -6,6 +6,7 @@ export interface IToDo {
   description: string;
   dueDate: Date;
   status: Status;
+  id: string;
 }
 
 export class ToDo implements IToDo {
@@ -14,11 +15,13 @@ export class ToDo implements IToDo {
   description: string;
   dueDate: Date;
   status: Status;
+  id: string;
 
   ui: HTMLDivElement;
   backgroundColor: HexColor;
 
   constructor(data: IToDo) {
+    this.id = data.id;
     this.taskType = data.taskType;
     this.name = data.name;
     this.description = data.description;

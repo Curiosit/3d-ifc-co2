@@ -52,6 +52,7 @@ export class ProjectsManager {
       detailsPage.style.display = "flex";
       this.currentProject = project;
       this.setDetailsPage(project);
+      console.log(this.currentProject)
     });
     this.ui.append(project.ui);
     this.list.push(project);
@@ -343,6 +344,7 @@ export class ProjectsManager {
                 console.log(fired)
                 console.log("addToDoForm event listener fired")
                 if(!fired) {
+                    fired = 1;
                     e.preventDefault()
                     const addToDoFormData = new FormData(addToDoForm)
                     try {
@@ -352,13 +354,15 @@ export class ProjectsManager {
                             description:  addToDoFormData.get("description") as string,
                             dueDate: new Date(addToDoFormData.get("dueDate") as string),
                             status: addToDoFormData.get("status") as Status,
+                            id: uuidv4()
                         }
                     
                         console.log("trying to add a new task...")
                         
                         this.currentProject.addNewTask(newTask)
+                        addToDoForm.reset()
                         closeModal("add-to-do-modal")
-                        fired = 1;
+                        
                         
                         
                     }

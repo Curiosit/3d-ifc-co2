@@ -216,6 +216,51 @@
           </div>
         </form>
       </dialog>
+      <dialog id="edit-to-do-modal">
+        <form id="edit-to-do-form">
+          <h2>Task</h2>
+          <div class="input-list">
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">tag</span>Name</label>
+              <input edit-to-do-info="name" name="name" type="text" placeholder="What's the name of this task?"></input>
+            </div>
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">subject</span>Description</label>
+              <textarea edit-to-do-info="description" cols="30" rows="3" name="description" placeholder="Describe the task in details."></textarea>
+            </div>
+           
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
+              <select edit-to-do-info="status" name="status">
+                <option>pending</option>
+                <option>active</option>
+                <option>finished</option>
+              </select>
+            </div>
+
+            <div class="form-field-container">
+              <label><span class="material-symbols-rounded">not_listed_location</span>Task Type</label>
+              <select edit-to-do-info="status" name="status">
+                <option>construction</option>
+                <option>design</option>
+              </select>
+            </div>
+            
+            <div class="form-field-container">
+              <label for="dueDate">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Due Date
+              </label>
+              <input edit-to-do-info="dueDate" id="due-date" type="date" name="dueDate"></input>
+            </div>
+            
+            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+              <button id="close-edit-to-do-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
+              <button type="submit" class="positive">Accept</button>
+            </div>
+          </div>
+        </form>
+      </dialog>
       <header>
         <div>
           

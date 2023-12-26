@@ -3,6 +3,8 @@ import { getRandomColorFromList, uppercaseInitials } from "../utils/utils";
 import { HexColor, Status, UserRole } from "../types/types";
 import { IToDo, ToDo } from "./ToDo";
 import { colors } from "../utils/utils";
+import { showModal, closeModal } from "../utils/utils";
+import { ToDoTaskType } from "../types/types";
 export interface IProject {
   name: string;
   description: string;
@@ -128,11 +130,111 @@ export class Project implements IProject {
       for (const task of this.toDoList) {
         console.log(task)
         const renderTask = new ToDo(task)
+        renderTask.ui.addEventListener("click", () => { 
+          showModal("edit-to-do-modal");
+          this.setupEditToDoModal(renderTask)
+        })
+
         this.taskUI.append(renderTask.ui)
         //console.log(this.taskUI)
       }
       //console.log(this.taskUI)
     }
     
+  }
+  setupEditToDoModal(renderTask:ToDo) {
+    const editToDoModal = document.getElementById("edit-to-do-modal");
+    if (!editToDoModal) {
+      return;
+    }
+    const name = editToDoModal.querySelector(
+      "[edit-to-do-info='name']"
+    ) as HTMLInputElement;
+    if (name) {
+      name.value = renderTask.name;
+    }
+    const description = editToDoModal.querySelector(
+      "[edit-to-do-info='description']"
+    ) as HTMLInputElement;
+    if (description) {
+      description.value = renderTask.description;
+    }
+    const status = editToDoModal.querySelector(
+      "[edit-to-do-info='status']"
+    ) as HTMLInputElement;
+    if (status) {
+      status.value = renderTask.status;
+    }
+    const taskType = editToDoModal.querySelector(
+      "[edit-to-do-info='taskType']"
+    ) as HTMLInputElement;
+    if (taskType) {
+      taskType.value = renderTask.taskType;
+    }
+    const dueDate = editToDoModal.querySelector(
+      "[edit-to-do-info='dueDate']"
+    ) as HTMLInputElement;
+    if (dueDate) {
+      dueDate.value = new Date(
+        renderTask.dueDate
+      ).toLocaleDateString("en-CA", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    }
+
+    const closeEditToDoBtn = document.getElementById(
+      "close-edit-to-do-modal-btn"
+    );
+    if (closeEditToDoBtn) {
+      closeEditToDoBtn.addEventListener("click", () => {
+        console.log("Closing modal...");
+        closeModal("edit-to-do-modal");
+      });
+    } else {
+      console.warn("Close modal button was not found");
+    }
+    const editToDoForm = document.getElementById("edit-to-do-form") as HTMLFormElement
+    console.log(editToDoForm)
+    if(editToDoForm) {
+      editToDoForm.addEventListener("submit", (e) => {
+        e.preventDefault()
+        const editToDoFormData = new FormData(editToDoForm)
+        try {
+          const editedTask: IToDo = {
+              taskType: editToDoFormData.get("taskType") as ToDoTaskType,
+              name:  editToDoFormData.get("name") as string,
+              description:  editToDoFormData.get("description") as string,
+              dueDate: new Date(editToDoFormData.get("dueDate") as string),
+              status: editToDoFormData.get("status") as Status,
+              id: renderTask.id
+          }
+      
+          console.log("trying to add a new task...")
+          
+          this.modifyTask(editedTask)
+          editToDoForm.reset()
+          closeModal("edit-to-do-modal")
+          
+          
+          
+      }
+      catch (err) {
+          showModal("error-modal", true, err)
+      } 
+      })
+    }
+    
+  }
+
+  modifyTask(editedTask: IToDo) {
+    const modifiedTask = new ToDo(editedTask)
+    for (let task of this.toDoList) {
+      if(modifiedTask.id == task.id) {
+        task = modifiedTask
+        this.setTaskUI()
+      }
+    }
   }
 }
