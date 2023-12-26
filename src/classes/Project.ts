@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { getRandomColorFromList, uppercaseInitials } from "../utils/utils";
 import { HexColor, Status, UserRole } from "../types/types";
-
+import { IToDo, ToDo } from "./ToDo";
+import { colors } from "../utils/utils";
 export interface IProject {
   name: string;
   description: string;
@@ -11,14 +12,8 @@ export interface IProject {
   createdDate: Date;
   cost: number;
   progress: number;
-  toDoList: IToDoTask[];
+  toDoList: ToDo[];
   id: string;
-}
-
-export interface IToDoTask {
-  name: string;
-  dueDate: Date;
-  status: Status;
 }
 
 export class Project implements IProject {
@@ -31,29 +26,39 @@ export class Project implements IProject {
   finishDate: Date;
   cost: number = 0;
   progress: number = 0;
-  toDoList: IToDoTask[];
+  toDoList: ToDo[];
   id: string;
 
   //Class internals
   ui: HTMLDivElement;
   initials: string;
   inColor: HexColor;
-
-  //Possible colors
-  colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
+  taskUI: HTMLDivElement;
+  
 
   constructor(data: IProject) {
     //Project data
     this.id = uuidv4();
-    this.inColor = getRandomColorFromList(this.colors);
+    this.inColor = getRandomColorFromList(colors);
     for (const key in data) {
       this[key] = data[key];
     }
 
     console.log(this.inColor);
     this.initials = uppercaseInitials(this.name);
-
+    this.setTaskUI () 
     this.setUI();
+    
+  }
+
+  addNewTask(newTaskData: IToDo) {
+    console.log("adding a new task")
+    const newTask = new ToDo(newTaskData)
+
+    this.toDoList.push(newTask)
+    console.log(this.toDoList)
+    this.setTaskUI ()
+
   }
 
   updateProject(data: IProject) {
@@ -98,5 +103,36 @@ export class Project implements IProject {
             </div>
           </div>
     `;
+  }
+  setTaskUI () {
+    const container = document.getElementById("to-do-list")
+    //console.log(container)
+    if(container && container instanceof HTMLDivElement) {
+      container.innerHTML = ''
+      this.taskUI = container
+      this.renderTaskList()
+      
+      
+    }
+    
+    
+    
+  }
+  renderTaskList() {
+    console.log(this.toDoList)
+    //console.log(this.taskUI)
+    if (this.toDoList == null) {
+
+    }
+    else {
+      for (const task of this.toDoList) {
+        console.log(task)
+        const renderTask = new ToDo(task)
+        this.taskUI.append(renderTask.ui)
+        //console.log(this.taskUI)
+      }
+      //console.log(this.taskUI)
+    }
+    
   }
 }

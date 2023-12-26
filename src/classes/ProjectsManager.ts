@@ -7,8 +7,9 @@ import {
   convertCurrencyStringToNumber,
 } from "../utils/utils";
 import { closeModal } from "../utils/utils";
-import { Status, UserRole } from "../types/types";
+import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
+import { IToDo } from "./ToDo";
 export class ProjectsManager {
   list: Project[] = [];
   id: string;
@@ -186,9 +187,8 @@ export class ProjectsManager {
         console.log("event listener fired");
         e.preventDefault();
         const editFormData = new FormData(editProjectForm);
-        console.log("Cost:");
+        
 
-        console.log(editFormData.get("cost"));
         try {
           const projectData: IProject = {
             name: editFormData.get("name") as string,
@@ -293,14 +293,90 @@ export class ProjectsManager {
     const addTaskButton = document.getElementById("add-to-do-btn");
     if (addTaskButton) {
       addTaskButton.addEventListener("click", () => {
-        showModal("add-to-do-modal");
         this.setupAddToDoModal();
+        showModal("add-to-do-modal");
+        
       });
     }
+
+    this.currentProject.setTaskUI () 
   }
+
   setupAddToDoModal() {
     try {
       const addToDoModal = document.getElementById("add-to-do-modal");
+
+      
+        if (!addToDoModal) {
+            return;
+        }
+        const dueDate = addToDoModal.querySelector(
+        "[add-to-do-info='dueDate']"
+        ) as HTMLInputElement;
+        if (dueDate) {
+            dueDate.value = new Date(
+                
+              ).toLocaleDateString("en-CA", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              });
+        }
+
+        const addToDoForm = document.getElementById("add-to-do-form")
+        console.log(addToDoForm)
+        let fired = 0;
+        if(addToDoForm && addToDoForm instanceof HTMLFormElement) {
+            const closeAddToDoBtn = document.getElementById(
+                "close-add-to-do-modal-btn"
+              );
+              if (closeAddToDoBtn) {
+                closeAddToDoBtn.addEventListener("click", () => {
+                  console.log("Closing modal...");
+                  closeModal("add-to-do-modal");
+                });
+              } else {
+                console.warn("Close modal button was not found");
+              }
+            console.log("addToDoForm adding event listener")
+            addToDoForm.addEventListener("submit", (e) => {
+                console.log(fired)
+                console.log("addToDoForm event listener fired")
+                if(!fired) {
+                    e.preventDefault()
+                    const addToDoFormData = new FormData(addToDoForm)
+                    try {
+                        const newTask: IToDo = {
+                            taskType: addToDoFormData.get("taskType") as ToDoTaskType,
+                            name:  addToDoFormData.get("name") as string,
+                            description:  addToDoFormData.get("description") as string,
+                            dueDate: new Date(addToDoFormData.get("dueDate") as string),
+                            status: addToDoFormData.get("status") as Status,
+                        }
+                    
+                        console.log("trying to add a new task...")
+                        
+                        this.currentProject.addNewTask(newTask)
+                        closeModal("add-to-do-modal")
+                        fired = 1;
+                        
+                        
+                    }
+                    catch (err) {
+                        showModal("error-modal", true, err)
+                    }    
+                }
+            
+            
+            
+            })
+        }
+        else {
+
+        
+        
+        }
+        
     } catch (err) {
       console.log(err);
     }

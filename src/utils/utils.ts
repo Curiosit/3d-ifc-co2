@@ -1,7 +1,8 @@
 import { ErrorModal } from "../classes/ErrorModal";
+export const colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
 export function formatDate(readDate: Date): string {
   // Get day, month, and year components
-  console.log(readDate);
+  //console.log(readDate);
   const date = new Date(readDate);
   console.log(date);
   if (!(date instanceof Date)) {

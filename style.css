@@ -348,7 +348,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .todo-item:hover {
-  background-color: var(--primary);
+  outline: 2px solid #969696; 
 }
 
 .progress-bar {
