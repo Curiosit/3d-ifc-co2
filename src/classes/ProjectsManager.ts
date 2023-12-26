@@ -1,7 +1,8 @@
-import { IProject, Project } from "./Project"
+import { IProject, Project, UserRole } from "./Project"
 import { v4 as uuidv4 } from 'uuid'
 import { formatDate, isFirstCharacterLetterOrNumber } from "../utils/utils"
 import { closeModal } from "../utils/utils"
+import { ProjectStatus } from "./Project"
 export class ProjectsManager {
     list: Project [] = []
     id: string
@@ -84,10 +85,38 @@ export class ProjectsManager {
 
         const closeEditProjectBtn = document.getElementById("close-edit-project-modal-btn")
         if (closeEditProjectBtn) {
-            closeEditProjectBtn.addEventListener("click", () => {closeModal("edit-project-modal")})
+            closeEditProjectBtn.addEventListener("click", () => {
+                console.log("Closing modal...")
+                closeModal("edit-project-modal")})
         } else {
             console.warn("Close modal button was not found")
         }
+        const editProjectForm = document.getElementById("edit-project-form")
+        if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
+            console.log("Listening for submit...")
+            editProjectForm.addEventListener("submit", (e) => {
+
+                console.log("event listener fired")
+                e.preventDefault()
+                const editFormData = new FormData(editProjectForm)
+
+                const projectData: IProject = {
+                    name: editFormData.get("name") as string,
+                    description: editFormData.get("description") as string,
+                    status: editFormData.get("status") as ProjectStatus,
+                    userRole: editFormData.get("userRole") as UserRole,
+                    finishDate: new Date(editFormData.get("finishDate") as string),
+                    createdDate: new Date(editFormData.get("createdDate") as string ),
+                    cost: editFormData.get("cost") as unknown as number,
+                    progress: editFormData.get("progress") as unknown as number,
+                    toDoList: []
+                  };
+
+                this.currentProject.updateProject(projectData)
+            })
+        }
+
+
     }
 
     private setDetailsPage(project: Project) {

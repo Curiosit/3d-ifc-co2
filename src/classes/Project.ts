@@ -13,7 +13,18 @@ export interface IProject {
   userRole: UserRole
   finishDate: Date
   createdDate: Date 
+  cost: number
+  progress: number
+  toDoList: IToDoTask[]
 }
+
+export interface IToDoTask {
+  name: string
+  dueDate: Date
+  status: ProjectStatus
+}
+
+
 export class Project implements IProject {
   //To satisfy IProject
   name: string
@@ -22,17 +33,18 @@ export class Project implements IProject {
   userRole: UserRole
   createdDate: Date
   finishDate: Date 
-  
-  
-  //Class internals
-  ui: HTMLDivElement
   cost: number = 0
   progress: number = 0
+  toDoList: IToDoTask[]
+
+  //Class internals
+  ui: HTMLDivElement
   id: string
   initials: string
   inColor: HexColor
   constructor(data: IProject) {
     //Project data
+    this.id = uuidv4()
     this.inColor = getRandomColorFromList()
     for (const key in data) {
       this[key] = data[key]
@@ -40,8 +52,16 @@ export class Project implements IProject {
     
     console.log(this.inColor)
     this.initials = uppercaseInitials(this.name)
-    this.id = uuidv4()
+    
     this.setUI()
+  }
+
+  updateProject(data: IProject) {
+    this.inColor = getRandomColorFromList()
+    for (const key in data) {
+      this[key] = data[key]
+    }
+    this.setUI
   }
 
   setUI() {

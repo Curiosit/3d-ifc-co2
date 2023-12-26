@@ -76,6 +76,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
   console.log("projectForm found")
   const closeNewProjectBtn = document.getElementById("close-new-project-modal-btn")
   if (closeNewProjectBtn) {
+    console.log("Found close new modal button")
     closeNewProjectBtn.addEventListener("click", () => {closeModal("new-project-modal")})
   } else {
     console.warn("Close modal button was not found")
@@ -101,6 +102,9 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
       userRole: formData.get("userRole") as UserRole,
       finishDate: finishDate,
       createdDate: new Date(),
+      cost: 0,
+      progress: 0,
+      toDoList: []
     };
     try {
       console.log("trying...")
