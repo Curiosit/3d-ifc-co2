@@ -9,7 +9,7 @@ import {
 import { closeModal } from "../utils/utils";
 import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
-import { IToDo } from "./ToDo";
+import { IToDo, ToDo } from "./ToDo";
 export class ProjectsManager {
   list: Project[] = [];
   id: string;
@@ -32,6 +32,7 @@ export class ProjectsManager {
       addTaskButton.addEventListener("click", addTaskClickHandler);
       
     }
+    this.setupEditToDoModal()
   }
 
   newProject(data: IProject) {
@@ -109,6 +110,7 @@ export class ProjectsManager {
     }
   }
 
+  
   setupEditProjectModal() {
     const editModal = document.getElementById("edit-project-modal");
     if (!editModal) {
@@ -233,6 +235,78 @@ export class ProjectsManager {
       });
     }
   }
+  setupEditToDoModal() {
+    const editToDoModal = document.getElementById("edit-to-do-modal");
+    if (!editToDoModal) {
+      return;
+    }
+    
+    
+    const closeEditToDoBtn = document.getElementById(
+      "close-edit-to-do-modal-btn"
+    );
+    if (closeEditToDoBtn) {
+      closeEditToDoBtn.addEventListener("click", () => {
+        console.log("Closing modal...");
+        closeModal("edit-to-do-modal");
+      });
+    } else {
+      console.warn("Close modal button was not found");
+    }
+    const editToDoForm = document.getElementById("edit-to-do-form") as HTMLFormElement
+    console.log(editToDoForm)
+    if(editToDoForm) {
+      editToDoForm.addEventListener("submit", (e) => {
+        e.preventDefault()
+        const editToDoFormData = new FormData(editToDoForm)
+        try {
+          const editedTask: IToDo = {
+              taskType: editToDoFormData.get("taskType") as ToDoTaskType,
+              name:  editToDoFormData.get("name") as string,
+              description:  editToDoFormData.get("description") as string,
+              dueDate: new Date(editToDoFormData.get("dueDate") as string),
+              status: editToDoFormData.get("status") as Status,
+              id: editToDoFormData.get("id") as string,
+          }
+      
+          console.log("trying to add a new task...")
+          
+          this.modifyTask(this.currentProject, editedTask)
+          editToDoForm.reset()
+          closeModal("edit-to-do-modal")
+          
+          
+          
+      }
+      catch (err) {
+          showModal("error-modal", true, err)
+      } 
+      })
+    }
+    
+  }
+
+  modifyTask(project: Project, editedTask: IToDo) {
+    console.log(this)
+    console.log("List of tasks")
+    console.log(project.toDoList)
+    let i = 0
+    const modifiedTask = new ToDo(editedTask)
+    modifiedTask.id = editedTask.id
+    for (let task of project.toDoList) {
+      console.log(modifiedTask.id)
+      console.log(task.id)
+      if(modifiedTask.id == task.id) {
+        console.log("modifying")
+        
+        project.toDoList[i] = modifiedTask
+        project.setTaskUI()
+      }
+      console.log(i)
+      i += 1
+    }
+  }
+
 
   private setDetailsPage(project: Project) {
     const detailsPage = document.getElementById("project-details");

@@ -50,6 +50,7 @@ export class Project implements IProject {
     this.initials = uppercaseInitials(this.name);
     this.loadTasks();
     this.setTaskUI () 
+    
     this.setUI();
     
   }
@@ -75,6 +76,7 @@ export class Project implements IProject {
   }
 
   updateProject(data: IProject) {
+    console.log(this)
     for (const key in data) {
       this[key] = data[key];
     }
@@ -144,7 +146,7 @@ export class Project implements IProject {
         //task = new ToDo(task)
         task.ui.addEventListener("click", () => { 
           showModal("edit-to-do-modal");
-          this.setupEditToDoModal(task)
+          this.updateEditToDoModal(task)
         })
 
         this.taskUI.append(task.ui)
@@ -154,7 +156,10 @@ export class Project implements IProject {
     }
     
   }
-  setupEditToDoModal(renderTask:ToDo) {
+
+
+  updateEditToDoModal(renderTask:ToDo) {
+    console.log(this)
     const editToDoModal = document.getElementById("edit-to-do-modal");
     if (!editToDoModal) {
       return;
@@ -177,6 +182,12 @@ export class Project implements IProject {
     if (status) {
       status.value = renderTask.status;
     }
+    const id = editToDoModal.querySelector(
+      "[edit-to-do-info='id']"
+    ) as HTMLInputElement;
+    if (id) {
+      id.value = renderTask.id;
+    }
     const taskType = editToDoModal.querySelector(
       "[edit-to-do-info='taskType']"
     ) as HTMLInputElement;
@@ -196,57 +207,7 @@ export class Project implements IProject {
       });
     }
 
-    const closeEditToDoBtn = document.getElementById(
-      "close-edit-to-do-modal-btn"
-    );
-    if (closeEditToDoBtn) {
-      closeEditToDoBtn.addEventListener("click", () => {
-        console.log("Closing modal...");
-        closeModal("edit-to-do-modal");
-      });
-    } else {
-      console.warn("Close modal button was not found");
-    }
-    const editToDoForm = document.getElementById("edit-to-do-form") as HTMLFormElement
-    console.log(editToDoForm)
-    if(editToDoForm) {
-      editToDoForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-        const editToDoFormData = new FormData(editToDoForm)
-        try {
-          const editedTask: IToDo = {
-              taskType: editToDoFormData.get("taskType") as ToDoTaskType,
-              name:  editToDoFormData.get("name") as string,
-              description:  editToDoFormData.get("description") as string,
-              dueDate: new Date(editToDoFormData.get("dueDate") as string),
-              status: editToDoFormData.get("status") as Status,
-              id: renderTask.id
-          }
-      
-          console.log("trying to add a new task...")
-          
-          this.modifyTask(editedTask)
-          editToDoForm.reset()
-          closeModal("edit-to-do-modal")
-          
-          
-          
-      }
-      catch (err) {
-          showModal("error-modal", true, err)
-      } 
-      })
-    }
-    
   }
+  
 
-  modifyTask(editedTask: IToDo) {
-    const modifiedTask = new ToDo(editedTask)
-    for (let task of this.toDoList) {
-      if(modifiedTask.id == task.id) {
-        task = modifiedTask
-        this.setTaskUI()
-      }
-    }
-  }
 }
