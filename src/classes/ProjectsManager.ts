@@ -20,6 +20,18 @@ export class ProjectsManager {
     this.id = uuidv4();
     console.log(`Project Manager is running, with id: ${this.id}`);
     console.log(this.list);
+    this.setupAddToDoModal();
+    const addTaskButton = document.getElementById("add-to-do-btn");
+    const addTaskClickHandler = () => {
+      this.updateAddToDoModal();
+      showModal("add-to-do-modal");
+ 
+    };
+    if (addTaskButton) {
+      
+      addTaskButton.addEventListener("click", addTaskClickHandler);
+      
+    }
   }
 
   newProject(data: IProject) {
@@ -291,21 +303,32 @@ export class ProjectsManager {
       console.log(initials.style);
     }
 
-    const addTaskButton = document.getElementById("add-to-do-btn");
-    const addTaskClickHandler = () => {
-      this.setupAddToDoModal();
-      showModal("add-to-do-modal");
-    };
-    if (addTaskButton) {
-      addTaskButton.removeEventListener("click", addTaskClickHandler);
-      addTaskButton.addEventListener("click", addTaskClickHandler);
-      
-    }
+
 
     this.currentProject.setTaskUI () 
   }
+  updateAddToDoModal() {
+    const addToDoModal = document.getElementById("add-to-do-modal");
 
-  setupAddToDoModal() {
+      
+        if (!addToDoModal) {
+            return;
+        }
+        const dueDate = addToDoModal.querySelector(
+          "[add-to-do-info='dueDate']"
+          ) as HTMLInputElement;
+          if (dueDate) {
+              dueDate.value = new Date(
+                  
+                ).toLocaleDateString("en-CA", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                });
+          }
+
+  }
+  private setupAddToDoModal() {
     try {
       const addToDoModal = document.getElementById("add-to-do-modal");
 
@@ -313,22 +336,11 @@ export class ProjectsManager {
         if (!addToDoModal) {
             return;
         }
-        const dueDate = addToDoModal.querySelector(
-        "[add-to-do-info='dueDate']"
-        ) as HTMLInputElement;
-        if (dueDate) {
-            dueDate.value = new Date(
-                
-              ).toLocaleDateString("en-CA", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              });
-        }
+        
 
         const addToDoForm = document.getElementById("add-to-do-form")
         console.log(addToDoForm)
-        let fired = 0;
+        
         if(addToDoForm && addToDoForm instanceof HTMLFormElement) {
             const closeAddToDoBtn = document.getElementById(
                 "close-add-to-do-modal-btn"
@@ -343,11 +355,12 @@ export class ProjectsManager {
               }
             console.log("addToDoForm adding event listener")
             addToDoForm.addEventListener("submit", (e) => {
-                console.log(fired)
+                
+                console.log(e)
                 console.log("addToDoForm event listener fired")
-                if(!fired) {
-                    fired = 1;
-                    console.log(fired)
+                if(true) {
+                    
+                    
                     e.preventDefault()
                     const addToDoFormData = new FormData(addToDoForm)
                     try {
@@ -361,9 +374,9 @@ export class ProjectsManager {
                         }
                     
                         console.log("trying to add a new task...")
-                        
+                        console.log(newTask)
                         this.currentProject.addNewTask(newTask)
-                        //addToDoForm.reset()
+                        addToDoForm.reset()
                         closeModal("add-to-do-modal")
                         
                         

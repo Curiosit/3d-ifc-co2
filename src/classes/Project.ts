@@ -48,17 +48,28 @@ export class Project implements IProject {
 
     console.log(this.inColor);
     this.initials = uppercaseInitials(this.name);
+    this.loadTasks();
     this.setTaskUI () 
     this.setUI();
     
+  }
+
+  loadTasks() {
+    let i = 0;
+    for(const task of this.toDoList) {
+      this.toDoList[i] = new ToDo(task)
+      i++
+
+    }
+    console.log(this.toDoList)
   }
 
   addNewTask(newTaskData: IToDo) {
     console.log("adding a new task")
     const newTask = new ToDo(newTaskData)
 
-    console.log(this.toDoList.push(newTask))
-    console.log(this.toDoList)
+    this.toDoList.push(newTask)
+    //console.log(this.toDoList)
     this.setTaskUI ()
 
   }
@@ -127,15 +138,16 @@ export class Project implements IProject {
 
     }
     else {
-      for (const task of this.toDoList) {
+      for (let task of this.toDoList) {
         console.log(task)
-        const renderTask = new ToDo(task)
-        renderTask.ui.addEventListener("click", () => { 
+        console.log(task.ui.innerHTML)
+        //task = new ToDo(task)
+        task.ui.addEventListener("click", () => { 
           showModal("edit-to-do-modal");
-          this.setupEditToDoModal(renderTask)
+          this.setupEditToDoModal(task)
         })
 
-        this.taskUI.append(renderTask.ui)
+        this.taskUI.append(task.ui)
         //console.log(this.taskUI)
       }
       //console.log(this.taskUI)
