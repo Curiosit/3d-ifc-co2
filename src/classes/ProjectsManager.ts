@@ -268,6 +268,7 @@ export class ProjectsManager {
               status: editToDoFormData.get("status") as Status,
               id: editToDoFormData.get("id") as string,
           }
+          console.log(editToDoFormData.get("taskType"))
       
           console.log("trying to add a new task...")
           
@@ -290,8 +291,10 @@ export class ProjectsManager {
     console.log(this)
     console.log("List of tasks")
     console.log(project.toDoList)
+    console.log(editedTask)
     let i = 0
     const modifiedTask = new ToDo(editedTask)
+    console.log(modifiedTask)
     modifiedTask.id = editedTask.id
     for (let task of project.toDoList) {
       console.log(modifiedTask.id)

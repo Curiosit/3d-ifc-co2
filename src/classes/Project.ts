@@ -160,6 +160,7 @@ export class Project implements IProject {
 
   updateEditToDoModal(renderTask:ToDo) {
     console.log(this)
+    console.log(renderTask)
     const editToDoModal = document.getElementById("edit-to-do-modal");
     if (!editToDoModal) {
       return;
@@ -194,6 +195,7 @@ export class Project implements IProject {
     if (taskType) {
       taskType.value = renderTask.taskType;
     }
+
     const dueDate = editToDoModal.querySelector(
       "[edit-to-do-info='dueDate']"
     ) as HTMLInputElement;
