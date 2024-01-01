@@ -6,7 +6,9 @@ import { closeModal } from "./utils/utils"
 import { formatDate, modifyDateInput } from "./utils/utils"
 import { showModal } from "./utils/utils"
 import { v4 as uuidv4 } from 'uuid'
-console.log("index.ts started")
+
+import * as THREE from "three"
+
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -128,3 +130,17 @@ if (importProjectsBtn) {
   })
 }
 
+//THREE.JS viewer
+
+const scene = new THREE.Scene()
+
+const viewerContainer = document.getElementById("viewer-container") as HTMLElement
+const containerDimensions = viewerContainer.getBoundingClientRect()
+const aspectRatio = containerDimensions.width / containerDimensions.height
+const camera = new THREE.PerspectiveCamera(75, aspectRatio)
+
+const renderer = new THREE.WebGLRenderer()
+viewerContainer.append(renderer.domElement)
+renderer.setSize(containerDimensions.width, containerDimensions.height)
+
+renderer.render(scene, camera)

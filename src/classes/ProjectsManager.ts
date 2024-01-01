@@ -18,6 +18,19 @@ export class ProjectsManager {
   constructor(container: HTMLElement) {
     this.ui = container;
     this.id = uuidv4();
+    const project = this.newProject({
+      name: "Default Project",
+      description: "This is a default app project",
+      status: "pending",
+      userRole: "architect",
+      finishDate: new Date(),
+      createdDate: new Date(),
+      cost: 1000,
+      progress: 0,
+      toDoList: [],
+      id: uuidv4()
+    })
+    project.ui.click()
     console.log(`Project Manager is running, with id: ${this.id}`);
     console.log(this.list);
     this.setupAddToDoModal();
