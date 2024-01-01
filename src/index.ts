@@ -138,9 +138,24 @@ const viewerContainer = document.getElementById("viewer-container") as HTMLEleme
 const containerDimensions = viewerContainer.getBoundingClientRect()
 const aspectRatio = containerDimensions.width / containerDimensions.height
 const camera = new THREE.PerspectiveCamera(75, aspectRatio)
+camera.position.z = 5
+
 
 const renderer = new THREE.WebGLRenderer()
 viewerContainer.append(renderer.domElement)
+
 renderer.setSize(containerDimensions.width, containerDimensions.height)
+
+
+const boxGeometry= new THREE.BoxGeometry()
+const material = new THREE.MeshStandardMaterial()
+const cube = new THREE.Mesh(boxGeometry, material)
+scene.add(cube)
+
+const directionalLight = new THREE.DirectionalLight()
+const ambientLight = new THREE.AmbientLight()
+
+scene.add(directionalLight)
+scene.add(ambientLight)
 
 renderer.render(scene, camera)
