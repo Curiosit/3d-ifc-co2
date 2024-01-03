@@ -13,6 +13,7 @@ import { GUI } from "three/examples/jsm/libs/lil-gui.module.min"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import * as THREE from "three"
 
+import * as OBC from "openbim-components"
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -136,7 +137,7 @@ if (importProjectsBtn) {
 
 //THREE.JS viewer
 
-const scene = new THREE.Scene()
+/* const scene = new THREE.Scene()
 
 const viewerContainer = document.getElementById("viewer-container") as HTMLElement
 
@@ -212,4 +213,32 @@ objLoader.load("../assets/Gear/Gear1.obj", (mesh) => {
 mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
   materials.preload()
   objLoader.setMaterials(materials)
-})
+}) */
+
+
+// OPENBIM VIEWER
+
+const viewer = new OBC.Components()
+
+const sceneComponent = new OBC.SimpleScene(viewer)
+sceneComponent.setup()
+viewer.scene = sceneComponent
+const scene = sceneComponent.get()
+
+scene.background = null
+
+const viewerContainer = document.getElementById("viewer-container") as HTMLElement
+const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
+viewer.renderer = rendererComponent
+
+const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
+viewer.camera = cameraComponent
+
+viewer.init()
+cameraComponent.updateAspect()
+
+const boxGeometry= new THREE.BoxGeometry()
+const material = new THREE.MeshStandardMaterial()
+const cube = new THREE.Mesh(boxGeometry, material)
+
+scene.add(cube)
