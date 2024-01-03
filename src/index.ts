@@ -226,20 +226,47 @@ const scene = sceneComponent.get()
 scene.background = null
 
 const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
-const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
+const rendererComponent = new OBC.PostproductionRenderer(viewer, viewerContainer)
 viewer.renderer = rendererComponent
 
 const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
 viewer.camera = cameraComponent
 
+const raycasterComponent = new OBC.SimpleRaycaster(viewer)
+viewer.raycaster = raycasterComponent
+
 viewer.init()
 cameraComponent.updateAspect()
+rendererComponent.postproduction.enabled = true
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer)
 ifcLoader.settings.wasm = {
   path: "https://unpkg.com/web-ifc@0.0.43/",
   absolute: true
 }
+
+const highlighter = new OBC.FragmentHighlighter(viewer)
+highlighter.setup()
+
+const classifier = new OBC.FragmentClassifier(viewer)
+const classificationWindow = new OBC.FloatingWindow(viewer)
+viewer.ui.add(classificationWindow)
+classificationWindow.title = "Model Groups"
+
+ifcLoader.onIfcLoaded.add( async (model) => {
+  highlighter.update()
+  classifier.byStorey(model)
+  classifier.byEntity(model)
+  console.log(classifier.get())
+  const fragmentTree = new OBC.FragmentTree(viewer)
+  await fragmentTree.init()
+  await fragmentTree.update([
+    "storeys",
+    "entities"
+  ])
+  const tree = fragmentTree.get().uiElement.get("tree")
+  classificationWindow.addChild(tree)
+})
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
