@@ -217,17 +217,15 @@ mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
 
 
 // OPENBIM VIEWER
-
 const viewer = new OBC.Components()
 
 const sceneComponent = new OBC.SimpleScene(viewer)
 sceneComponent.setup()
 viewer.scene = sceneComponent
 const scene = sceneComponent.get()
-
 scene.background = null
 
-const viewerContainer = document.getElementById("viewer-container") as HTMLElement
+const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
 const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
 viewer.renderer = rendererComponent
 
@@ -237,8 +235,14 @@ viewer.camera = cameraComponent
 viewer.init()
 cameraComponent.updateAspect()
 
-const boxGeometry= new THREE.BoxGeometry()
-const material = new THREE.MeshStandardMaterial()
-const cube = new THREE.Mesh(boxGeometry, material)
+const ifcLoader = new OBC.FragmentIfcLoader(viewer)
+ifcLoader.settings.wasm = {
+  path: "https://unpkg.com/web-ifc@0.0.43/",
+  absolute: true
+}
 
-scene.add(cube)
+const toolbar = new OBC.Toolbar(viewer)
+toolbar.addChild(
+  ifcLoader.uiElement.get("main")
+)
+viewer.ui.addToolbar(toolbar)
