@@ -16,6 +16,7 @@ import * as THREE from "three"
 import { FragmentsGroup } from "bim-fragment"
 
 import * as OBC from "openbim-components"
+import { TodoCreator } from "./bim-components/TodoCreator"
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -341,8 +342,18 @@ highlighter.events.select.onClear.add(() => {
   propertiesProcessor.cleanPropertiesList()
 })
 
+const culler = new OBC.ScreenCuller(viewer)
+cameraComponent.controls.addEventListener("sleep", () => {
+  culler.needsUpdate = true
+})
+
 async function onModelLoaded(model: FragmentsGroup) {
   highlighter.update()
+
+  for(const fragment of model.items) {
+    culler.add(fragment.mesh)
+  }
+  culler.needsUpdate = true
 
   try {
     classifier.byModel(model.name, model)
@@ -415,6 +426,7 @@ importJSONBtn.onClick.add(() => {
   
 }) */
 
+const todoCreator = new TodoCreator(viewer)
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
@@ -423,6 +435,8 @@ toolbar.addChild(
   classificationsBtn,
   
   propertiesProcessor.uiElement.get("main"),
+  fragmentManager.uiElement.get("main"),
+  todoCreator.uiElement.get("activationButton")
   
 )
 viewer.ui.addToolbar(toolbar)
