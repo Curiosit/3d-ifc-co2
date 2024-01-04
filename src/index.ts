@@ -253,6 +253,43 @@ function exportFragments(model: FragmentsGroup ) {
   URL.revokeObjectURL(url);
 }
 
+function exportJSON (model: FragmentsGroup) {
+  const json = JSON.stringify(model.properties, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${model.name.replace(".ifc", "")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importJSON (model) {
+  const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const json = reader.result as string;
+      if (!json) {
+        return;
+      }
+      const loadedModel =  { ...model, properties:JSON.parse(json)};
+      onModelLoaded(loadedModel) 
+      return;
+      
+    });
+    input.addEventListener("change", () => {
+      const filesList = input.files;
+      if (!filesList) {
+        return;
+      }
+      reader.readAsText(filesList[0]);
+    });
+    input.click();
+    
+}
+
 const ifcLoader = new OBC.FragmentIfcLoader(viewer)
 ifcLoader.settings.wasm = {
   path: "https://unpkg.com/web-ifc@0.0.43/",
@@ -331,11 +368,14 @@ async function onModelLoaded(model: FragmentsGroup) {
 
 ifcLoader.onIfcLoaded.add( async (model) => {
   exportFragments(model)
+  exportJSON(model)
   onModelLoaded(model)
 })
 
 fragmentManager.onFragmentsLoaded.add((model) => {
   model.properties = {} // From JSON file exported from the IFC!
+  importJSON(model)
+   
   onModelLoaded(model)
 })
 
@@ -366,11 +406,22 @@ importFragmentBtn.onClick.add(() => {
   input.click();
 })
 
+
+/* const importJSONBtn = new OBC.Button(viewer)
+importJSONBtn.materialIcon = "book"
+importJSONBtn.tooltip = "Load .json file"
+
+importJSONBtn.onClick.add(() => { 
+  
+}) */
+
+
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
   importFragmentBtn,
   classificationsBtn,
+  
   propertiesProcessor.uiElement.get("main"),
   
 )
