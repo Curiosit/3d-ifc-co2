@@ -268,6 +268,7 @@ async function createModelTree() {
   const fragmentTree = new OBC.FragmentTree(viewer)
   await fragmentTree.init()
   await fragmentTree.update([
+    "model",
     "storeys",
     "entities"
   ])
@@ -283,23 +284,33 @@ async function createModelTree() {
   return tree
 }
 
-
+const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
 
 ifcLoader.onIfcLoaded.add( async (model) => {
   highlighter.update()
+
+  classifier.byModel(model.name, model)
   classifier.byStorey(model)
   classifier.byEntity(model)
-  
-  console.log(model.uuid)
+
   const tree = await createModelTree()
   await classificationWindow.slots.content.dispose(true)
   classificationWindow.addChild(tree)
-  console.log(viewer.scene.components)
+  
+
+  propertiesProcessor.process(model)
+  
+  highlighter.events.select.onHighlight.add((fragmentMap) => {
+    const expressID = [...Object.values(fragmentMap)[0]][0]
+    propertiesProcessor.renderProperties(model, Number(expressID))
+  })
+
 })
 
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
-  classificationsBtn
+  classificationsBtn,
+  propertiesProcessor.uiElement.get("main"),
 )
 viewer.ui.addToolbar(toolbar)
