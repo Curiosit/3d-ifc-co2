@@ -41,14 +41,15 @@ export class ToDo implements IToDo {
           }">
             <div class="" style="display: flex; justify-content: space-between; align-items: center;">
               <div style="display: flex; column-gap: 15px; align-items: center;">
-                <span class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">${
-                  this.name
-                }</span>
-                <p></p>
+                <span class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span><p></p>
               </div>
-              <p style="text-wrap: nowrap; margin-left: 10px;">${formatDate(
+              <p style="text-wrap: nowrap; margin-left: 10px;">${
+                this.name
+              }
+              </p>
+              ${formatDate(
                 this.dueDate
-              )}</p>
+              )}
             </div>
             <div class="tooltiptext">
               ${this.description}
