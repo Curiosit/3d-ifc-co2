@@ -1,15 +1,26 @@
 import * as OBC from "openbim-components"
 
 export class SimpleQto extends OBC.Component<null> implements OBC.UI, OBC.Disposable  {
-    enabled: boolean;
+    static uuid = "c9ffb4b0-c077-4244-90a6-c4eec04a6a6f"
+    enabled: boolean = true
+    private _components: OBC.Components
+    uiElement = new OBC.UIElement<{
+        activationBtn: OBC.Button
+        qtoList: OBC.FloatingWindow
+    }>()
 
-    get(...args: any): null {
-        throw new Error("Method not implemented.");
+    constructor(components: OBC.Components) {
+
+        super(components)
+        this._components = components
     }
-    dispose: () => Promise<void>;
-    
-    uiElement: OBC.UIElement<any>;
 
-    
+    async dispose() {
+        
+    }
+
+    get(): null {
+        return null
+     }
 
 }
