@@ -142,3 +142,13 @@ export function convertCurrencyStringToNumber(value: string): number | null {
   // If the input doesn't match the expected format, return null or handle the error as needed
   return null;
 }
+
+export function roundNumber(number): number {
+  if (number < 100) {
+    return Math.round(number * 100) / 100; 
+  } else if (number < 1000) {
+    return Math.round(number * 10) / 10; 
+  } else {
+    return Math.round(number); 
+  }
+}

@@ -1,4 +1,5 @@
 import * as OBC from "openbim-components"
+import { roundNumber } from "../../../utils/utils"
 
 export class QtyValueCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
@@ -12,7 +13,7 @@ export class QtyValueCard extends OBC.SimpleUIComponent {
 
     set qtyValue(value: number) {
         const qtyValueElement = this.getInnerElement("qtyValue") as HTMLParagraphElement
-        qtyValueElement.textContent = value.toString()
+        qtyValueElement.textContent = roundNumber(value).toString()
     }
 
     
