@@ -17,6 +17,7 @@ import { FragmentsGroup } from "bim-fragment"
 
 import * as OBC from "openbim-components"
 import { TodoCreator } from "./bim-components/TodoCreator"
+import { SimpleQto } from "./bim-components/SimpleQto"
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
 const projectsManager = new ProjectsManager(projectsListUI)
@@ -293,7 +294,7 @@ function importJSON (model) {
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer)
 ifcLoader.settings.wasm = {
-  path: "https://unpkg.com/web-ifc@0.0.43/",
+  path: "https://unpkg.com/web-ifc@0.0.44/",
   absolute: true
 }
 
@@ -337,6 +338,7 @@ async function createModelTree() {
 }
 
 const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
+const qtyList = new SimpleQto(viewer)
 
 highlighter.events.select.onClear.add(() => {
   propertiesProcessor.cleanPropertiesList()
@@ -348,6 +350,7 @@ cameraComponent.controls.addEventListener("sleep", () => {
 })
 
 async function onModelLoaded(model: FragmentsGroup) {
+  console.log("Model loaded")
   highlighter.update()
 
   for(const fragment of model.items) {
@@ -374,19 +377,22 @@ async function onModelLoaded(model: FragmentsGroup) {
   } catch (error) {
     showModal("error-modal", true, error)
   }
+  console.log (model)
+  
   
 }
 
 ifcLoader.onIfcLoaded.add( async (model) => {
   exportFragments(model)
   exportJSON(model)
+  console.log(model)
   onModelLoaded(model)
 })
 
 fragmentManager.onFragmentsLoaded.add((model) => {
   model.properties = {} // From JSON file exported from the IFC!
   importJSON(model)
-   
+  console.log(model)
   onModelLoaded(model)
 })
 
@@ -429,6 +435,15 @@ importJSONBtn.onClick.add(() => {
 const todoCreator = new TodoCreator(viewer)
 await todoCreator.setup()
 
+
+const propsFinder = new OBC.IfcPropertiesFinder(viewer)
+await propsFinder.init()
+propsFinder.onFound.add((fragmentIDMap) => {
+  highlighter.highlightByID("select", fragmentIDMap)
+})
+
+
+
 const toolbar = new OBC.Toolbar(viewer)
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
@@ -436,8 +451,9 @@ toolbar.addChild(
   classificationsBtn,
   
   propertiesProcessor.uiElement.get("main"),
+  propsFinder.uiElement.get("main"),
   fragmentManager.uiElement.get("main"),
-  todoCreator.uiElement.get("activationButton")
-  
+  todoCreator.uiElement.get("activationButton"),
+  qtyList.uiElement.get("activationBtn")
 )
 viewer.ui.addToolbar(toolbar)
