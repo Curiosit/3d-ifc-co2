@@ -219,6 +219,17 @@ mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
   objLoader.setMaterials(materials)
 }) */
 
+//
+const inputSearch = document.getElementById("search-todo")
+if (inputSearch) {
+  inputSearch.addEventListener("input", (e) => {
+    if(e.target) {
+      const target = e.target as HTMLInputElement
+      console.log(target.value)
+    }
+    
+  })
+}
 
 // OPENBIM VIEWER
 const viewer = new OBC.Components()
