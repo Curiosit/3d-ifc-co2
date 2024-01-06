@@ -39,7 +39,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
         const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
         highlighter.events.select.onClear.add(async () => {
             this.resetQuantities()
-            await this.resetWindow()
+            this.resetWindow()
             console.log("reseting window")
             
             
@@ -57,7 +57,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
         
         
     }
-    async resetWindow() {
+    resetWindow() {
         
         const qtoList = this.uiElement.get("qtoList")
         console.log(qtoList)
@@ -210,6 +210,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
             )
         }
         console.log(this._qtoResult)
+        this.resetWindow()
         this.updateUI()
     }
 
