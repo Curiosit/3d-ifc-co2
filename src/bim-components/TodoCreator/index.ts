@@ -201,7 +201,7 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
     filterList(str) {
         for (let i = 0; i < this._list.length; i++) {
             const todo_item = this._list[i];
-            if(todo_item.description.includes(str)) {
+            if(todo_item.description.toLowerCase().includes(str.toLowerCase())) {
                 todo_item.TodoCard.visible = true
             }
             else {
