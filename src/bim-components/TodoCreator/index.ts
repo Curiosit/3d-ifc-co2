@@ -1,9 +1,10 @@
 import * as OBC from "openbim-components"
 import * as THREE from "three"
 import { TodoCard } from "./src/TodoCard"
-import { generateUUID } from "three/src/math/MathUtils"
-import { v4 as uuidv4 } from 'uuid'
-type ToDoPriority = "Low" | "Medium" | "High"
+
+
+import { ToDoPriority, Todo } from "./src/Todo"
+
 
 interface ToDo {
     description: string
@@ -14,7 +15,7 @@ interface ToDo {
     id: string
 }
 
-export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Disposable {
+export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Disposable {
     static uuid = "79a04980-11cf-42c7-963d-67ccb0ff0dad"
     onProjectCreated = new OBC.Event<ToDo>()
 
@@ -25,11 +26,15 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Di
         todoList: OBC.FloatingWindow
     }>()
     private _components: OBC.Components
-    private _list: ToDo[] = []
+    private _list: Todo[] = []
+    //private _Todo: Todo
 
     constructor(components: OBC.Components) {
         super(components)
         this._components = components
+        
+        
+
         components.tools.add(TodoCreator.uuid, this)
         this.setUI()
     }
@@ -48,70 +53,26 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Di
 
     removeTodo(toDo, toDoCard) {
        const updatedToDos = this._list.filter((todo)=> {
-        console.log(todo.id)
-        console.log(toDo.id)
         return (todo.id!=toDo.id)
        })
-       console.log(updatedToDos)
        this._list = updatedToDos 
-       //const todoList = this.uiElement.get("todoList")
-       //todoList.removeChild(toDo.ui)
        toDoCard.dispose()
     }
 
     async addTodo(description: string, priority: ToDoPriority) {
-        if (!this.enabled) { return }
-        const camera = this._components.camera
-        if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
-            throw new Error("TodoCreator needs the Ortho Perspective Camera in order to work!")
-        }
-        //camera.controls
-
-        const position = new THREE.Vector3()
-        camera.controls.getPosition(position)
-        const target = new THREE.Vector3()
-        camera.controls.getTarget(target)
-        const todoCamera = {position, target}
-
-
-        const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
-        const todo: ToDo = {
+        const date = new Date()
+        const data = {
             description: description,
-            date: new Date(),
-            fragmentMap: highlighter.selection.select,
-            camera: todoCamera,
-            priority,
-            id: uuidv4()
+            date: date,
+            priority: priority,
         }
-        console.log(todo)
-
+        const todo = new Todo(this.components, data)
+        await todo.setupOnClick()
         this._list.push(todo)
-
-        const todoCard = new TodoCard(this._components)
-        todoCard.description = todo.description
-        todoCard.date = todo.date
-        todoCard.onCardClick.add(() => {
-            camera.controls.setLookAt(
-                todo.camera.position.x,
-                todo.camera.position.y,
-                todo.camera.position.x,
-                todo.camera.target.x,
-                todo.camera.target.y,
-                todo.camera.target.z,
-                true
-
-            )
-            const fragmentMapLength = Object.keys(todo.fragmentMap).length
-            if(fragmentMapLength === 0) {return}
-            highlighter.highlightByID("select", todo.fragmentMap)
-        })
-        
         const todoList = this.uiElement.get("todoList")
-        console.log(todo)
-        todoList.addChild(todoCard)
-        todoCard.onDelete.add(() => {
-            this.removeTodo(todo, todoCard)
-            
+        todoList.addChild(todo.TodoCard)
+        todo.TodoCard.onDelete.add(() => {
+            this.removeTodo(todo, todo.TodoCard)
         })
         this.onProjectCreated.trigger()
     }
@@ -164,11 +125,22 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Di
         const todoListToolbar = new OBC.SimpleUIComponent(this._components)
         todoList.addChild(todoListToolbar)
 
+        const menuContainer =  new OBC.SimpleUIComponent(this._components)
+        menuContainer.get().style.display="flex"
+        todoListToolbar.addChild(menuContainer)
+
+
+        const searchBar = this.addSearch() 
+        menuContainer.addChild(searchBar)
+
+
         const colorizeBtn = new OBC.Button(this._components)
         colorizeBtn.materialIcon = "format_color_fill"
         colorizeBtn.tooltip = "Colorize by priority"
-        todoListToolbar.addChild(colorizeBtn)
+        menuContainer.addChild(colorizeBtn)
 
+        
+        
 
         const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
         colorizeBtn.onClick.add(() => {
@@ -198,7 +170,47 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI, OBC.Di
         })
     }
 
-    get(): ToDo[] {
-        return this._list
+    addSearch() {
+        const searchContainer = new OBC.SimpleUIComponent(this._components)
+        searchContainer.get().style.display="flex"
+        const searchIcon = new OBC.Button(this._components)
+        searchIcon.materialIcon = "search"
+        const searchInput = new OBC.TextInput(this._components)
+        searchInput.label = ""
+        const input = searchInput.innerElements.input
+        input.style.padding = "1px"
+
+        
+        if (input) {
+            input.addEventListener("input", (e) => {
+            if(e.target) {
+            const target = e.target as HTMLInputElement
+            console.log(target.value)
+            this.filterList(target.value)
+            }
+            
+        })
+        }
+
+        searchContainer.addChild(searchInput)
+        searchContainer.addChild(searchIcon)
+        
+        return searchContainer
+
+    }
+    filterList(str) {
+        for (let i = 0; i < this._list.length; i++) {
+            const todo_item = this._list[i];
+            if(todo_item.description.includes(str)) {
+                todo_item.TodoCard.visible = true
+            }
+            else {
+                todo_item.TodoCard.visible = false
+            }
+        }
+    }
+
+    get(): number {
+        return this._list.length
     }
 }

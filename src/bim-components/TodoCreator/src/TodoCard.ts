@@ -14,6 +14,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
     }
 
     set date(value: Date) {
+        console.log(value)
         const dateElement = this.getInnerElement("date") as HTMLParagraphElement
         dateElement.textContent = value.toDateString()
     }
