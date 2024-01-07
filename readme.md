@@ -23,3 +23,4 @@ Welcome to the slad.ai project repository! slad.ai is a carbon footprint calcula
 ![select](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/a9a0b833-23fa-4373-80ce-8d16f9c3e6db)
 
 ![search](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/b602f8e3-a9e2-49ec-8780-f8e4e00a7289)
+

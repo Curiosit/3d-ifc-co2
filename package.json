@@ -10,15 +10,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "18.2.31",
+    "@types/react-dom": "18.2.14",
+    "@vitejs/plugin-react": "4.0.3",
     "@types/three": "0.156.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "typescript": "^5.2.2",
+    "vite": "^4.4.10"
   },
   "dependencies": {
-    "bim-fragment": "1.0.22",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "openbim-components": "1.1.5",
     "three": "0.152.2",
-    "uuid": "^9.0.1",
-    "web-ifc": "0.0.44"
+    "uuid": "^9.0.1"
   }
 }
