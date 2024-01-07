@@ -10,6 +10,7 @@ import { closeModal } from "../utils/utils";
 import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
 import { IToDo, ToDo } from "./ToDo";
+
 export class ProjectsManager {
   list: Project[] = [];
   id: string;
@@ -30,7 +31,7 @@ export class ProjectsManager {
       toDoList: [],
       id: uuidv4()
     })
-    project.ui.click()
+    //project.ui.click()
     console.log(`Project Manager is running, with id: ${this.id}`);
     console.log(this.list);
     this.setupAddToDoModal();

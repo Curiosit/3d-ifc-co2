@@ -14,29 +14,7 @@
   
 </head>
 <body>
-  <aside id="sidebar">
-    
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <div class="container-fluid logo-container">
-            <img class="logo-image" src="./assets/logo-dark.png" alt="">
-            <a class="navbar-brand fw-bold" href="./">
-                <div>
-                    slad.ai
-                    <span class="badge rounded-pill bg-danger">
-                        beta
-                    </span>
-                </div>
-            </a>
-    </div></nav>
-    <ul id="nav-buttons">
-      <li id="menu-project-btn"><span  class="material-symbols-rounded">apartment</span>
-        Projects
-      </li>
-      <li><span class="material-symbols-rounded">person</span>
-        Users
-      </li>
-    </ul>
-  </aside>
+  <div id="app"></div>
   <main id="content">
     <dialog id="error-modal" class="popup">
         <h2>
@@ -49,73 +27,7 @@
             </div>
         </div>
     </dialog>
-    <div class="page" id="projects-page" > 
-      <dialog id="new-project-modal">
-        <form id="new-project-form">
-          <h2>New Project</h2>
-          <div class="input-list">
-            <div class="form-field-container">
-              <label><span class="material-symbols-rounded">apartment</span>Name</label>
-              <input name="name" type="text" placeholder="What's the name of your project?">
-              <p style="color: gray; font-size: var(--font-sm); margin-top: 5px; font-style: italic;">TIP: Give it a short name</p>
-            </div>
-            <div class="form-field-container">
-              <label><span class="material-symbols-rounded">subject</span>Description</label>
-              <textarea cols="30" rows="3" name="description" placeholder="Give your project a nice description! So people are jealous about it."></textarea>
-            </div>
-            <div class="form-field-container">
-              <label><span class="material-symbols-rounded">person</span>Role</label>
-              <select name="userRole">
-                <option>Architect</option>
-                <option>Engineer</option>
-                <option>Developer</option>
-              </select>
-            </div>
-            <div class="form-field-container">
-              <label><span class="material-symbols-rounded">not_listed_location</span>Status</label>
-              <select name="status">
-                <option>pending</option>
-                <option>active</option>
-                <option>finished</option>
-              </select>
-            </div>
-            <div class="form-field-container">
-              <label for="createdDate">
-                <span class="material-symbols-rounded">calendar_month</span>
-                Created Date
-              </label>
-              <input id="createdDate" type="date" name="createdDate"></input>
-            </div>
-            <div class="form-field-container">
-              <label for="finishDate">
-                <span class="material-symbols-rounded">calendar_month</span>
-                Finish Date
-              </label>
-              <input id="finishDate" type="date" name="finishDate"></input>
-            </div>
-            <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
-              <button id="close-new-project-modal-btn" type="button" style="background-color: transparent;">Cancel</button>
-              <button type="submit" class="positive">Accept</button>
-            </div>
-          </div>
-        </form>
-      </dialog>
-      <header>
-        <h2><span class="material-symbols-rounded">
-          folder_copy
-          </span> Projects</h2>
-          <div style="display: flex; align-items: center; column-gap: 15px;">
-            <span id="import-projects-btn" class="material-symbols-rounded action-icon">file_upload</span>
-            <span id="export-projects-btn" class="material-symbols-rounded action-icon">file_download</span>
-            <button id = "new-project-btn"><span class="material-symbols-rounded">
-              note_add
-            </span> New project</button>
-          </div>
-          
-        
-      </header>
-      <div id="projects-list">
-        
+
       </div>
     </div>
     <div class="page" id="project-details" style="display: none">
@@ -337,6 +249,6 @@
     </div>
   </div>
   </main>
-  <script type="module" src="./src/index.ts"></script>
+  <script type="module" src="./src/index.tsx"></script>
 </body>
 </html>

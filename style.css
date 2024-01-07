@@ -49,7 +49,7 @@
 }
 
 
-body {
+#app {
     display: grid;
     grid-template-columns: 300px 1fr;
     grid-template-areas: 'sidebar content';
