@@ -14,10 +14,10 @@ import { IToDo, ToDo } from "./ToDo";
 export class ProjectsManager {
   list: Project[] = [];
   id: string;
-  ui: HTMLElement;
+
   currentProject: Project;
-  constructor(container: HTMLElement) {
-    this.ui = container;
+  constructor() {
+    
     this.id = uuidv4();
     const project = this.newProject({
       name: "Default Project",
@@ -69,7 +69,7 @@ export class ProjectsManager {
     }
 
     const project = new Project(data);
-    project.ui.addEventListener("click", () => {
+    /* project.ui.addEventListener("click", () => {
       const projectsPage = document.getElementById("projects-page");
       const detailsPage = document.getElementById("project-details");
       if (!projectsPage || !detailsPage) {
@@ -80,15 +80,15 @@ export class ProjectsManager {
       this.currentProject = project;
       this.setDetailsPage(project);
       console.log(this.currentProject)
-    });
-    this.ui.append(project.ui);
+    }); */
+
     this.list.push(project);
 
     return project;
   }
   createProjectFromData(projectData: Project) {
     const project = new Project(projectData);
-    project.ui.addEventListener("click", () => {
+    /* project.ui.addEventListener("click", () => {
       const projectsPage = document.getElementById("projects-page");
       const detailsPage = document.getElementById("project-details");
       if (!projectsPage || !detailsPage) {
@@ -98,8 +98,8 @@ export class ProjectsManager {
       detailsPage.style.display = "flex";
       this.currentProject = project;
       this.setDetailsPage(project);
-    });
-    this.ui.append(project.ui);
+    }); */
+
     this.list.push(project);
   }
 
@@ -115,7 +115,7 @@ export class ProjectsManager {
       if (foundUI) {
         console.log(`Found UI of a project with id ${id} `);
         console.log(foundUI);
-        foundUI.innerHTML = foundProject.ui.innerHTML;
+        /* foundUI.innerHTML = foundProject.ui.innerHTML; */
       } else {
         console.log(`UI of a project with id ${id} not found!`);
       }
@@ -505,7 +505,7 @@ export class ProjectsManager {
     if (!project) {
       return;
     }
-    project.ui.remove();
+    
     const remaining = this.list.filter((project) => {
       return project.id !== id;
     });
@@ -566,31 +566,30 @@ export class ProjectsManager {
   }
 
   renderProjectList(projects: IProject[]) {
-    console.log(projects);
+
     for (const project of projects) {
       try {
-        console.log("trying rendering project list");
+
         if (project.id != "") {
           console.log(`project id not empty: ${project.id}`);
           const foundProject = this.list.find(
             (listedProject) => listedProject.id === project.id
           );
           if (foundProject) {
-            console.log("Found project with this id");
+
             const updatedProjectData = new Project(project);
             this.updateProjectData(updatedProjectData, project.id);
-            console.log("updated project data");
+
           } else {
             const projectSetup = this.newProject(project);
-            console.log(projectSetup);
+
           }
         } else {
           const projectSetup = this.newProject(project);
-          console.log(projectSetup);
+
         }
 
-        console.log(this.ui);
-        console.log(this.list);
+
       } catch (error) {
         console.log(error);
       }
