@@ -1,6 +1,6 @@
 import { Project, IProject } from "./classes/Project"
 import { UserRole, Status } from "./types/types"
-import { ProjectsManager } from "./classes/ProjectsManager"
+
 import { ErrorModal } from "./classes/ErrorModal"
 import { closeModal } from "./utils/utils"
 import { formatDate, modifyDateInput } from "./utils/utils"
@@ -16,9 +16,10 @@ import * as THREE from "three"
 import { FragmentsGroup } from "bim-fragment"
 
 import * as OBC from "openbim-components"
+import { ProjectsManager } from "./classes/projectsManager"
 
 const projectsListUI = document.getElementById("projects-list") as HTMLElement
-const projectsManager = new ProjectsManager()
+const projectsManager = new ProjectsManager
 
 // Menu Buttons
 const menuProjectBtn = document.getElementById("menu-project-btn")

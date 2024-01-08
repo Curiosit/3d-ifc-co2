@@ -13,6 +13,11 @@ import { FragmentsGroup } from "bim-fragment"
 import * as OBC from "openbim-components"
 import { TodoCreator } from "./bim-components/TodoCreator"
 import { SimpleQto } from "./bim-components/SimpleQto"
+import { ProjectsManager } from "./classes/projectsManager"
+import { E404 } from "./react-components/E404"
+
+
+const projectsManager = new ProjectsManager()
 
 const rootElement = document.getElementById("app") as HTMLDivElement
 const appRoot = ReactDOM.createRoot(rootElement)
@@ -21,8 +26,9 @@ appRoot.render(
     <Router.BrowserRouter>
       <Sidebar />
       <Router.Routes>
-        <Router.Route path="/" element={<ProjectsPage />}></Router.Route>
-        <Router.Route path="/project" element={<ProjectDetailsPage />}></Router.Route>
+        <Router.Route path="/404" element={<E404 message="" />}></Router.Route>
+        <Router.Route path="/" element={<ProjectsPage projectsManager = {projectsManager} />}></Router.Route>
+        <Router.Route path="/project/:id" element={<ProjectDetailsPage projectsManager = {projectsManager} />}></Router.Route>
         
         
       </Router.Routes>

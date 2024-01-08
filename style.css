@@ -188,12 +188,12 @@ header {
   display: flex;
   align-items: center;
   justify-content: center; 
-  font-size: 16px;
+  font-size: 17px;
   background-color: #ca8134;
   width: 2em;
   height: 2em;
   border-radius: 0.4em;
-  padding: 8px;
+  padding: 20px;
 }
 
 

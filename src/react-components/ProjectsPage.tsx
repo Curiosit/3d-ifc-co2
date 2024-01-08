@@ -2,17 +2,22 @@ import * as React from "react"
 import { Project, IProject } from "../classes/Project";
 import { Status, UserRole } from "../types/types";
 import { v4 as uuidv4 } from 'uuid'
-import { ProjectsManager } from "../classes/ProjectsManager";
+import { ProjectsManager } from "../classes/projectsManager";
 import { ProjectCard } from "./ProjectCard";
 
 import * as Router from "react-router-dom"
+import { SearchBox } from "./Searchbox";
 
-export function ProjectsPage() {
+interface Props {
+    projectsManager: ProjectsManager
+}
 
-    const [projectsManager] = React.useState(new ProjectsManager())
-    const [projects, setProjects] = React.useState<Project[]>(projectsManager.list)
-    projectsManager.onProjectCreated = (project) => {setProjects([...projectsManager.list])}
-    projectsManager.onProjectDeleted = (project) => {setProjects([...projectsManager.list])}
+export function ProjectsPage(props: Props) {
+
+    
+    const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
+    props.projectsManager.onProjectCreated = (project) => {setProjects([...props.projectsManager.list])}
+    props.projectsManager.onProjectDeleted = (project) => {setProjects([...props.projectsManager.list])}
     
     const projectCards = projects.map((project) => {
         return  <Router.Link to={`/project/${project.id}`} key={project.id}>
@@ -36,11 +41,11 @@ export function ProjectsPage() {
     }
 
     const onExportClick = () => {
-        projectsManager.exportToJSON()
+        props.projectsManager.exportToJSON()
     }
 
     const onImportClick = () => {
-        projectsManager.importFromJSON()
+        props.projectsManager.importFromJSON()
     }
 
     const onFormSubmit = (e: React.FormEvent) => {
@@ -74,7 +79,7 @@ export function ProjectsPage() {
         };
         try {
             
-            const project = projectsManager.newProject(projectData)
+            const project = props.projectsManager.newProject(projectData)
             
             projectForm.reset()
             const modal = document.getElementById("new-project-modal");
@@ -89,6 +94,10 @@ export function ProjectsPage() {
             alert(err)
         }
 
+    }
+
+    const onProjectSearch = (value: string) => {
+        setProjects(props.projectsManager.filterProjects(value))
     }
 
     return (
@@ -191,6 +200,7 @@ export function ProjectsPage() {
                 <h2>
                 <span className="material-symbols-rounded">folder_copy</span> Projects
                 </h2>
+                <SearchBox  onChange={(value) => onProjectSearch(value)}/>
                 <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
                 <span onClick={onImportClick}
                     id="import-projects-btn"
@@ -209,11 +219,15 @@ export function ProjectsPage() {
                 </button>
                 </div>
             </header>
-            <div id="projects-list">
-                
-                        { projectCards }
-                
-            </div>
+            {
+                projects.length > 0 ? 
+                <div id="projects-list">
+                    { projectCards }
+                </div>
+                :
+                <p style={{padding:"15px", textAlign: "center"}}>No projects found!</p>
+            }
+            
         </div>
 
     ) 

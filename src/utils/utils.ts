@@ -152,3 +152,13 @@ export function roundNumber(number): number {
     return Math.round(number); 
   }
 }
+export function renderProgress(input: number): string {
+    const clampedInput = Math.max(0, Math.min(1, input));
+
+    const rescaledValue = 0.09 + 0.91 * clampedInput;
+    const progress = rescaledValue * 100
+    const progressText = progress + "%"
+    console.log(progressText)
+    return progressText
+
+}

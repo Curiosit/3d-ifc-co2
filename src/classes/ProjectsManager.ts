@@ -21,6 +21,14 @@ export class ProjectsManager {
 
   }
 
+  filterProjects(value: string) {
+    const filteredProjects = this.list.filter((project) => {
+      return (project.name.toLowerCase().includes(value.toLowerCase()) || project.description.toLowerCase().includes(value.toLowerCase()))
+
+    })
+    return filteredProjects
+  }
+
   id: string;
 
   currentProject: Project;
