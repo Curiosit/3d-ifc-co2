@@ -1,4 +1,5 @@
 import * as React from "react"
+import * as Router from "react-router-dom"
 
 export function Sidebar() {
     
@@ -17,12 +18,16 @@ export function Sidebar() {
                     </a>
             </div></nav>
             <ul id="nav-buttons">
-            <li id="menu-project-btn"><span  className="material-symbols-rounded">apartment</span>
-                Projects
-            </li>
-            <li><span className="material-symbols-rounded">person</span>
-                Users
-            </li>
+                <Router.Link to="/">
+                    <li id="menu-project-btn"><span  className="material-symbols-rounded">apartment</span>
+                        Projects
+                    </li>
+                </Router.Link>
+                <Router.Link to="/users">
+                    <li><span className="material-symbols-rounded">person</span>
+                        Users
+                    </li>
+                </Router.Link>
             </ul>
         </aside>
     ) 
