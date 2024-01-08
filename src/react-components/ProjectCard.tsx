@@ -1,20 +1,25 @@
 import * as React from 'react'
+import { Project } from '../classes/Project'
 
-export function ProjectCard () {
+interface Props {
+    project: Project
+}
+
+export function ProjectCard (props: Props) {
   
     
     return (
     <div className="project-card">
         <div className="card-header">
-            <p className="initials" style={{ background: "#ff00ff" }}>
-            PC
+            <p className="initials" style={{ background: props.project.inColor }}>
+                { props.project.initials }
             </p>
             <div>
             <h4>
-                Project Name
+                { props.project.name }
             </h4>
             <p>
-                Description
+            { props.project.description }
             </p>
             </div>
         </div>
@@ -22,25 +27,25 @@ export function ProjectCard () {
             <div className="card-property">
             <p style={{ color: "#969696" }}>Status</p>
             <p>
-                Active
+                { props.project.status }
             </p>
             </div>
             <div className="card-property">
             <p style={{ color: "#969696" }}>Role</p>
             <p>
-                Architect
+                { props.project.userRole }
             </p>
             </div>
             <div className="card-property">
             <p style={{ color: "#969696" }}>Cost</p>
             <p>
-                $110000
+                { props.project.cost }
             </p>
             </div>
             <div className="card-property">
             <p style={{ color: "#969696" }}>Estimated Progress</p>
             <p>
-                75%
+                { props.project.progress }
             </p>
             </div>
         </div>

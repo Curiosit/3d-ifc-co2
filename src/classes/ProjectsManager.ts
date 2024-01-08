@@ -13,6 +13,14 @@ import { IToDo, ToDo } from "./ToDo";
 
 export class ProjectsManager {
   list: Project[] = [];
+
+  onProjectCreated = (project: Project) => {
+
+  }
+  onProjectDeleted = (project: Project) => {
+
+  }
+
   id: string;
 
   currentProject: Project;
@@ -69,21 +77,10 @@ export class ProjectsManager {
     }
 
     const project = new Project(data);
-    /* project.ui.addEventListener("click", () => {
-      const projectsPage = document.getElementById("projects-page");
-      const detailsPage = document.getElementById("project-details");
-      if (!projectsPage || !detailsPage) {
-        return;
-      }
-      projectsPage.style.display = "none";
-      detailsPage.style.display = "flex";
-      this.currentProject = project;
-      this.setDetailsPage(project);
-      console.log(this.currentProject)
-    }); */
+    
 
     this.list.push(project);
-
+    this.onProjectCreated(project)
     return project;
   }
   createProjectFromData(projectData: Project) {
@@ -124,7 +121,6 @@ export class ProjectsManager {
     }
   }
 
-  
   setupEditProjectModal() {
     const editModal = document.getElementById("edit-project-modal");
     if (!editModal) {
@@ -176,7 +172,6 @@ export class ProjectsManager {
         day: "2-digit",
       });
     }
-
     const createdDate = editModal.querySelector(
       "[data-edit-project-info='createdDate']"
     ) as HTMLInputElement;
@@ -189,7 +184,6 @@ export class ProjectsManager {
         day: "2-digit",
       });
     }
-
     const cost = editModal.querySelector(
       "[data-edit-project-info='cost']"
     ) as HTMLInputElement;
@@ -197,7 +191,6 @@ export class ProjectsManager {
       cost.textContent = "$ " + this.currentProject.cost;
       cost.value = "$ " + this.currentProject.cost;
     }
-
     const closeEditProjectBtn = document.getElementById(
       "close-edit-project-modal-btn"
     );
@@ -217,7 +210,6 @@ export class ProjectsManager {
         e.preventDefault();
         const editFormData = new FormData(editProjectForm);
         
-
         try {
           const projectData: IProject = {
             name: editFormData.get("name") as string,
@@ -255,7 +247,6 @@ export class ProjectsManager {
       return;
     }
     
-    
     const closeEditToDoBtn = document.getElementById(
       "close-edit-to-do-modal-btn"
     );
@@ -289,16 +280,12 @@ export class ProjectsManager {
           this.modifyTask(this.currentProject, editedTask)
           editToDoForm.reset()
           closeModal("edit-to-do-modal")
-          
-          
-          
       }
       catch (err) {
           showModal("error-modal", true, err)
       } 
       })
-    }
-    
+    }   
   }
 
   modifyTask(project: Project, editedTask: IToDo) {
@@ -323,7 +310,6 @@ export class ProjectsManager {
       i += 1
     }
   }
-
 
   private setDetailsPage(project: Project) {
     const detailsPage = document.getElementById("project-details");
@@ -393,8 +379,6 @@ export class ProjectsManager {
 
       console.log(initials.style);
     }
-
-
 
     this.currentProject.setTaskUI () 
   }
@@ -510,6 +494,7 @@ export class ProjectsManager {
       return project.id !== id;
     });
     this.list = remaining;
+    this.onProjectDeleted(project)
   }
 
   editProject(id: string) {

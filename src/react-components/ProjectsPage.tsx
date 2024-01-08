@@ -7,10 +7,19 @@ import { ProjectCard } from "./ProjectCard";
 
 export function ProjectsPage() {
 
-    const projectsManager = new ProjectsManager()
+    const [projectsManager] = React.useState(new ProjectsManager())
     const [projects, setProjects] = React.useState<Project[]>(projectsManager.list)
-
+    projectsManager.onProjectCreated = (project) => {setProjects([...projectsManager.list])}
+    projectsManager.onProjectDeleted = (project) => {setProjects([...projectsManager.list])}
     
+    const projectCards = projects.map((project) => {
+        return <ProjectCard project={project} key={project.id} />
+    })
+    
+    React.useEffect(() => {
+        console.log(projects)
+     }, [projects])
+
     const onNewProjectClick = () => {
         const modal = document.getElementById("new-project-modal");
         if (modal && modal instanceof HTMLDialogElement) {
@@ -59,20 +68,20 @@ export function ProjectsPage() {
 
         };
         try {
-        console.log("trying...")
-        const project = projectsManager.newProject(projectData)
-        console.log(project)
-        projectForm.reset()
-        const modal = document.getElementById("new-project-modal");
-        if (modal && modal instanceof HTMLDialogElement) {
-          modal.close();
-        } 
-        else {
-          console.warn("The provided modal wasn't found. ");
-        }
+            
+            const project = projectsManager.newProject(projectData)
+            
+            projectForm.reset()
+            const modal = document.getElementById("new-project-modal");
+            if (modal && modal instanceof HTMLDialogElement) {
+            modal.close();
+            } 
+            else {
+            console.warn("The provided modal wasn't found. ");
+            }
         }
         catch (err) {
-        alert(err)
+            alert(err)
         }
 
     }
@@ -196,7 +205,9 @@ export function ProjectsPage() {
                 </div>
             </header>
             <div id="projects-list">
-                    <ProjectCard />
+
+
+                    { projectCards }
 
             </div>
         </div>
