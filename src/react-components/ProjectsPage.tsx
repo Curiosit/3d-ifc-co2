@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
 
+import * as Router from "react-router-dom"
+
 export function ProjectsPage() {
 
     const [projectsManager] = React.useState(new ProjectsManager())
@@ -13,7 +15,10 @@ export function ProjectsPage() {
     projectsManager.onProjectDeleted = (project) => {setProjects([...projectsManager.list])}
     
     const projectCards = projects.map((project) => {
-        return <ProjectCard project={project} key={project.id} />
+        return  <Router.Link to={`/project/${project.id}`} key={project.id}>
+                    <ProjectCard project={project} />
+                </Router.Link>
+        
     })
     
     React.useEffect(() => {
@@ -205,10 +210,9 @@ export function ProjectsPage() {
                 </div>
             </header>
             <div id="projects-list">
-
-
-                    { projectCards }
-
+                
+                        { projectCards }
+                
             </div>
         </div>
 
