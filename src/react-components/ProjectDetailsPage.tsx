@@ -3,6 +3,7 @@ import * as Router from "react-router-dom"
 import { ProjectsManager } from "../classes/projectsManager"
 import { formatDate, showModal } from "../utils/utils"
 import { renderProgress } from "../utils/utils"
+import { IFCViewer } from "./IFCViewer"
 
 
 
@@ -41,7 +42,7 @@ export function ProjectDetailsPage(props: Props) {
                             name="name"
                             type="text"
                             placeholder="What's the name of your project?"
-                            value={project.name}
+                            defaultValue={project.name}
                         />
                         </div>
                         <div className="form-field-container">
@@ -54,14 +55,14 @@ export function ProjectDetailsPage(props: Props) {
                             rows={3}
                             name="description"
                             placeholder="Give your project a nice description! So people are jealous about it."
-                            value={project.description}
+                            defaultValue={project.description}
                         />
                     </div>
                         <div className="form-field-container">
                         <label>
                             <span className="material-symbols-rounded">person</span>Role
                         </label>
-                        <select data-edit-project-info="userRole" name="userRole" value={project.userRole}>
+                        <select data-edit-project-info="userRole" name="userRole" defaultValue={project.userRole}>
                             <option>Architect</option>
                             <option>Engineer</option>
                             <option>Developer</option>
@@ -74,7 +75,7 @@ export function ProjectDetailsPage(props: Props) {
                             </span>
                             Status
                         </label>
-                        <select data-edit-project-info="status" name="status" value={project.status}>
+                        <select data-edit-project-info="status" name="status" defaultValue={project.status}>
                             <option>pending</option>
                             <option>active</option>
                             <option>finished</option>
@@ -90,7 +91,7 @@ export function ProjectDetailsPage(props: Props) {
                             name="cost"
                             type="text"
                             placeholder="Cost of your project..."
-                            value={project.cost}
+                            defaultValue={project.cost}
                         />
                         </div>
                         <div className="form-field-container">
@@ -103,7 +104,7 @@ export function ProjectDetailsPage(props: Props) {
                             name="progress"
                             type="text"
                             placeholder="Progress in %"
-                            value={`${project.progress*100} %`}
+                            defaultValue={`${project.progress*100} %`}
                         />
                         </div>
                         <div className="form-field-container">
@@ -283,11 +284,7 @@ export function ProjectDetailsPage(props: Props) {
                         ></div>
                     </div>
                     </div>
-                    <div
-                    id="viewer-container"
-                    className="dashboard-card"
-                    style={{ minWidth: 0, position: "relative" }}
-                    />
+                    <IFCViewer />
                 </div>
             </div>
         
