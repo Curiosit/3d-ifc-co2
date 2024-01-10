@@ -4,9 +4,11 @@ import { Status, UserRole } from "../types/types";
 import { v4 as uuidv4 } from 'uuid'
 import { ProjectsManager } from "../classes/projectsManager";
 import { ProjectCard } from "./ProjectCard";
-
+import * as Firestore from "firebase/firestore"
+import { firebaseDB } from "../firebase";
 import * as Router from "react-router-dom"
 import { SearchBox } from "./Searchbox";
+
 
 interface Props {
     projectsManager: ProjectsManager
@@ -26,9 +28,34 @@ export function ProjectsPage(props: Props) {
         
     })
     
+    const getFirestoreProjects = async () => {
+        const projectsCollection = Firestore.collection(firebaseDB, "/projects") as Firestore.CollectionReference<IProject>
+        const firebaseProjects = await Firestore.getDocs(projectsCollection)
+        for (const doc of firebaseProjects.docs) {
+            const data = doc.data() 
+            const project: IProject = {
+                ...data,
+                finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate(),
+                createdDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
+            }
+            try {
+                
+                props.projectsManager.newProject(data, doc.id)
+            }
+            catch (error) {
+                console.log(error)
+            }
+            
+        }
+
+        return firebaseProjects.docs
+    }
+
     React.useEffect(() => {
-        console.log(projects)
-     }, [projects])
+        console.log("Getting projects from firebase...")
+        getFirestoreProjects()
+
+     }, [])
 
     const onNewProjectClick = () => {
         const modal = document.getElementById("new-project-modal");
@@ -225,7 +252,15 @@ export function ProjectsPage(props: Props) {
                     { projectCards }
                 </div>
                 :
-                <p style={{padding:"15px", textAlign: "center"}}>No projects found!</p>
+                <div style={{ padding: "15px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <p>No projects found.</p>
+                    <div style={{ padding: "15px" }}>
+                        <button onClick={onNewProjectClick} id="new-project-btn">
+                            <span className="material-symbols-rounded">note_add</span> Create a new project!
+                        </button>
+                    </div>
+                </div>
+
             }
             
         </div>

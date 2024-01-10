@@ -1,5 +1,8 @@
 import { ErrorModal } from "../classes/ErrorModal";
-export const colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
+import seedrandom from 'seedrandom';
+
+
+
 export function formatDate(readDate: Date): string {
   // Get day, month, and year components
   //console.log(readDate);
@@ -22,6 +25,9 @@ export function formatDate(readDate: Date): string {
   return formattedDate;
 }
 
+
+export const colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
+
 export function uppercaseInitials(inputString: string): string {
   // Split the input string into words
   const words = inputString.split(" ");
@@ -34,23 +40,39 @@ export function uppercaseInitials(inputString: string): string {
 
   return resultString;
 }
+export function getHexColor(variableName) {
+  // Get the computed style of the root element
+  const rootStyles = getComputedStyle(document.documentElement);
 
-export function getRandomColorFromList(colors: string[]): string {
-  // Define an array of warning and positive colors
+  // Get the color value of the specified variable
+  const colorValue = rootStyles.getPropertyValue(variableName);
+  console.log(colorValue)
+  // Convert the color value to hex
+  
 
-  // Function to randomly select a color from the array
+  return colorValue;
+}
+
+export function getRandomColorFromList(initials: string, colors: string[]): string {
+  const seed = initials
+    .split('')
+    .map(char => char.charCodeAt(0))
+    .reduce((acc, val) => acc + val, 0);
+
+  const rng = seedrandom(seed.toString());
+
   function getRandomColor() {
-    const randomIndex = Math.floor(Math.random() * colors.length);
+    const randomIndex = Math.floor(rng() * colors.length);
     return colors[randomIndex];
   }
 
-  // Access the selected color from the :root CSS variables
+  // Get the randomly selected color variable
   const randomColorVariable = getRandomColor();
-  const selectedColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(randomColorVariable);
 
-  return selectedColor.trim();
+  // Convert the color variable to hex
+  const hexColor = getHexColor(randomColorVariable);
+
+  return hexColor;
 }
 
 export function isFirstCharacterLetterOrNumber(inputString: string): boolean {

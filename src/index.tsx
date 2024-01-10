@@ -7,7 +7,7 @@ import { Sidebar } from "./react-components/Sidebar"
 import { ProjectsPage } from "./react-components/ProjectsPage"
 import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage"
 
-
+import { ViewerProvider } from "./react-components/IFCViewer"
 import { FragmentsGroup } from "bim-fragment"
 
 import * as OBC from "openbim-components"
@@ -24,6 +24,7 @@ const appRoot = ReactDOM.createRoot(rootElement)
 appRoot.render(
   <>
     <Router.BrowserRouter>
+      <ViewerProvider>
       <Sidebar />
       <Router.Routes>
         <Router.Route path="/404" element={<E404 message="" />}></Router.Route>
@@ -32,6 +33,7 @@ appRoot.render(
         
         
       </Router.Routes>
+      </ViewerProvider>
     </Router.BrowserRouter>
   </>
 )

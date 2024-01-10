@@ -41,13 +41,15 @@ export class Project implements IProject {
   constructor(data: IProject) {
     //Project data
     this.id = uuidv4();
-    this.inColor = getRandomColorFromList(colors);
+    
     for (const key in data) {
       this[key] = data[key];
     }
 
-    console.log(this.inColor);
+    
     this.initials = uppercaseInitials(this.name);
+    this.inColor = getRandomColorFromList(this.initials, colors);
+    console.log(this.inColor);
     this.loadTasks();
     this.setTaskUI () 
     
@@ -57,12 +59,14 @@ export class Project implements IProject {
 
   loadTasks() {
     let i = 0;
+    if (this.toDoList) {
     for(const task of this.toDoList) {
       this.toDoList[i] = new ToDo(task)
       i++
 
     }
     console.log(this.toDoList)
+  }
   }
 
   addNewTask(newTaskData: IToDo) {

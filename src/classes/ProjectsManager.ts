@@ -34,7 +34,7 @@ export class ProjectsManager {
   currentProject: Project;
   constructor() {
     
-    this.id = uuidv4();
+    /* this.id = uuidv4();
     const project = this.newProject({
       name: "Default Project",
       description: "This is a default app project",
@@ -46,7 +46,7 @@ export class ProjectsManager {
       progress: 0,
       toDoList: [],
       id: uuidv4()
-    })
+    }) */
     //project.ui.click()
     console.log(`Project Manager is running, with id: ${this.id}`);
     console.log(this.list);
@@ -65,7 +65,7 @@ export class ProjectsManager {
     this.setupEditToDoModal()
   }
 
-  newProject(data: IProject) {
+  newProject(data: IProject, id?:string) {
     const projectNames = this.list.map((project) => {
       return project.name;
     });
@@ -83,7 +83,9 @@ export class ProjectsManager {
         `Name "${data.name}" has to start with a letter or number!`
       );
     }
-
+    if (id) {
+      data.id = id
+    }
     const project = new Project(data);
     
 
@@ -354,6 +356,7 @@ export class ProjectsManager {
       "[data-project-info='finishDate']"
     );
     if (finishDate) {
+      console.log(finishDate)
       finishDate.textContent = formatDate(project.finishDate);
     }
 
