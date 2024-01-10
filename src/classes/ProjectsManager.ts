@@ -10,6 +10,8 @@ import { closeModal } from "../utils/utils";
 import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
 import { IToDo, ToDo } from "./ToDo";
+import * as Router from "react-router-dom"
+import { updateDocument } from "../firebase";
 
 export class ProjectsManager {
   list: Project[] = [];
@@ -17,7 +19,7 @@ export class ProjectsManager {
   onProjectCreated = (project: Project) => {
 
   }
-  onProjectDeleted = (project: Project) => {
+  onProjectDeleted = (id: string) => {
 
   }
 
@@ -110,28 +112,35 @@ export class ProjectsManager {
     this.list.push(project);
   }
 
-  updateProjectData(projectData: Project, id: string) {
-    console.log("updating project data");
+  findProjectByID(id: string) {
     const foundProject = this.list.find((project) => project.id === id);
+    return foundProject
+  }
+
+  updateProjectData(projectData: IProject) {
+    console.log("updating project data");
+    const foundProject = this.findProjectByID(projectData.id)
 
     if (foundProject) {
       console.log("Found project: ");
       console.log(foundProject);
       foundProject.updateProject(projectData);
-      const foundUI = document.getElementById(id);
+      const foundUI = document.getElementById(projectData.id);
       if (foundUI) {
-        console.log(`Found UI of a project with id ${id} `);
+        console.log(`Found UI of a project with id ${projectData.id} `);
         console.log(foundUI);
         /* foundUI.innerHTML = foundProject.ui.innerHTML; */
       } else {
-        console.log(`UI of a project with id ${id} not found!`);
+        console.log(`UI of a project with id ${projectData.id} not found!`);
       }
     } else {
-      throw new Error(`A project with an id: ${id} has not been found`);
+      throw new Error(`A project with an id: ${projectData.id} has not been found`);
     }
   }
 
-  setupEditProjectModal() {
+  setupEditProjectModal(project: IProject) {
+    console.log(project)
+    console.log("setup edit project modal")
     const editModal = document.getElementById("edit-project-modal");
     if (!editModal) {
       return;
@@ -140,34 +149,34 @@ export class ProjectsManager {
       "[data-edit-project-info='name']"
     ) as HTMLInputElement;
     if (name) {
-      name.value = this.currentProject.name;
+      name.value = project.name;
     }
     const description = editModal.querySelector(
       "[data-edit-project-info='description']"
     ) as HTMLInputElement;
     if (description) {
-      description.value = this.currentProject.description;
+      description.value = project.description;
     }
 
     const status = editModal.querySelector(
       "[data-edit-project-info='status']"
     ) as HTMLInputElement;
     if (status) {
-      status.value = this.currentProject.status;
+      status.value = project.status;
     }
 
     const userRole = editModal.querySelector(
       "[data-edit-project-info='userRole']"
     ) as HTMLInputElement;
     if (userRole) {
-      userRole.value = this.currentProject.userRole;
+      userRole.value = project.userRole;
     }
 
     const progress = editModal.querySelector(
       "[data-edit-project-info='progress']"
     ) as HTMLInputElement;
     if (progress) {
-      progress.value = this.currentProject.progress * 100 + "%";
+      progress.value = project.progress * 100 + "%";
     }
 
     const finishDate = editModal.querySelector(
@@ -175,7 +184,7 @@ export class ProjectsManager {
     ) as HTMLInputElement;
     if (finishDate) {
       finishDate.value = new Date(
-        this.currentProject.finishDate
+        project.finishDate
       ).toLocaleDateString("en-CA", {
         year: "numeric",
         month: "2-digit",
@@ -185,9 +194,13 @@ export class ProjectsManager {
     const createdDate = editModal.querySelector(
       "[data-edit-project-info='createdDate']"
     ) as HTMLInputElement;
+    console.log(createdDate)
     if (createdDate) {
+      console.log(createdDate)
+      console.log(project.createdDate)
+      console.log(formatDate(project.createdDate))
       createdDate.value = new Date(
-        this.currentProject.createdDate
+        project.createdDate
       ).toLocaleDateString("en-CA", {
         year: "numeric",
         month: "2-digit",
@@ -198,8 +211,8 @@ export class ProjectsManager {
       "[data-edit-project-info='cost']"
     ) as HTMLInputElement;
     if (cost) {
-      cost.textContent = "$ " + this.currentProject.cost;
-      cost.value = "$ " + this.currentProject.cost;
+      cost.textContent = "$ " + project.cost;
+      cost.value = "$ " + project.cost;
     }
     const closeEditProjectBtn = document.getElementById(
       "close-edit-project-modal-btn"
@@ -213,43 +226,8 @@ export class ProjectsManager {
       console.warn("Close modal button was not found");
     }
     const editProjectForm = document.getElementById("edit-project-form");
-    if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
-      console.log("Listening for submit...");
-      editProjectForm.addEventListener("submit", (e) => {
-        console.log("event listener fired");
-        e.preventDefault();
-        const editFormData = new FormData(editProjectForm);
-        
-        try {
-          const projectData: IProject = {
-            name: editFormData.get("name") as string,
-            description: editFormData.get("description") as string,
-            status: editFormData.get("status") as Status,
-            userRole: editFormData.get("userRole") as UserRole,
-            finishDate: new Date(editFormData.get("finishDate") as string),
-            createdDate: new Date(editFormData.get("createdDate") as string),
-            cost: convertCurrencyStringToNumber(
-              editFormData.get("cost") as string
-            ) as number,
-            progress: convertPercentageStringToNumber(
-              editFormData.get("progress") as string
-            ) as number,
-            toDoList: [],
-            id: this.currentProject.id,
-          };
-
-          this.currentProject.updateProject(projectData);
-
-          this.replaceProjectById(this.list);
-
-          this.setDetailsPage(this.currentProject);
-          this.renderProjectList(this.list);
-          closeModal("edit-project-modal");
-        } catch (err) {
-          showModal("error-modal", true, err);
-        }
-      });
-    }
+    
+    
   }
   setupEditToDoModal() {
     const editToDoModal = document.getElementById("edit-to-do-modal");
@@ -268,37 +246,63 @@ export class ProjectsManager {
     } else {
       console.warn("Close modal button was not found");
     }
-    const editToDoForm = document.getElementById("edit-to-do-form") as HTMLFormElement
-    console.log(editToDoForm)
-    if(editToDoForm) {
-      editToDoForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-        const editToDoFormData = new FormData(editToDoForm)
-        try {
-          const editedTask: IToDo = {
-              taskType: editToDoFormData.get("taskType") as ToDoTaskType,
-              name:  editToDoFormData.get("name") as string,
-              description:  editToDoFormData.get("description") as string,
-              dueDate: new Date(editToDoFormData.get("dueDate") as string),
-              status: editToDoFormData.get("status") as Status,
-              id: editToDoFormData.get("id") as string,
-          }
-          console.log(editToDoFormData.get("taskType"))
-      
-          console.log("trying to add a new task...")
-          
-          this.modifyTask(this.currentProject, editedTask)
-          editToDoForm.reset()
-          closeModal("edit-to-do-modal")
-      }
-      catch (err) {
-          showModal("error-modal", true, err)
-      } 
-      })
-    }   
+    
   }
 
-  modifyTask(project: Project, editedTask: IToDo) {
+  onEditProject(id: string) {
+    console.log ("editing...")
+    const editProjectForm = document.getElementById("edit-project-form");
+    //const routeParams = Router.useParams<{id: string}>()
+    const project = this.findProjectByID(id)
+    if (!project) { return }
+    if (editProjectForm && editProjectForm instanceof HTMLFormElement) {
+
+     
+
+        const editFormData = new FormData(editProjectForm);
+        
+        try {
+          const projectData: IProject = {
+            name: editFormData.get("name") as string,
+            description: editFormData.get("description") as string,
+            status: editFormData.get("status") as Status,
+            userRole: editFormData.get("userRole") as UserRole,
+            finishDate: new Date(editFormData.get("finishDate") as string),
+            createdDate: new Date(editFormData.get("createdDate") as string),
+            cost: convertCurrencyStringToNumber(
+              editFormData.get("cost") as string
+            ) as number,
+            progress: convertPercentageStringToNumber(
+              editFormData.get("progress") as string
+            ) as number,
+            toDoList: [],
+            id: id,
+          };
+
+          //project.updateProject(projectData)
+          
+          this.updateProjectData(projectData)
+          updateDocument<IProject>("/projects", project.id, projectData)
+          this.setDetailsPage(project)
+          
+          this.renderProjectList(this.list)
+        } catch (err) {
+          showModal("error-modal", true, err);
+        }
+
+          
+
+          
+          //this.renderProjectList(this.list);
+          closeModal("edit-project-modal");
+
+    }
+  }
+
+
+  
+  
+/*   modifyTask(project: Project, editedTask: IToDo) {
     console.log(this)
     console.log("List of tasks")
     console.log(project.toDoList)
@@ -314,21 +318,23 @@ export class ProjectsManager {
         console.log("modifying")
         
         project.toDoList[i] = modifiedTask
-        project.setTaskUI()
+        //project.setTaskUI()
       }
       console.log(i)
       i += 1
     }
-  }
+  } */
 
   private setDetailsPage(project: Project) {
     const detailsPage = document.getElementById("project-details");
+    console.log(detailsPage)
     if (!detailsPage) {
       return;
     }
     const name = detailsPage.querySelector(
       "[data-project-info='name']"
     ) as HTMLElement;
+    console.log(name)
     if (name) {
       name.textContent = project.name;
     }
@@ -364,6 +370,9 @@ export class ProjectsManager {
       "[data-project-info='createdDate']"
     );
     if (createdDate) {
+      console.log(createdDate)
+      console.log(project.createdDate)
+      console.log(formatDate(project.createdDate))
       createdDate.textContent = formatDate(project.createdDate);
     }
 
@@ -391,7 +400,7 @@ export class ProjectsManager {
       console.log(initials.style);
     }
 
-    this.currentProject.setTaskUI () 
+    //this.currentProject.setTaskUI () 
   }
   updateAddToDoModal() {
     const addToDoModal = document.getElementById("add-to-do-modal");
@@ -496,6 +505,7 @@ export class ProjectsManager {
   }
 
   deleteProject(id: string) {
+    console.log("delete")
     const project = this.getProject(id);
     if (!project) {
       return;
@@ -505,7 +515,7 @@ export class ProjectsManager {
       return project.id !== id;
     });
     this.list = remaining;
-    this.onProjectDeleted(project)
+    this.onProjectDeleted(id)
   }
 
   editProject(id: string) {
@@ -514,18 +524,7 @@ export class ProjectsManager {
       return;
     }
   }
-  replaceProjectById(projectList) {
-    const index = projectList.findIndex((project) => project.id === this.id);
 
-    if (index !== -1) {
-      // If the project with the given id is found, replace it with the new project
-      projectList[index] = this;
-      projectList[index].setUI();
-    } else {
-      // If the project is not found, you may want to push the new project to the list
-      //projectList.push(newProject);
-    }
-  }
 
   exportToJSON(fileName: string = "projects") {
     const json = JSON.stringify(this.list, null, 2);
@@ -574,8 +573,8 @@ export class ProjectsManager {
           if (foundProject) {
 
             const updatedProjectData = new Project(project);
-            this.updateProjectData(updatedProjectData, project.id);
-
+            this.updateProjectData(updatedProjectData);
+            
           } else {
             const projectSetup = this.newProject(project);
 

@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app"
 //import { getAnalytics } from "firebase/analytics"
-import { getFirestore } from "firebase/firestore"
+
+import * as Firestore from "firebase/firestore"
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-ohqP3FPY3bHrwWYNGMibTo3jcsgToYE",
@@ -15,4 +16,23 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
-export const firebaseDB = getFirestore()
+export const firebaseDB = Firestore.getFirestore()
+
+
+export function getCollection<T>(path: string) {
+  return Firestore.collection(firebaseDB, path) as Firestore.CollectionReference<T>
+}
+
+export async function deleteDocument(collectionPath: string, id: string) {
+  const doc = Firestore.doc(firebaseDB, `${collectionPath}/${id}`)
+
+  await Firestore.deleteDoc(doc)
+}
+export async function updateDocument<T extends Record<string, any>>(collectionPath: string, id: string, data: T) {
+  const doc = Firestore.doc(firebaseDB, `${collectionPath}/${id}`)
+
+  await Firestore.updateDoc(doc, data)
+}
+export async function addDocument<T extends Record<string, any>>(collectionPath: string, id: string, data: T) {
+  await Firestore.addDoc(getCollection(collectionPath),data)
+}

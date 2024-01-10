@@ -8,18 +8,20 @@ import * as Firestore from "firebase/firestore"
 import { firebaseDB } from "../firebase";
 import * as Router from "react-router-dom"
 import { SearchBox } from "./Searchbox";
-
+import { getCollection } from "../firebase";
 
 interface Props {
     projectsManager: ProjectsManager
 }
+
+const projectsCollection = getCollection<IProject>("/projects")
 
 export function ProjectsPage(props: Props) {
 
     
     const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
     props.projectsManager.onProjectCreated = (project) => {setProjects([...props.projectsManager.list])}
-    props.projectsManager.onProjectDeleted = (project) => {setProjects([...props.projectsManager.list])}
+    
     
     const projectCards = projects.map((project) => {
         return  <Router.Link to={`/project/${project.id}`} key={project.id}>
@@ -29,8 +31,9 @@ export function ProjectsPage(props: Props) {
     })
     
     const getFirestoreProjects = async () => {
-        const projectsCollection = Firestore.collection(firebaseDB, "/projects") as Firestore.CollectionReference<IProject>
+        
         const firebaseProjects = await Firestore.getDocs(projectsCollection)
+        
         for (const doc of firebaseProjects.docs) {
             const data = doc.data() 
             const project: IProject = {
@@ -40,7 +43,7 @@ export function ProjectsPage(props: Props) {
             }
             try {
                 
-                props.projectsManager.newProject(data, doc.id)
+                props.projectsManager.newProject(project, doc.id)
             }
             catch (error) {
                 console.log(error)
@@ -106,6 +109,8 @@ export function ProjectsPage(props: Props) {
         };
         try {
             
+            Firestore.addDoc(projectsCollection, projectData)
+
             const project = props.projectsManager.newProject(projectData)
             
             projectForm.reset()

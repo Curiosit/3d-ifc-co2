@@ -4,6 +4,7 @@ import { ProjectsManager } from "../classes/projectsManager"
 import { formatDate, showModal } from "../utils/utils"
 import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
+import { deleteDocument } from "../firebase"
 
 
 
@@ -21,9 +22,18 @@ export function ProjectDetailsPage(props: Props) {
     const project = props.projectsManager.getProject(routeParams.id)
     if (!project) { return  }
 
+    const navigateTo = Router.useNavigate()
+    props.projectsManager.onProjectDeleted = async (id) => {
+        console.log("deleting...")
+        await deleteDocument("projects", id)
+        navigateTo("/")
+        }
+    
     const onEditProjectClick = () => {
+        props.projectsManager.setupEditProjectModal(project)
         showModal("edit-project-modal")
     }
+    
     
     
     
@@ -104,7 +114,7 @@ export function ProjectDetailsPage(props: Props) {
                             name="progress"
                             type="text"
                             placeholder="Progress in %"
-                            defaultValue={`${project.progress*100} %`}
+                            defaultValue={`${project.progress*100}%`}
                         />
                         </div>
                         <div className="form-field-container">
@@ -142,10 +152,10 @@ export function ProjectDetailsPage(props: Props) {
                             id="close-edit-project-modal-btn"
                             type="button"
                             style={{ backgroundColor: "transparent" }}
-                        >
+                            className="btn-secondary" >
                             Cancel
                         </button>
-                        <button type="submit" className="positive">
+                        <button onClick={(e) => { e.preventDefault(); props.projectsManager.onEditProject(routeParams.id as string)}} className="positive">
                             Accept
                         </button>
                         </div>
@@ -175,6 +185,7 @@ export function ProjectDetailsPage(props: Props) {
                         <button id="edit-project-details-btn" className="btn-secondary" onClick={onEditProjectClick}>
                             <p style={{ width: "100%" }}>Edit</p>
                         </button>
+                        <button className="btn-red" onClick={() => {props.projectsManager.deleteProject(project.id)}}>Delete</button>
                         </div>
                         <div style={{ padding: "0 30px" }}>
                         <div>
@@ -183,6 +194,7 @@ export function ProjectDetailsPage(props: Props) {
                             { project.description }
                             </p>
                         </div>
+                        
                         <div
                             style={{
                             display: "flex",

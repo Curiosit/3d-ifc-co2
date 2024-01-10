@@ -40,7 +40,7 @@ export class Project implements IProject {
 
   constructor(data: IProject) {
     //Project data
-    this.id = uuidv4();
+    //this.id = uuidv4();
     
     for (const key in data) {
       this[key] = data[key];

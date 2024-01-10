@@ -352,6 +352,18 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
+.btn-red {
+  outline: none;
+  background-color: #ff2452; 
+   
+  text-align: center;
+}
+
+.btn-red:hover {
+  background-color: transparent; 
+  outline: 2px solid #969696; 
+}
+
 .todo-item {
   padding: 20px;
   
