@@ -8,13 +8,11 @@ interface Props {
 
 export function ProjectCard (props: Props) {
   
-    const onProjectCardClick = () => {
-        
-    }
+    
     return (
     /* <Router.Routes>
         <Router.Route path="/project" element={ */
-            <div className="project-card" onClick={onProjectCardClick}>
+            <div className="project-card" >
                 <div className="card-header">
                     <p className="initials" style={{ background: props.project.inColor }}>
                         { props.project.initials }

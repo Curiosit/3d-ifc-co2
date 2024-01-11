@@ -68,7 +68,7 @@ export class ProjectsManager {
     this.setupEditToDoModal()
   }
 
-  async newProject(data: IProject, id?:string) {
+  async verifyProjectEligilibity(data: IProject) {
     const projectNames = this.list.map((project) => {
       return project.name;
     });
@@ -86,6 +86,10 @@ export class ProjectsManager {
         `Name "${data.name}" has to start with a letter or number!`
       );
     }
+    return true
+  }
+  async newProject(data: IProject, id?:string) {
+    
     if (id) {
       data.id = id
     }try {

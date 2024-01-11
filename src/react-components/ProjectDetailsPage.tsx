@@ -1,10 +1,11 @@
 import * as React from "react"
 import * as Router from "react-router-dom"
 import { ProjectsManager } from "../classes/ProjectsManager"
-import { formatDate, showModal } from "../utils/utils"
+import { formatDate, setupModal, showModal } from "../utils/utils"
 import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
 import { deleteDocument } from "../firebase"
+import { Modal } from "./Modal"
 
 
 
@@ -29,6 +30,16 @@ export function ProjectDetailsPage(props: Props) {
         navigateTo("/")
         }
     
+        const onDeleteClick = () => {
+            setupModal("Delete project", `Do you want to delete <b>${project.name}</b> ?`,() => {props.projectsManager.deleteProject(project.id)})
+            
+            
+            
+            
+            
+            
+    };
+
     const onEditProjectClick = () => {
         props.projectsManager.setupEditProjectModal(project)
         showModal("edit-project-modal")
@@ -38,7 +49,12 @@ export function ProjectDetailsPage(props: Props) {
     
     
     return(
+        
             <div className="page" id="project-details" >
+                <dialog id="delete-project-modal">
+                <h2>Delete Project</h2>
+                    <p>Are you sure you want to delete project: <b>{project.name}</b>?</p>
+                </dialog>
                 <dialog id="edit-project-modal">
                     <form id="edit-project-form">
                     <h2>Edit Project</h2>
@@ -185,7 +201,7 @@ export function ProjectDetailsPage(props: Props) {
                         <button id="edit-project-details-btn" className="btn-secondary" onClick={onEditProjectClick}>
                             <p style={{ width: "100%" }}>Edit</p>
                         </button>
-                        <button className="btn-red" onClick={() => {props.projectsManager.deleteProject(project.id)}}>Delete</button>
+                        <button className="btn-red" onClick={onDeleteClick}>Delete</button>
                         </div>
                         <div style={{ padding: "0 30px" }}>
                         <div>

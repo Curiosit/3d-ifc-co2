@@ -120,6 +120,33 @@ export function closeModal(id) {
     console.warn("The provided modal wasn't found. ID: ", id);
   }
 }
+export function setupModal(title, msg, modalFunction) {
+    const deleteModal = document.getElementById("this-modal")
+    const titleContainer = document.getElementById("modal-title")
+    const msgContainer = document.getElementById("modal-msg")
+    if (titleContainer) {
+      titleContainer.innerHTML = title
+    }
+    if (msgContainer) {
+      msgContainer.innerHTML = msg
+    }
+    showModal("this-modal")
+    console.log(deleteModal)
+    const buttonModal = document.getElementById("modal-button")
+    const cancelButtonModal = document.getElementById("cancel-button")
+    if(buttonModal) {
+        buttonModal.onclick = () => { 
+          modalFunction()
+          closeModal("this-modal")
+        };
+    }
+    if(cancelButtonModal) {
+      cancelButtonModal.onclick = () => { 
+        
+        closeModal("this-modal")
+      };
+  }
+}
 
 export function showModal(id, errorModal = false, msg = "") {
   const modal = document.getElementById(id);

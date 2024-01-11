@@ -2,7 +2,7 @@ import * as React from "react"
 import { Project, IProject } from "../classes/Project";
 import { Status, UserRole } from "../types/types";
 import { v4 as uuidv4 } from 'uuid'
-import { ProjectsManager } from "../classes/projectsManager";
+import { ProjectsManager } from "../classes/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
 import * as Firestore from "firebase/firestore"
 import { firebaseDB } from "../firebase";
@@ -33,7 +33,7 @@ export function ProjectsPage(props: Props) {
     const getFirestoreProjects = async () => {
         
         const firebaseProjects = await Firestore.getDocs(projectsCollection)
-        
+        props.projectsManager.list = []
         for (const doc of firebaseProjects.docs) {
             const data = doc.data() 
             const project: IProject = {
@@ -78,7 +78,7 @@ export function ProjectsPage(props: Props) {
         props.projectsManager.importFromJSON()
     }
 
-    const onFormSubmit = (e: React.FormEvent) => {
+    const onFormSubmit = async (e: React.FormEvent) => {
         const projectForm = document.getElementById("new-project-form")
         if (!(projectForm && projectForm instanceof HTMLFormElement)) {return}
         e.preventDefault()
@@ -108,19 +108,26 @@ export function ProjectsPage(props: Props) {
 
         };
         try {
-            
-            Firestore.addDoc(projectsCollection, projectData)
-
-            const project = props.projectsManager.newProject(projectData)
-            
-            projectForm.reset()
-            const modal = document.getElementById("new-project-modal");
-            if (modal && modal instanceof HTMLDialogElement) {
-            modal.close();
-            } 
-            else {
-            console.warn("The provided modal wasn't found. ");
+            if(await props.projectsManager.verifyProjectEligilibity(projectData)) {
+                const result = await Firestore.addDoc(projectsCollection, projectData)
+                projectData.id = result.id
+                const project = await props.projectsManager.newProject(projectData)
+                
+                    
+                    
+                    
+                    
+                projectForm.reset()
+                const modal = document.getElementById("new-project-modal");
+                if (modal && modal instanceof HTMLDialogElement) {
+                    modal.close();
+                } 
+                else {
+                    console.warn("The provided modal wasn't found. ");
+                }
+                
             }
+            
         }
         catch (err) {
             alert(err)
