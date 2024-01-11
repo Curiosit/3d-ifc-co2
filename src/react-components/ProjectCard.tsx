@@ -7,8 +7,18 @@ interface Props {
 }
 
 export function ProjectCard (props: Props) {
-  
-    
+    let desc = ''
+    if (props.project.description.length > 25) {
+        desc = props.project.description.substring(0,20) + '...'
+    } else {
+        desc = props.project.description
+    }
+    let name = ''
+    if (props.project.name.length > 20) {
+        name = props.project.name.substring(0,17) + '...'
+    } else {
+        name = props.project.name
+    }
     return (
     /* <Router.Routes>
         <Router.Route path="/project" element={ */
@@ -19,10 +29,10 @@ export function ProjectCard (props: Props) {
                     </p>
                     <div>
                     <h4>
-                        { props.project.name }
+                        { name }
                     </h4>
                     <p style={{ color: "#969696" }}>
-                    { props.project.description }
+                    { desc }
                     </p>
                     </div>
                 </div>
@@ -42,7 +52,7 @@ export function ProjectCard (props: Props) {
                     <div className="card-property">
                     <p style={{ color: "#969696" }}>Cost</p>
                     <p>
-                        { props.project.cost }
+                        $ { props.project.cost }
                     </p>
                     </div>
                     <div className="card-property">
