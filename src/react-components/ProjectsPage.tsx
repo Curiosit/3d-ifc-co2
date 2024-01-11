@@ -20,7 +20,7 @@ export function ProjectsPage(props: Props) {
 
     
     const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
-    props.projectsManager.onProjectCreated = (project) => {setProjects([...props.projectsManager.list])}
+    props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
     
     
     const projectCards = projects.map((project) => {
@@ -55,7 +55,7 @@ export function ProjectsPage(props: Props) {
     }
 
     React.useEffect(() => {
-        console.log("Getting projects from firebase...")
+        
         getFirestoreProjects()
 
      }, [])
@@ -136,6 +136,7 @@ export function ProjectsPage(props: Props) {
     }
 
     const onProjectSearch = (value: string) => {
+        
         setProjects(props.projectsManager.filterProjects(value))
     }
 

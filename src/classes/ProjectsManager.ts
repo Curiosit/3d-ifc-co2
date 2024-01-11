@@ -29,6 +29,7 @@ export class ProjectsManager {
       return (project.name.toLowerCase().includes(value.toLowerCase()) || project.description.toLowerCase().includes(value.toLowerCase()))
 
     })
+    console.log(filteredProjects)
     return filteredProjects
   }
 

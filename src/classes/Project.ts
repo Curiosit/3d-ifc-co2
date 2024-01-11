@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from "uuid";
+
 import { getRandomColorFromList, uppercaseInitials } from "../utils/utils";
 import { HexColor, Status, UserRole } from "../types/types";
 import { IToDo, ToDo } from "./ToDo";
 import { colors } from "../utils/utils";
-import { showModal, closeModal } from "../utils/utils";
-import { ToDoTaskType } from "../types/types";
+import { showModal } from "../utils/utils";
+
 export interface IProject {
   name: string;
   description: string;
