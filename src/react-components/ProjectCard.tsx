@@ -23,7 +23,7 @@ export function ProjectCard (props: Props) {
                     <h4>
                         { props.project.name }
                     </h4>
-                    <p>
+                    <p style={{ color: "#969696" }}>
                     { props.project.description }
                     </p>
                     </div>
@@ -50,7 +50,7 @@ export function ProjectCard (props: Props) {
                     <div className="card-property">
                     <p style={{ color: "#969696" }}>Estimated Progress</p>
                     <p>
-                        { props.project.progress }
+                        { props.project.progress * 100 }%
                     </p>
                     </div>
                 </div>

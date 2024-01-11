@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as Router from "react-router-dom"
-import { ProjectsManager } from "../classes/projectsManager"
+import { ProjectsManager } from "../classes/ProjectsManager"
 import { formatDate, showModal } from "../utils/utils"
 import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
@@ -189,8 +189,8 @@ export function ProjectDetailsPage(props: Props) {
                         </div>
                         <div style={{ padding: "0 30px" }}>
                         <div>
-                            <h4 data-project-info="name">{ project.name }</h4>
-                            <p data-project-info="description">
+                            <h2 data-project-info="name">{ project.name }</h2>
+                            <p style={{ color: "#969696" }} data-project-info="description">
                             { project.description }
                             </p>
                         </div>
@@ -221,6 +221,16 @@ export function ProjectDetailsPage(props: Props) {
                             </p>
                             <p data-project-info="userRole">{ project.userRole }</p>
                             </div>
+                            
+                        </div>
+                        <div
+                            style={{
+                            display: "flex",
+                            columnGap: 30,
+                            padding: "30px 0px",
+                            justifyContent: "space-between"
+                            }}
+                        >
                             <div>
                             <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                                 Created
@@ -229,7 +239,7 @@ export function ProjectDetailsPage(props: Props) {
                             </div>
                             <div>
                             <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Finish Date
+                                Finish
                             </p>
                             <p data-project-info="finishDate">{ formatDate(project.finishDate)  }</p>
                             </div>
@@ -251,7 +261,7 @@ export function ProjectDetailsPage(props: Props) {
                             }}
                         >
                             <div data-project-info="progress" className="progress-bar">
-                            { project.progress }%
+                            { project.progress*100 }%
                             </div>
                             </div>
                         </div>

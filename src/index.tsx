@@ -13,7 +13,7 @@ import { FragmentsGroup } from "bim-fragment"
 import * as OBC from "openbim-components"
 import { TodoCreator } from "./bim-components/TodoCreator"
 import { SimpleQto } from "./bim-components/SimpleQto"
-import { ProjectsManager } from "./classes/projectsManager"
+import { ProjectsManager } from "./classes/ProjectsManager"
 import { E404 } from "./react-components/E404"
 
 

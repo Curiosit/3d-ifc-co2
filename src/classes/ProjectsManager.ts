@@ -11,7 +11,8 @@ import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
 import { IToDo, ToDo } from "./ToDo";
 import * as Router from "react-router-dom"
-import { updateDocument } from "../firebase";
+import { addDocument, updateDocument } from "../firebase";
+import { addDoc } from "firebase/firestore";
 
 export class ProjectsManager {
   list: Project[] = [];
@@ -67,7 +68,7 @@ export class ProjectsManager {
     this.setupEditToDoModal()
   }
 
-  newProject(data: IProject, id?:string) {
+  async newProject(data: IProject, id?:string) {
     const projectNames = this.list.map((project) => {
       return project.name;
     });
@@ -87,13 +88,21 @@ export class ProjectsManager {
     }
     if (id) {
       data.id = id
+    }try {
+      const project = new Project(data);
+      //const newId = await addDocument("/projects", project)
+      //project.id = newId
+      this.list.push(project);
+      this.onProjectCreated(project)
+      return project;
     }
-    const project = new Project(data);
+    catch (err) {
+      showModal("error-modal", true, err);
+    }
+    
     
 
-    this.list.push(project);
-    this.onProjectCreated(project)
-    return project;
+    
   }
   createProjectFromData(projectData: Project) {
     const project = new Project(projectData);

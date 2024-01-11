@@ -8,7 +8,7 @@ export function Sidebar() {
             <nav className="navbar navbar-expand-md navbar-dark bg-dark">
             <div className="container-fluid logo-container">
                     <img className="logo-image" src="./assets/logo-dark.png" alt=""></img>
-                    <a className="navbar-brand fw-bold" href="./">
+                    <a className="navbar-brand fw-bold" href="../">
                         <div>
                             slad.ai
                             <span className="badge rounded-pill bg-danger">
