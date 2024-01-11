@@ -4,20 +4,73 @@ import { TodoCard } from "./src/TodoCard"
 
 
 import { ToDoPriority, Todo } from "./src/Todo"
+import { addDocument, deleteDocument, getCollection } from "../../firebase"
+import { Project } from "../../classes/Project"
+import * as Firestore from "firebase/firestore"
+import { parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
 
 
-interface ToDo {
+interface ToDoData {
     description: string
     date: Date
-    fragmentMap: OBC.FragmentIdMap
-    camera: {position: THREE.Vector3, target: THREE.Vector3}
+    fragmentMap?: OBC.FragmentIdMap
+    todoCamera: {position: THREE.Vector3, target: THREE.Vector3}
     priority: ToDoPriority
     id: string
+    projectId: string
 }
+const todosCollection = getCollection<ToDoData>("/todos")
 
 export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Disposable {
+
+    getFirestoreTodos = async () => {
+        
+        const firebaseTodos = await Firestore.getDocs(todosCollection)
+        
+        for (const doc of firebaseTodos.docs) {
+            const data = doc.data() 
+            console.log(data.fragmentMap)
+            console.log(parseFragmentIdMap(data.fragmentMap as unknown as string))
+            
+            console.log(doc.id)
+            const todo: ToDoData = {
+                ...data,
+                fragmentMap: parseFragmentIdMap(data.fragmentMap as unknown as string),
+                todoCamera: (JSON.parse(data.todoCamera as unknown as string)) as {position: THREE.Vector3, target: THREE.Vector3},
+                date: (data.date as unknown as Firestore.Timestamp).toDate(),
+                id: doc.id
+            }
+            try {
+
+                const todoObject = new Todo(this.components, todo)
+                //console.log(todoObject.fragmentMap)
+                //console.log(todoObject.todoCamera)
+                this._list.push(todoObject)
+                const todoList = this.uiElement.get("todoList")
+                
+                todoList.addChild(todoObject.TodoCard)
+                todoObject.TodoCard.onDelete.add(() => {
+                    console.log("removing!")
+                    this.removeTodo(todo, todoObject.TodoCard)
+                })
+                this.onProjectCreated.trigger()
+            }
+            catch (error) {
+                console.log(error)
+            }
+            
+        
+        }
+        console.log(this._list)
+        return firebaseTodos.docs
+    }
+
+    
+
+
+    project
     static uuid = "79a04980-11cf-42c7-963d-67ccb0ff0dad"
-    onProjectCreated = new OBC.Event<ToDo>()
+    onProjectCreated = new OBC.Event<ToDoData>()
 
     enabled = true
     uiElement = new OBC.UIElement<
@@ -31,6 +84,7 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
 
     constructor(components: OBC.Components) {
         super(components)
+        this.getFirestoreTodos()
         this._components = components
         
         
@@ -44,19 +98,25 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         this._list = []
         this.enabled = false
     }
-    async setup() {
+    async setup(setupProject: Project) {
+        this.project = setupProject
+        console.log(this.project)
         const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
-        highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: 0x00d02b})])
-        highlighter.add(`${TodoCreator.uuid}-priority-Medium`, [new THREE.MeshStandardMaterial({color: 0x7fbd45})])
-        highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: 0x8eb161})])
+        highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: 0x8FDB5E})])
+        highlighter.add(`${TodoCreator.uuid}-priority-Medium`, [new THREE.MeshStandardMaterial({color: 0xFFA500})])
+        highlighter.add(`${TodoCreator.uuid}-priority-High`, [new THREE.MeshStandardMaterial({color: 0xFF0000})])
     }   
 
-    removeTodo(toDo, toDoCard) {
-       const updatedToDos = this._list.filter((todo)=> {
-        return (todo.id!=toDo.id)
-       })
-       this._list = updatedToDos 
-       toDoCard.dispose()
+    async removeTodo(toDo, toDoCard) {
+        console.log(toDo)
+        console.log(toDo.id)
+        const result = await deleteDocument("todos", toDo.id)
+        console.log(result)
+        const updatedToDos = this._list.filter((todo)=> {
+            return (todo.id!=toDo.id)
+        })
+        this._list = updatedToDos 
+        toDoCard.dispose()
     }
 
     async addTodo(description: string, priority: ToDoPriority) {
@@ -65,9 +125,25 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
             description: description,
             date: date,
             priority: priority,
+            projectId: this.project.id
         }
         const todo = new Todo(this.components, data)
+        
         await todo.setupOnClick()
+        console.log(todo)
+        console.log(todo.fragmentMap)
+        console.log(stringifyFragmentIdMap(todo.fragmentMap))
+        const result = await addDocument("todos",{
+            description: todo.description,
+            projectId: todo.projectId,
+            date: todo.date,
+            priority: todo.priority,
+            fragmentMap: stringifyFragmentIdMap(todo.fragmentMap),
+            todoCamera: JSON.stringify(todo.todoCamera)
+        })
+        todo.id = result
+        
+        
         this._list.push(todo)
         const todoList = this.uiElement.get("todoList")
         todoList.addChild(todo.TodoCard)

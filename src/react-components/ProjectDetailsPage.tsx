@@ -6,6 +6,7 @@ import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
 import { deleteDocument } from "../firebase"
 import { Modal } from "./Modal"
+import { Project } from "../classes/Project"
 
 
 
@@ -21,6 +22,8 @@ export function ProjectDetailsPage(props: Props) {
     const routeParams = Router.useParams<{id: string}>()
     if (!routeParams.id) { return  }
     const project = props.projectsManager.getProject(routeParams.id)
+    console.log(routeParams.id)
+    console.log(project)
     if (!project) { return  }
 
     const navigateTo = Router.useNavigate()
@@ -322,7 +325,7 @@ export function ProjectDetailsPage(props: Props) {
                         ></div>
                     </div>
                     </div>
-                    <IFCViewer />
+                    <IFCViewer project={project }/>
                 </div>
             </div>
         

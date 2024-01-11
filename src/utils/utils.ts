@@ -1,3 +1,4 @@
+import { FragmentIdMap } from "openbim-components";
 import { ErrorModal } from "../classes/ErrorModal";
 import seedrandom from 'seedrandom';
 
@@ -211,4 +212,32 @@ export function renderProgress(input: number): string {
     console.log(progressText)
     return progressText
 
+}
+
+
+export function stringifyFragmentIdMap(fragmentIdMap: FragmentIdMap): string {
+  const stringifiableMap: { [fragmentID: string]: string[] } = {};
+
+  for (const key in fragmentIdMap) {
+    if (fragmentIdMap.hasOwnProperty(key)) {
+      const setValues = Array.from(fragmentIdMap[key]);
+      stringifiableMap[key] = setValues;
+    }
+  }
+
+  return JSON.stringify(stringifiableMap);
+}
+
+export function parseFragmentIdMap(jsonString: string): FragmentIdMap {
+  const parsedMap: { [fragmentID: string]: string[] } = JSON.parse(jsonString);
+  const fragmentIdMap: FragmentIdMap = {};
+
+  for (const key in parsedMap) {
+    if (parsedMap.hasOwnProperty(key)) {
+      const setValues = new Set(parsedMap[key]);
+      fragmentIdMap[key] = setValues;
+    }
+  }
+
+  return fragmentIdMap;
 }

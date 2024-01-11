@@ -3,7 +3,11 @@ import * as React from "react"
 import * as OBC from "openbim-components"
 import { FragmentsGroup } from "bim-fragment"
 import { TodoCreator } from "../bim-components/TodoCreator"
+import { Project } from "../classes/Project"
 
+interface Props {
+  project: Project
+}
 
 interface IViewerContext {
     viewer: OBC.Components | null,
@@ -26,7 +30,7 @@ export function ViewerProvider (props: {children: React.ReactNode}) {
     )
 }
 
-export function IFCViewer() {
+export function IFCViewer(props: Props) {
     const { setViewer } = React.useContext(ViewerContext)
     let viewer: OBC.Components
     
@@ -169,7 +173,7 @@ export function IFCViewer() {
         })
     
         const todoCreator = new TodoCreator(viewer)
-        await todoCreator.setup()
+        await todoCreator.setup(props.project)
     
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(

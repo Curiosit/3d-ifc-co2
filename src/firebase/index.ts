@@ -26,7 +26,8 @@ export function getCollection<T>(path: string) {
 export async function deleteDocument(collectionPath: string, id: string) {
   const doc = Firestore.doc(firebaseDB, `${collectionPath}/${id}`)
 
-  await Firestore.deleteDoc(doc)
+  const result = await Firestore.deleteDoc(doc)
+  return result
 }
 export async function updateDocument<T extends Record<string, any>>(collectionPath: string, id: string, data: T) {
   const doc = Firestore.doc(firebaseDB, `${collectionPath}/${id}`)

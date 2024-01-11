@@ -15,22 +15,39 @@ export class Todo extends OBC.Component<null>  {
     id: string
     private _components: OBC.Components
     enabled = true
+    projectId: string
 
     TodoCard: TodoCard
     get(...args: any): null {
         return null
     }
     highlighter: OBC.FragmentHighlighter
-
-    constructor(components:OBC.Components, {
+    
+    constructor(components: OBC.Components, {
         description,
         date,
         priority,
-    }) 
+        projectId,
+        fragmentMap, 
+        todoCamera,
+        id
+    }: {
+        description: string;
+        date: Date;
+        priority: ToDoPriority;
+        projectId: string;
+        fragmentMap?: OBC.FragmentIdMap; 
+        todoCamera?: {position: THREE.Vector3, target: THREE.Vector3}
+        id: string
+    })
     {
-        
-
         super(components)
+        if(fragmentMap) {
+            this.fragmentMap = fragmentMap
+        }
+        console.log(id)
+        this.id = id
+        
         this._components = components
         console.log(components.camera)
         if (!this.enabled) { return }
@@ -39,6 +56,7 @@ export class Todo extends OBC.Component<null>  {
         if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
             throw new Error("TodoCreator needs the Ortho Perspective Camera in order to work!")
         }
+        this.projectId = projectId
         //camera.controls
 
         const position = new THREE.Vector3()
@@ -57,22 +75,20 @@ export class Todo extends OBC.Component<null>  {
         
         
         this.priority = priority
-        this.id = uuidv4()
+        
         
 
         this.TodoCard = new TodoCard(components)
-
+        console.log (this.TodoCard)
         this.TodoCard.description = this.description
         this.TodoCard.date = this.date
         
         
-        /* const todoList = this.uiElement.get("todoList")
-        console.log(this)
-        todoList.addChild(todoCard)
-        todoCard.onDelete.add(() => {
+        
+        /* this.TodoCard.onDelete.add(() => {
             this.removeTodo(todo, todoCard)
             
-        }) */
+        })  */
         
     }
 
