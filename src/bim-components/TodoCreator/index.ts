@@ -28,36 +28,45 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         const firebaseTodos = await Firestore.getDocs(todosCollection)
         
         for (const doc of firebaseTodos.docs) {
-            const data = doc.data() 
-            console.log(data.fragmentMap)
-            console.log(parseFragmentIdMap(data.fragmentMap as unknown as string))
             
-            console.log(doc.id)
-            const todo: ToDoData = {
-                ...data,
-                fragmentMap: parseFragmentIdMap(data.fragmentMap as unknown as string),
-                todoCamera: (JSON.parse(data.todoCamera as unknown as string)) as {position: THREE.Vector3, target: THREE.Vector3},
-                date: (data.date as unknown as Firestore.Timestamp).toDate(),
-                id: doc.id
-            }
-            try {
-
-                const todoObject = new Todo(this.components, todo)
-                //console.log(todoObject.fragmentMap)
-                //console.log(todoObject.todoCamera)
-                this._list.push(todoObject)
-                const todoList = this.uiElement.get("todoList")
+            const data = doc.data() 
+            if(data.projectId === this.project.id) {
+                console.log(data.fragmentMap)
+                console.log(parseFragmentIdMap(data.fragmentMap as unknown as string))
                 
-                todoList.addChild(todoObject.TodoCard)
-                todoObject.TodoCard.onDelete.add(() => {
-                    console.log("removing!")
-                    this.removeTodo(todo, todoObject.TodoCard)
-                })
-                this.onProjectCreated.trigger()
+                console.log(doc.id)
+                
+                try {
+                    const todo: ToDoData = {
+                        ...data,
+                        fragmentMap: parseFragmentIdMap(data.fragmentMap as unknown as string),
+                        todoCamera: (JSON.parse(data.todoCamera as unknown as string)) as {position: THREE.Vector3, target: THREE.Vector3},
+                        date: (data.date as unknown as Firestore.Timestamp).toDate(),
+                        id: doc.id
+                    }
+                    
+                    const todoObject = new Todo(this.components, todo)
+                    console.log("Calling setup on click!")
+                    await todoObject.setupOnClick()
+
+                    this._list.push(todoObject)
+                    const todoList = this.uiElement.get("todoList")
+                    
+                    todoList.addChild(todoObject.TodoCard)
+                    todoObject.TodoCard.onDelete.add(() => {
+                        console.log("removing!")
+                        this.removeTodo(todo, todoObject.TodoCard)
+                    })
+                    this.onProjectCreated.trigger()
+                }
+                catch (error) {
+                    console.log(error)
+                }
             }
-            catch (error) {
-                console.log(error)
+            else {
+
             }
+            
             
         
         }
@@ -125,11 +134,12 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
             description: description,
             date: date,
             priority: priority,
-            projectId: this.project.id
+            projectId: this.project.id,
         }
         const todo = new Todo(this.components, data)
-        
+        console.log("Calling setup on click!")
         await todo.setupOnClick()
+        
         console.log(todo)
         console.log(todo.fragmentMap)
         console.log(stringifyFragmentIdMap(todo.fragmentMap))

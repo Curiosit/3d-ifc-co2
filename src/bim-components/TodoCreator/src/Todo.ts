@@ -38,7 +38,7 @@ export class Todo extends OBC.Component<null>  {
         projectId: string;
         fragmentMap?: OBC.FragmentIdMap; 
         todoCamera?: {position: THREE.Vector3, target: THREE.Vector3}
-        id: string
+        id?: string
     })
     {
         super(components)
@@ -46,7 +46,7 @@ export class Todo extends OBC.Component<null>  {
             this.fragmentMap = fragmentMap
         }
         console.log(id)
-        this.id = id
+        this.id = id as string
         
         this._components = components
         console.log(components.camera)
@@ -64,7 +64,18 @@ export class Todo extends OBC.Component<null>  {
         const target = new THREE.Vector3()
         camera.controls.getTarget(target)
         this.camera = camera
-        this.todoCamera = {position, target}
+        if(fragmentMap) {
+            this.fragmentMap = fragmentMap
+        }
+        
+        
+        if(!todoCamera) {
+            this.todoCamera = {position, target}
+        }
+        else {
+            this.todoCamera = todoCamera
+        }
+        
 
 
         
@@ -93,19 +104,23 @@ export class Todo extends OBC.Component<null>  {
     }
 
     async setupOnClick() {
+        console.log("Setup onclick")
         this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
         this.fragmentMap = this.highlighter.selection.select,
         this.TodoCard.onCardClick.add(() => {
+            console.log("clicked!!!")
+            console.log(this.todoCamera)
             this.camera.controls.setLookAt(
                 this.todoCamera.position.x,
                 this.todoCamera.position.y,
-                this.todoCamera.position.x,
+                this.todoCamera.position.z,
                 this.todoCamera.target.x,
                 this.todoCamera.target.y,
                 this.todoCamera.target.z,
                 true
 
             )
+            console.log(this.fragmentMap)
             const fragmentMapLength = Object.keys(this.fragmentMap).length
             if(fragmentMapLength === 0) {return}
             this.highlighter.highlightByID("select", this.fragmentMap)

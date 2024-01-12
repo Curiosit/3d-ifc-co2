@@ -83,7 +83,12 @@ export function IFCViewer(props: Props) {
         highlighter.events.select.onClear.add(() => {
           propertiesProcessor.cleanPropertiesList()
         })
-    
+        
+        highlighter.events.select.onHighlight.add((e) => {
+          console.log("selected")
+          console.log(e)
+        })
+
         const classifier = new OBC.FragmentClassifier(viewer)
         const classificationWindow = new OBC.FloatingWindow(viewer)
         classificationWindow.visible = false
