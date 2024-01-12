@@ -4,6 +4,7 @@ import * as OBC from "openbim-components"
 import { FragmentsGroup } from "bim-fragment"
 import { TodoCreator } from "../bim-components/TodoCreator"
 import { Project } from "../classes/Project"
+import { SimpleQto } from "../bim-components/SimpleQto"
 
 interface Props {
   project: Project
@@ -181,7 +182,11 @@ export function IFCViewer(props: Props) {
               if (!json) {
                 return;
               }
+              console.log(model)
+              model.properties = JSON.parse(json)
               const loadedModel =  { ...model, properties:JSON.parse(json)};
+              console.log(loadedModel)
+              console.log(loadedModel.properties)
               onModelLoaded(loadedModel) 
               return;
               
@@ -223,6 +228,8 @@ export function IFCViewer(props: Props) {
         const todoCreator = new TodoCreator(viewer)
         await todoCreator.setup(props.project)
     
+        const simpleQto = new SimpleQto(viewer)
+        
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),
@@ -230,7 +237,8 @@ export function IFCViewer(props: Props) {
           classificationsBtn,
           propertiesProcessor.uiElement.get("main"),
           todoCreator.uiElement.get("activationButton"),
-          fragmentManager.uiElement.get("main")
+          fragmentManager.uiElement.get("main"),
+          simpleQto.uiElement.get("activationBtn")
         )
         viewer.ui.addToolbar(toolbar)
         

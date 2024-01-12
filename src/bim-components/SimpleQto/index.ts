@@ -47,12 +47,12 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
         })
         highlighter.events.select.onHighlight.add((fragmentIdMap) => {
             
-            
+            console.log("calculating")
             this.sumQuantities(fragmentIdMap)
         })
         
         
-        const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
+        //const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
         this._qtoResult = {}
         
         
@@ -60,8 +60,8 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
     resetWindow() {
         
         const qtoList = this.uiElement.get("qtoList")
-        console.log(qtoList)
-        console.log(qtoList.children[0].children)
+        //console.log(qtoList)
+        //console.log(qtoList.children[0].children)
         for (const childID in qtoList.children[0].children) {
             
             const qtyCard = qtoList.children[0].children[childID] as QtyCard
@@ -69,8 +69,8 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
             
             //qtyCard.dispose()
             
-            console.log(childID)
-            console.log(qtyCard)
+            //console.log(childID)
+            //console.log(qtyCard)
             qtyCard.qtyValueList = []
             qtyCard.dispose()
             qtyCard.removeFromParent()
@@ -118,7 +118,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
 
     updateUI () {
         const qtoList = this.uiElement.get("qtoList")
-        console.log(this._qtoList)
+        //console.log(this._qtoList)
         this._qtoList = []
         
         for (const setName in this._qtoResult) {
@@ -156,14 +156,14 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
         
         const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
         for (const fragmentID in fragmentIdMap) {
-            //console.log(fragmentID)
+            console.log(fragmentID)
             const fragment = fragmentManager.list[fragmentID]
             /* console.log(fragment) */
             const model = fragment.mesh.parent
             if (!(model instanceof FragmentsGroup && model.properties )) { continue }
             const properties = model.properties
             
-            //console.log(properties)
+            console.log(properties)
             
            
             
@@ -184,8 +184,8 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                     if (!(setName in this._qtoResult)) {
                         this._qtoResult[setName] = {}
                     }
-                    //console.log("SetID")
-                    //console.log(setID)
+                    console.log("SetID")
+                    console.log(setID)
                     
                     OBC.IfcPropertiesUtils.getQsetQuantities(
                         properties,
@@ -196,7 +196,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                             const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
                            
                             if(!qtoName || !value) {return}
-                            //console.log(qtoName)
+                            console.log(qtoName)
                             if (!(qtoName in this._qtoResult[setName])) {
                                 this._qtoResult[setName][qtoName] = 0
                             

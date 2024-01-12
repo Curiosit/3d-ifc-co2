@@ -89,14 +89,16 @@ export class TodoCard extends OBC.SimpleUIComponent {
                         </p>
                     </div>
                 </div>
-                <span id="count"  style="padding: 10px; background-color: #686868; border-radius: 15px;">
-                    1
-                </span>
-                <div data-tooeen-slot="actionButtons"></div>
-            </div>
-            <div class="tooltiptext">
+                <div style="display: flex; column-gap: 15px; align-items: center">
                 
+            
+                    <span id="count"  style="padding: 5px; background-color: #686868; border-radius: 99px;">
+                        1
+                    </span>
+                    <div data-tooeen-slot="actionButtons" style="display: flex; column-gap: 15px; align-items: flex-end;"></div>
+                </div>
             </div>
+            
             </div>
       
         `
