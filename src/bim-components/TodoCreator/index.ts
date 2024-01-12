@@ -24,6 +24,8 @@ interface ToDoData {
 const todosCollection = getCollection<ToDoData>("/todos")
 
 export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Disposable {
+    currentTodo: Todo 
+    editForm
     clearList() {
         for(const item  of this._list) {
             item.TodoCard.dispose()
@@ -57,7 +59,7 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
 
                     const todoObject = new Todo(this.components, todo)
                     console.log("Calling setup on click!")
-                    await todoObject.setupOnClick()
+                    await todoObject.setupOnClick(this.editForm)
                     //todoObject.countMaps()
                     this._list.push(todoObject)
                     const todoList = this.uiElement.get("todoList")
@@ -66,6 +68,12 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
                     todoObject.TodoCard.onDelete.add(() => {
                         console.log("removing!")
                         this.removeTodo(todo, todoObject.TodoCard)
+                    })
+                    todoObject.TodoCard.onEdit.add(() => {
+                        console.log(this.currentTodo)
+                        this.currentTodo = todoObject
+                        console.log(this.currentTodo)
+                        
                     })
                     this.onProjectCreated.trigger()
                 }
@@ -80,12 +88,9 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
             
         
         }
-        console.log(this._list)
+
         return firebaseTodos.docs
     }
-
-    
-
 
     project
     static uuid = "79a04980-11cf-42c7-963d-67ccb0ff0dad"
@@ -119,7 +124,7 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
     }
     async setup(setupProject: Project) {
         this.project = setupProject
-        console.log(this.project)
+
         const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
         highlighter.add(`${TodoCreator.uuid}-priority-Low`, [new THREE.MeshStandardMaterial({color: 0x8FDB5E})])
         highlighter.add(`${TodoCreator.uuid}-priority-Medium`, [new THREE.MeshStandardMaterial({color: 0xFFA500})])
@@ -127,10 +132,9 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
     }   
 
     async removeTodo(toDo, toDoCard) {
-        console.log(toDo)
-        console.log(toDo.id)
+
         const result = await deleteDocument("todos", toDo.id)
-        console.log(result)
+
         const updatedToDos = this._list.filter((todo)=> {
             return (todo.id!=toDo.id)
         })
@@ -148,12 +152,11 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
             status: status
         }
         const todo = new Todo(this.components, data)
-        console.log("Calling setup on click!")
+
         await todo.setupSelection()
-        //todo.countMaps()
-        console.log(todo)
-        console.log(todo.fragmentMap)
-        console.log(stringifyFragmentIdMap(todo.fragmentMap))
+        
+        
+       
         const result = await addDocument("todos",{
             description: todo.description,
             projectId: todo.projectId,
@@ -168,7 +171,17 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         
         this._list.push(todo)
         const todoList = this.uiElement.get("todoList")
+        await todo.setupOnClick(this.editForm)
         todoList.addChild(todo.TodoCard)
+       
+        
+        todo.TodoCard.onEdit.add(() => {
+            
+            this.currentTodo = todo
+            
+            
+        })
+        
         todo.TodoCard.onDelete.add(() => {
             this.removeTodo(todo, todo.TodoCard)
         })
@@ -220,6 +233,49 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         newTodoBtn.onClick.add(() => {
             form.visible = true
         })
+
+        this.editForm = new OBC.Modal(this._components)
+        const editForm = this.editForm
+        this._components.ui.add(editForm)
+        editForm.title = "Edit a ToDo"
+
+        const editDescriptionInput = new OBC.TextArea(this._components)
+        editDescriptionInput.label = "Description..."
+        editDescriptionInput.name = 'description'
+        editForm.slots.content.addChild(editDescriptionInput)
+
+        const editPriorityDropdown = new OBC.Dropdown(this._components)
+        editPriorityDropdown.name='priority'
+        editPriorityDropdown.label = "Priority"
+        editPriorityDropdown.addOption("Low", "Medium", "High")
+        editPriorityDropdown.value = "Normal"
+        editForm.slots.content.addChild(editPriorityDropdown)
+
+        const editStatusDropdown = new OBC.Dropdown(this._components)
+        editStatusDropdown.name = 'status'
+        editStatusDropdown.label = "Status"
+        editStatusDropdown.addOption("pending", "active", "finished")
+        editStatusDropdown.value = "pending"
+        editForm.slots.content.addChild(editStatusDropdown)
+
+        editForm.slots.content.get().style.padding = "20px"
+        editForm.slots.content.get().style.display = "flex"
+        editForm.slots.content.get().style.flexDirection = "column"
+        editForm.slots.content.get().style.rowGap = "20px"
+
+        editForm.onAccept.add(() => {
+            console.log(this.currentTodo)
+            this.currentTodo.editTodo(editForm)
+            
+        })
+
+        editForm.onCancel.add(() => {
+            editForm.visible = false
+        })
+        
+
+
+
 
         const todoList = new OBC.FloatingWindow(this._components)
         this._components.ui.add(todoList)

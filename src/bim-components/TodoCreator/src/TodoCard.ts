@@ -1,8 +1,10 @@
 import * as OBC from "openbim-components"
 
 export class TodoCard extends OBC.SimpleUIComponent {
+    
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
+    onEdit = new OBC.Event()
     statusColor
     slots: {
         actionButtons: OBC.SimpleUIComponent
@@ -21,7 +23,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
 
     
     set status(value: string) {
-        console.log(this.status)
+        
         const statusElement = this.getInnerElement("status") as HTMLParagraphElement
         if (value == 'active') {
             statusElement.textContent = 'construction'
@@ -40,7 +42,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
         
     }
     set priority (value: string) {
-        console.log(this.priority)
+        
         if (value == 'Low') {
             this.statusColor = '#8FDB5E'
             
@@ -59,6 +61,13 @@ export class TodoCard extends OBC.SimpleUIComponent {
         const countElement = this.getInnerElement("count") as HTMLParagraphElement
         countElement.textContent = value as unknown as string
         
+    }
+    update(todo) {
+        console.log(todo)
+        this.description = todo.description
+        this.priority = todo.priority
+        this.status = todo.status
+
     }
 
 
@@ -101,7 +110,13 @@ export class TodoCard extends OBC.SimpleUIComponent {
             this.onCardClick.trigger()
         })
         this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
-        
+        const editBtn = new OBC.Button(this._components)
+        editBtn.materialIcon = "edit"
+        this.slots.actionButtons.addChild(editBtn)
+        editBtn.onClick.add(() => {
+            console.log("setup edit trigger")
+            this.onEdit.trigger()
+        })
         const deleteBtn = new OBC.Button(this._components)
         deleteBtn.materialIcon = "delete"
         this.slots.actionButtons.addChild(deleteBtn)
