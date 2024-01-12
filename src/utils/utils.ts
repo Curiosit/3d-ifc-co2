@@ -241,3 +241,4 @@ export function parseFragmentIdMap(jsonString: string): FragmentIdMap {
 
   return fragmentIdMap;
 }
+

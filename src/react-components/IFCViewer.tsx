@@ -30,6 +30,9 @@ export function ViewerProvider (props: {children: React.ReactNode}) {
     )
 }
 
+
+
+
 export function IFCViewer(props: Props) {
     const { setViewer } = React.useContext(ViewerContext)
     let viewer: OBC.Components
@@ -124,6 +127,7 @@ export function IFCViewer(props: Props) {
     
         async function onModelLoaded(model: FragmentsGroup) {
           highlighter.update()
+          
           for (const fragment of model.items) {culler.add(fragment.mesh)}
           culler.needsUpdate = true
     
@@ -142,17 +146,56 @@ export function IFCViewer(props: Props) {
           } catch (error) {
             alert(error)
           }
+          todoCreator.update()
         }
     
         ifcLoader.onIfcLoaded.add(async (model) => {
           exportFragments(model)
+          exportJSON(model)
           onModelLoaded(model)
         })
     
         fragmentManager.onFragmentsLoaded.add((model) => {
           model.properties = {} //Get this from a JSON file exported from the IFC first load!
+          importJSON(model)
           onModelLoaded(model)
         })
+
+        function exportJSON (model: FragmentsGroup) {
+          const json = JSON.stringify(model.properties, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${model.name.replace(".ifc", "")}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        function importJSON (model) {
+          const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "application/json";
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+              const json = reader.result as string;
+              if (!json) {
+                return;
+              }
+              const loadedModel =  { ...model, properties:JSON.parse(json)};
+              onModelLoaded(loadedModel) 
+              return;
+              
+            });
+            input.addEventListener("change", () => {
+              const filesList = input.files;
+              if (!filesList) {
+                return;
+              }
+              reader.readAsText(filesList[0]);
+            });
+            input.click();
+            
+        }
     
         const importFragmentBtn = new OBC.Button(viewer)
         importFragmentBtn.materialIcon = "upload"
@@ -204,6 +247,11 @@ export function IFCViewer(props: Props) {
       }, [])
 
     
+
+
+      
+
+
     return (
         <div
             id="viewer-container"

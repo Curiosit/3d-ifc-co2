@@ -2,6 +2,8 @@ import * as OBC from "openbim-components"
 import { TodoCard } from "./TodoCard"
 import * as THREE from "three"
 import { v4 as uuidv4 } from 'uuid'
+import { Status } from "../../../types/types"
+import { parseFragmentIdMap } from "../../../utils/utils"
 
 export type ToDoPriority = "Low" | "Medium" | "High"
 
@@ -11,6 +13,7 @@ export class Todo extends OBC.Component<null>  {
     fragmentMap: OBC.FragmentIdMap
     camera: OBC.OrthoPerspectiveCamera
     todoCamera: {position: THREE.Vector3, target: THREE.Vector3}
+    status: Status
     priority: ToDoPriority
     id: string
     private _components: OBC.Components
@@ -26,6 +29,7 @@ export class Todo extends OBC.Component<null>  {
     constructor(components: OBC.Components, {
         description,
         date,
+        status,
         priority,
         projectId,
         fragmentMap, 
@@ -34,6 +38,7 @@ export class Todo extends OBC.Component<null>  {
     }: {
         description: string;
         date: Date;
+        status: Status;
         priority: ToDoPriority;
         projectId: string;
         fragmentMap?: OBC.FragmentIdMap; 
@@ -42,13 +47,17 @@ export class Todo extends OBC.Component<null>  {
     })
     {
         super(components)
+        this._components = components
         if(fragmentMap) {
             this.fragmentMap = fragmentMap
         }
+        else {
+        
+        }
         console.log(id)
         this.id = id as string
+        this.status = status
         
-        this._components = components
         console.log(components.camera)
         if (!this.enabled) { return }
         const camera = this._components.camera
@@ -64,9 +73,7 @@ export class Todo extends OBC.Component<null>  {
         const target = new THREE.Vector3()
         camera.controls.getTarget(target)
         this.camera = camera
-        if(fragmentMap) {
-            this.fragmentMap = fragmentMap
-        }
+        
         
         
         if(!todoCamera) {
@@ -90,6 +97,10 @@ export class Todo extends OBC.Component<null>  {
         
 
         this.TodoCard = new TodoCard(components)
+        this.TodoCard.priority = this.priority
+        this.TodoCard.status = this.status
+        console.log(this.fragmentMap)
+        
         console.log (this.TodoCard)
         this.TodoCard.description = this.description
         this.TodoCard.date = this.date
@@ -106,8 +117,13 @@ export class Todo extends OBC.Component<null>  {
     async setupOnClick() {
         console.log("Setup onclick")
         this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
-        this.fragmentMap = this.highlighter.selection.select,
-        this.TodoCard.onCardClick.add(() => {
+        
+        if (!this.fragmentMap) {
+            this.fragmentMap = this.highlighter.selection.select
+        }
+        this.TodoCard.count = this.fragmentMap[Object.keys(this.fragmentMap)[0]].size
+        
+        this.TodoCard.onCardClick.add(async () => {
             console.log("clicked!!!")
             console.log(this.todoCamera)
             this.camera.controls.setLookAt(
@@ -120,11 +136,23 @@ export class Todo extends OBC.Component<null>  {
                 true
 
             )
-            console.log(this.fragmentMap)
+            
             const fragmentMapLength = Object.keys(this.fragmentMap).length
+            //this.TodoCard.count = this.fragmentMap.set.size as unknown as number
+            //console.log (this.fragmentMap.set.size)
+           
             if(fragmentMapLength === 0) {return}
             this.highlighter.highlightByID("select", this.fragmentMap)
+            
         })
     }
+    async setupSelection() {
+        this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
+        this.fragmentMap = this.highlighter.selection.select
+        
+        this.setupOnClick()
+    }
+
+    
 
 }

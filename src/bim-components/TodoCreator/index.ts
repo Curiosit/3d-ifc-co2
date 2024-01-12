@@ -8,6 +8,7 @@ import { addDocument, deleteDocument, getCollection } from "../../firebase"
 import { Project } from "../../classes/Project"
 import * as Firestore from "firebase/firestore"
 import { parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
+import { Status } from "../../types/types"
 
 
 interface ToDoData {
@@ -15,6 +16,7 @@ interface ToDoData {
     date: Date
     fragmentMap?: OBC.FragmentIdMap
     todoCamera: {position: THREE.Vector3, target: THREE.Vector3}
+    status: Status
     priority: ToDoPriority
     id: string
     projectId: string
@@ -22,13 +24,21 @@ interface ToDoData {
 const todosCollection = getCollection<ToDoData>("/todos")
 
 export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Disposable {
-
+    clearList() {
+        for(const item  of this._list) {
+            item.TodoCard.dispose()
+        }
+        this._list = []
+        console.log("list cleared")
+    }
     getFirestoreTodos = async () => {
+        console.log("get todos")
+        this.clearList()
         
         const firebaseTodos = await Firestore.getDocs(todosCollection)
         
         for (const doc of firebaseTodos.docs) {
-            
+            console.log("get todos")
             const data = doc.data() 
             if(data.projectId === this.project.id) {
                 console.log(data.fragmentMap)
@@ -44,11 +54,11 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
                         date: (data.date as unknown as Firestore.Timestamp).toDate(),
                         id: doc.id
                     }
-                    
+
                     const todoObject = new Todo(this.components, todo)
                     console.log("Calling setup on click!")
                     await todoObject.setupOnClick()
-
+                    //todoObject.countMaps()
                     this._list.push(todoObject)
                     const todoList = this.uiElement.get("todoList")
                     
@@ -128,18 +138,19 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         toDoCard.dispose()
     }
 
-    async addTodo(description: string, priority: ToDoPriority) {
+    async addTodo(description: string, priority: ToDoPriority, status: Status) {
         const date = new Date()
         const data = {
             description: description,
             date: date,
             priority: priority,
             projectId: this.project.id,
+            status: status
         }
         const todo = new Todo(this.components, data)
         console.log("Calling setup on click!")
-        await todo.setupOnClick()
-        
+        await todo.setupSelection()
+        //todo.countMaps()
         console.log(todo)
         console.log(todo.fragmentMap)
         console.log(stringifyFragmentIdMap(todo.fragmentMap))
@@ -148,6 +159,7 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
             projectId: todo.projectId,
             date: todo.date,
             priority: todo.priority,
+            status: todo.status,
             fragmentMap: stringifyFragmentIdMap(todo.fragmentMap),
             todoCamera: JSON.stringify(todo.todoCamera)
         })
@@ -185,13 +197,19 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
         priorityDropdown.value = "Normal"
         form.slots.content.addChild(priorityDropdown)
 
+        const statusDropdown = new OBC.Dropdown(this._components)
+        statusDropdown.label = "Status"
+        statusDropdown.addOption("pending", "active", "finished")
+        statusDropdown.value = "pending"
+        form.slots.content.addChild(statusDropdown)
+
         form.slots.content.get().style.padding = "20px"
         form.slots.content.get().style.display = "flex"
         form.slots.content.get().style.flexDirection = "column"
         form.slots.content.get().style.rowGap = "20px"
 
         form.onAccept.add(() => {
-            this.addTodo(descriptionInput.value, priorityDropdown.value as ToDoPriority)
+            this.addTodo(descriptionInput.value, priorityDropdown.value as ToDoPriority, statusDropdown.value as Status)
             descriptionInput.value = ""
             form.visible = false
         })
@@ -298,5 +316,8 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
 
     get(): number {
         return this._list.length
+    }
+    update() {
+        this.getFirestoreTodos()
     }
 }

@@ -3,7 +3,7 @@ import * as OBC from "openbim-components"
 export class TodoCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
-
+    statusColor
     slots: {
         actionButtons: OBC.SimpleUIComponent
     }
@@ -19,6 +19,48 @@ export class TodoCard extends OBC.SimpleUIComponent {
         dateElement.textContent = value.toDateString()
     }
 
+    
+    set status(value: string) {
+        console.log(this.status)
+        const statusElement = this.getInnerElement("status") as HTMLParagraphElement
+        if (value == 'active') {
+            statusElement.textContent = 'construction'
+            statusElement.style.backgroundColor = this.statusColor
+        }
+        if (value == 'pending') {
+            statusElement.textContent = 'arrow_forward'
+            statusElement.style.backgroundColor = this.statusColor
+            
+        }
+        if (value == 'finished') {
+            statusElement.textContent = 'done'
+            statusElement.style.backgroundColor = '#686868'
+            
+        }
+        
+    }
+    set priority (value: string) {
+        console.log(this.priority)
+        if (value == 'Low') {
+            this.statusColor = '#8FDB5E'
+            
+        }
+        if (value == 'Medium') {
+            this.statusColor = '#FFA500'
+            
+        }
+        if (value == 'High') {
+            this.statusColor = '#FF0000'
+            
+            
+        }
+    }
+    set count (value: number) {
+        const countElement = this.getInnerElement("count") as HTMLParagraphElement
+        countElement.textContent = value as unknown as string
+        
+    }
+
 
     constructor(components: OBC.Components) {
         const template = `
@@ -26,7 +68,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
             <div class="todo-item tooltip" >
             <div class="" style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; column-gap: 15px; align-items: center;">
-                <span class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">
+                <span id="status" class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">
                     construction
                 </span>
                     <div>
@@ -38,6 +80,9 @@ export class TodoCard extends OBC.SimpleUIComponent {
                         </p>
                     </div>
                 </div>
+                <span id="count"  style="padding: 10px; background-color: #686868; border-radius: 15px;">
+                    1
+                </span>
                 <div data-tooeen-slot="actionButtons"></div>
             </div>
             <div class="tooltiptext">
@@ -52,7 +97,7 @@ export class TodoCard extends OBC.SimpleUIComponent {
         const cardElement = this.get()
         cardElement.addEventListener("click", () => {
             console.log("clicked")
-            
+
             this.onCardClick.trigger()
         })
         this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
