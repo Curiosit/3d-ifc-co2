@@ -39,6 +39,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         super(components)
         this._components = components
         components.scene
+        this._qtoResult = {}
         this.setUI()
         //this.getQuantities()
     }
@@ -69,34 +70,72 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     
 
     async getQuantities() {
-        console.log("_______________________________________")
+            console.log("_______________________________________")
             const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
             console.log(fragmentManager)
             console.log(fragmentManager.groups)
-            console.log(fragmentManager.groups[0])
-            console.log(fragmentManager.groups[0].properties)
-            for (const group in fragmentManager.groups) {
-                console.log(group[0])
-                
-                for (const fragmentID in fragmentManager) {
+            
+            for (const groupID in fragmentManager.groups) {
+                console.log(groupID)
+                const group = fragmentManager.groups[groupID]
+                console.log(group.keyFragments)
+                const fragmentMap = group.keyFragments 
+                for (const fragmentID in fragmentMap) {
                     console.log(fragmentID)
-                    const fragment = fragmentManager.list[fragmentID]
                     
+                    const fragmentUUID = fragmentMap[fragmentID]
+                    console.log(fragmentUUID as string)
+                    const fragment = fragmentManager.list[fragmentUUID]
+                    console.log(fragment)
                     const model = fragment.mesh.parent
                     if (!(model instanceof FragmentsGroup && model.properties )) { continue }
                     const properties = model.properties
                     
                     console.log(properties)
-            }
             
-                
+                    
+                    const fragmentIdMap = fragmentMap[fragmentUUID]
+                    
+                    OBC.IfcPropertiesUtils.getRelationMap(
+                        properties, 
+                        WEBIFC.IFCRELDEFINESBYPROPERTIES,
+                        (setID, relatedIDs) => {
+                            const set = properties[setID]
+                            console.log(set)
+                            const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
+                            if ( !setName || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+
+                            console.log(setName)
+                            console.log(this._qtoResult)
+                            if (!(setName in this._qtoResult)) {
+                                this._qtoResult[setName] = {}
+                            }
+                            OBC.IfcPropertiesUtils.getQsetQuantities(
+                                properties,
+                                setID,
+                                (qtoID) => {
+                                    //console.log(properties[qtoID])
+                                    const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
+                                    const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
+                                
+                                    if(!qtoName || !value ) {return}
+                                    console.log(qtoName)
+                                    console.log(value)
+                                    if (!(qtoName in this._qtoResult[setName])) {
+                                        this._qtoResult[setName][qtoName] = 0
+                                    
+                                    }
+                                    this._qtoResult[setName][qtoName] += value 
+                                }
+                            )
+                            
+                        }
+                        
+                    )
+                    console.log(this._qtoResult)
                
-                
-               
+                }
+            }
+
         }
-    }
-
-
-
-
 }
