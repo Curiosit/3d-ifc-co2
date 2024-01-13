@@ -5,6 +5,7 @@ import { FragmentsGroup } from "bim-fragment"
 import { TodoCreator } from "../bim-components/TodoCreator"
 import { Project } from "../classes/Project"
 import { SimpleQto } from "../bim-components/SimpleQto"
+import { CarbonTool } from "../bim-components/CarbonTool"
 
 interface Props {
   project: Project
@@ -41,7 +42,7 @@ export function IFCViewer(props: Props) {
     const createViewer = async () => {
         viewer = new OBC.Components()
         setViewer(viewer)
-
+        
         const sceneComponent = new OBC.SimpleScene(viewer)
         sceneComponent.setup()
         viewer.scene = sceneComponent
@@ -229,7 +230,10 @@ export function IFCViewer(props: Props) {
         await todoCreator.setup(props.project)
     
         const simpleQto = new SimpleQto(viewer)
-        
+
+
+        const carbonTool = new CarbonTool(viewer)
+        carbonTool.getQuantities()
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),
@@ -238,7 +242,8 @@ export function IFCViewer(props: Props) {
           propertiesProcessor.uiElement.get("main"),
           todoCreator.uiElement.get("activationButton"),
           fragmentManager.uiElement.get("main"),
-          simpleQto.uiElement.get("activationBtn")
+          simpleQto.uiElement.get("activationBtn"),
+          carbonTool.uiElement.get("activationBtn")
         )
         viewer.ui.addToolbar(toolbar)
         
