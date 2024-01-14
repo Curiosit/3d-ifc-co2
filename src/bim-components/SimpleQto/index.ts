@@ -172,7 +172,12 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                 WEBIFC.IFCRELDEFINESBYPROPERTIES,
                 (setID, relatedIDs) => {
                     const set = properties[setID]
+                    console.log(setID)
+                    console.log(set)
                     const expressIDs = fragmentIdMap[fragmentID]
+                    console.log(fragmentIdMap)
+                    console.log(expressIDs)
+                    
                     const workingIDs = relatedIDs.filter(id => expressIDs.has(id.toString()))
                     const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
                     
