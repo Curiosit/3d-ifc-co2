@@ -89,34 +89,35 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             const set = this._qtoResultByElementName[elementName]
             this._qtoList = []
             for (const setName in set) {
-                
-                if (set.hasOwnProperty(setName)) {
-                    const qtyCard = new ElementSetNameCard(this.components)
-                   
-                    qtyCard.setName = setName
+                if(setName == "Calculated values") {
+                    if (set.hasOwnProperty(setName)) {
+                        const qtyCard = new ElementSetNameCard(this.components)
                     
-                    const qtoValues = set[setName];
-                   
+                        qtyCard.setName = setName
+                        
+                        const qtoValues = set[setName];
                     
-                    
-                    for (const qtoName in qtoValues) {
-                        console.log(qtoName)
-                        if (qtoValues.hasOwnProperty(qtoName)) {
-                            const qtoValue = qtoValues[qtoName];
-                            //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
-                            const item = { [qtoName]: qtoValue };
+                        
+                        
+                        for (const qtoName in qtoValues) {
+                            console.log(qtoName)
+                            if (qtoValues.hasOwnProperty(qtoName)) {
+                                const qtoValue = qtoValues[qtoName];
+                                //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
+                                const item = { [qtoName]: qtoValue };
 
-                            // Push the object into qlist
-                            this._qtoList.push(item);
+                                // Push the object into qlist
+                                this._qtoList.push(item);
+                            }
                         }
+                        console.log(qtyCard)
+                        qtyCard.qtyValueList = this._qtoList
+                        //console.log(qtyCard)
+                        console.log(qtyCard)
+                        elementCard.addChild(qtyCard)
                     }
-                    console.log(qtyCard)
-                    qtyCard.qtyValueList = this._qtoList
-                    //console.log(qtyCard)
-                    console.log(qtyCard)
-                    elementCard.addChild(qtyCard)
                 }
-                
+                    
             }
         } 
     }
@@ -266,16 +267,16 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     
                     const set = properties[setID]
                     if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                    console.log(setID)
-                    console.log(set)
-                    console.log(relatedIDs)
-                    console.log(idMap)
+                    //console.log(setID)
+                    //console.log(set)
+                    //console.log(relatedIDs)
+                    //console.log(idMap)
                     const expressIDs = idMap
 
                     const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
 
                     if (workingIDs.length > 0) {
-                    console.log('Working IDs:', workingIDs);
+                    //console.log('Working IDs:', workingIDs);
                     } else {
                     //console.log('No common IDs found between expressIDs and relatedIDs');
                     }
@@ -311,9 +312,18 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             //resultRow[setName][qtoName] = value
                         }
                     )
-                    //console.log("Element area: ")
-                    //const volume = resultRow["BaseQuantities"]["NetVolume"]
+                    console.log("Element thickness: ")
+                    const thickness = resultRow["BaseQuantities"]["Width"] / 1000
+                    console.log(thickness)
+                    console.log("Element volume: ")
+                    const volume = resultRow["BaseQuantities"]["NetVolume"]
+                    console.log(volume)
 
+                    console.log("Element area: ")
+                    const area = volume / thickness
+                    console.log(area)
+                    
+                    qtoResultByElementName[nameWithID]["Calculated values"] = {"Area": area} 
                     
                 }
                 
