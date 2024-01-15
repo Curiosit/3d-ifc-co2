@@ -24,19 +24,20 @@ export class ElementCard extends OBC.SimpleUIComponent {
         
         const template = `
         
-            <div class="qty-item tooltip" >
-            <div class="" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="element-item" >
+            
+            <div class="" >
                 <div style="display: flex; column-gap: 15px; align-items: center;">
                 
                     <div>
-                        <div id="ElementName">
+                        <h3 id="ElementName">
                         
-                        </div>
+                        </h3>
                     </div>
                 </div>
                 <div data-tooeen-slot="actionButtons"></div>
             </div>
-
+            
             </div>
       
         `

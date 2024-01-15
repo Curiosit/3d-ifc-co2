@@ -36,6 +36,7 @@ export function ViewerProvider (props: {children: React.ReactNode}) {
 
 
 export function IFCViewer(props: Props) {
+    let properties
     const { setViewer } = React.useContext(ViewerContext)
     let viewer: OBC.Components
     
@@ -164,6 +165,9 @@ export function IFCViewer(props: Props) {
         ifcLoader.onIfcLoaded.add(async (model) => {
           exportFragments(model)
           exportJSON(model)
+          properties = model.properties
+          carbonTool.properties = properties
+          console.log(properties)
           onModelLoaded(model)
         })
     
@@ -197,7 +201,10 @@ export function IFCViewer(props: Props) {
               model.properties = JSON.parse(json)
               const loadedModel =  { ...model, properties:JSON.parse(json)};
               console.log(loadedModel)
-              console.log(loadedModel.properties)
+              //console.log(loadedModel.properties)
+              properties = loadedModel.properties
+              carbonTool.properties = properties
+              console.log(properties)
               onModelLoaded(loadedModel) 
               return;
               
@@ -243,7 +250,8 @@ export function IFCViewer(props: Props) {
 
 
         const carbonTool = new CarbonTool(viewer)
-        carbonTool.getQuantities()
+        
+        //carbonTool.getQuantities()
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),

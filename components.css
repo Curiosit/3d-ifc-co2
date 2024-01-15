@@ -1529,10 +1529,10 @@ html {
 }
 
 h3{
-  font-size: 24px;
+  font-size: 18px;
   line-height: 2.25rem;
-  font-weight: 500;
-  color: var(--primary-color);
+  font-weight:bold
+  
 }
 
 dialog{

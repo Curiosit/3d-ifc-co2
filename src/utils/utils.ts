@@ -242,3 +242,11 @@ export function parseFragmentIdMap(jsonString: string): FragmentIdMap {
   return fragmentIdMap;
 }
 
+
+export function addArrayList(arrayList, addArray) {
+  for (const arrayID in addArray) {
+    arrayList.push(addArray[arrayID])
+  }
+  return arrayList
+}
+

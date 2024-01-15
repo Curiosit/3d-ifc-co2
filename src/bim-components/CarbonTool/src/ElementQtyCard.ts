@@ -21,7 +21,7 @@ export class ElementQtyCard extends OBC.SimpleUIComponent {
     constructor(components: OBC.Components) {
         const template = `
         
-            <div class="qty-value tooltip" style="" >
+            <div class="element-value-item" style="" >
             <span id="qtyName" style="font-weight: bold;"></span>: <span id="qtyValue"></span>
 
             </div>

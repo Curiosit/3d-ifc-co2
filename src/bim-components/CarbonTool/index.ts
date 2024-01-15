@@ -4,7 +4,7 @@ import * as WEBIFC from "web-ifc"
 import { addDocument, deleteDocument, getCollection } from "../../firebase"
 import { Project } from "../../classes/Project"
 import * as Firestore from "firebase/firestore"
-import { parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
+import { addArrayList, parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
 import { BuildingCarbonFootprint, Status } from "../../types/types"
 import  {FragmentsGroup} from "bim-fragment"
 import { ElementCard } from "./src/ElementCard"
@@ -29,7 +29,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
     carbonFootprint: BuildingCarbonFootprint
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
-
+    properties
     private _qtoResult: QtoResult
     private _qtoResultByElementName: QtoResultByElementName
     private _qtoList: { [key: string]: any }[] = [];
@@ -114,7 +114,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     qtyCard.qtyValueList = this._qtoList
                     //console.log(qtyCard)
                     console.log(qtyCard)
-                    qtoList.addChild(qtyCard)
+                    elementCard.addChild(qtyCard)
                 }
                 
             }
@@ -148,14 +148,193 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
 
 
+    sumQuantities(properties, elements, elementType) {
+        let idMap = new Array()
+        let qtoResultByElementName: QtoResultByElementName
+        qtoResultByElementName = {}
+        for (const elementID in elements) {
+
+            const name = properties[elements[elementID].expressID].Name.value
+            idMap.push(elements[elementID].expressID)
+            
+            if (!(name in qtoResultByElementName)) {
+                qtoResultByElementName[name] = {}
+                
+            }
+            const resultRow = qtoResultByElementName[name]
+
+        console.log("________________________________________________________________________")
+
+            
+            OBC.IfcPropertiesUtils.getRelationMap(
+                properties, 
+                WEBIFC.IFCRELDEFINESBYPROPERTIES,
+                (setID, relatedIDs) => {
+                    const set = properties[setID]
+                    if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+
+                    const expressIDs = idMap
+
+                    const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
+
+                    if (workingIDs.length > 0) {
+                    console.log('Working IDs:', workingIDs);
+                    } else {
+                    //console.log('No common IDs found between expressIDs and relatedIDs');
+                    }
+
+                    const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
+
+                    if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+                    
+                    if (!(setName in resultRow)) {
+                        resultRow[setName] = {}
+                    }
+
+                    
+                    OBC.IfcPropertiesUtils.getQsetQuantities(
+                        properties,
+                        setID,
+                        (qtoID) => {
+                            //console.log(properties[qtoID])
+                            const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
+                            console.log(qtoName)
+                            const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
+                            console.log(value)
+                            if(!qtoName || !value) {return}
+                            //console.log(qtoName)
+                            if (!(qtoName in resultRow[setName])) {
+                                resultRow[setName][qtoName] = 0
+                            
+                            }
+                            resultRow[setName][qtoName] += value
+                        }
+                    )
+                }
+                
+            )
+
+        }
+        return qtoResultByElementName
+        
+    }
+    calculateQuantities(properties, elements, elementType) {
+
+        let idMap = new Array()
+        let qtoResultByElementName: QtoResultByElementName
+        let result
+        
+        qtoResultByElementName = {}
+        console.log(qtoResultByElementName)
+
+        console.log("________________________________________________________________________")
+        console.log("________________________________________________________________________")
+        console.log("________________________________________________________________________")
+        
+        if (elementType == "walls") {
+            result = {
+                name: "Walls",
+                elements: []
+
+            }
+        }
+        console.log(elements)
+        for (const elementID in elements) {
+            idMap = []
+            console.log("________________________________________________________________________")
+            console.log(elementID)
+            console.log(elements[elementID])
+            const name = properties[elements[elementID].expressID].Name.value
+            const nameWithID = name + '#' + elements[elementID].expressID
+            idMap.push(elements[elementID].expressID)
+            
+            /* if (!(name in qtoResultByElementName)) {
+                qtoResultByElementName[name] = {}
+                result.elements.push(name)
+            } */
+            qtoResultByElementName[nameWithID] = {}
+            const resultRow = qtoResultByElementName[nameWithID]
+            console.log(qtoResultByElementName[nameWithID])
+            console.log("________________________________________________________________________")
+
+            console.log(resultRow)
+            OBC.IfcPropertiesUtils.getRelationMap(
+                properties, 
+                WEBIFC.IFCRELDEFINESBYPROPERTIES,
+                (setID, relatedIDs) => {
+                    console.log("GET RELATION MAP")
+                    
+                    const set = properties[setID]
+                    if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+                    console.log(setID)
+                    console.log(set)
+                    console.log(relatedIDs)
+                    console.log(idMap)
+                    const expressIDs = idMap
+
+                    const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
+
+                    if (workingIDs.length > 0) {
+                    console.log('Working IDs:', workingIDs);
+                    } else {
+                    //console.log('No common IDs found between expressIDs and relatedIDs');
+                    }
+
+                    const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
+
+                    if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+                    
+                    if (!(setName in resultRow)) {
+                        resultRow[setName] = {}
+                    }
+
+                    
+                    OBC.IfcPropertiesUtils.getQsetQuantities(
+                        properties,
+                        setID,
+                        (qtoID) => {
+                            //console.log(properties[qtoID])
+                            const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
+                            console.log(qtoName)
+                            const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
+                            console.log(value)
+                            if(!qtoName || !value) {return}
+                            //console.log(qtoName)
+                            if (!(qtoName in resultRow[setName])) {
+                                resultRow[setName][qtoName] = value
+                            
+                            }
+                            if ((qtoName in resultRow[setName])) {
+                                resultRow[setName][qtoName] = Math.min(resultRow[setName][qtoName], value) //find a lower value, as there are multiple netVolumes !!!!!!
+                            
+                            }
+                            //resultRow[setName][qtoName] = value
+                        }
+                    )
+                    //console.log("Element area: ")
+                    //const volume = resultRow["BaseQuantities"]["NetVolume"]
+
+                    
+                }
+                
+            )
+            console.log(resultRow)
+            
+            
+        }
+        return qtoResultByElementName
+        
+    }
     
 
-    async getQuantities() {
-            console.log("_______________________________________")
+    getQuantities() {
+        console.log("_______________________________________") 
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$") 
+            /*
             const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
             console.log(fragmentManager)
             console.log(fragmentManager.groups)
-            
+            let properties
             for (const groupID in fragmentManager.groups) {
                 console.log(groupID)
                 const group = fragmentManager.groups[groupID]
@@ -170,134 +349,65 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     console.log(fragment)
                     const model = fragment.mesh.parent
                     if (!(model instanceof FragmentsGroup && model.properties )) { continue }
-                    const properties = model.properties
-                    
+                    properties = model.properties
                     console.log(properties)
+                }   
+            }     
+            console.log(properties) */
             
-                    
-                    const fragmentIdMap = fragmentMap[fragmentUUID]
-                    /* console.log(fragmentIdMap)
-                    const walls = OBC.IfcPropertiesUtils.getAllItemsOfType(
-                        properties,
-                        WEBIFC.IFCWALLTYPE
-                        ) */
+        const properties = this.properties      
+        console.log(properties)  
 
                     
-                    const slabs = OBC.IfcPropertiesUtils.getAllItemsOfType(
+                    
+        let typeList = new Array()
+        typeList = []
+        const walls = OBC.IfcPropertiesUtils.getAllItemsOfType(
+                        properties,
+                        WEBIFC.IFCWALLSTANDARDCASE
+                        ) 
+        console.log(walls)
+                    
+                    
+        const slabs = OBC.IfcPropertiesUtils.getAllItemsOfType(
                         properties,
                         WEBIFC.IFCSLAB
                         )
+        console.log(slabs)
                     
-                    //console.log(walls)
-                    console.log(slabs)
-                    //WEBIFC.IFCELEMENTQUANTITY
-                    console.log(slabs[0].HasPropertySets)
-                    let idMap = new Array()
-                    for (const slabID in slabs) {
-                        
-                        console.log("???????????????????????????????????????????????????")
-                        
-                        console.log(properties[slabs[slabID].expressID].Name) // RETURNS name object!
-                        const name = properties[slabs[slabID].expressID].Name.value
-                        console.log("???????????????????????????????????????????????????")
-                        idMap.push(slabs[slabID].expressID)
-                        /* for (const psetID in properties[slabs[slabID].expressID].HasPropertySets) {
-                            console.log(psetID)
-                            console.log(properties[psetID])
-                            const id = properties[slabs[slabID].expressID].HasPropertySets[psetID]
-                            console.log(id)
-                            const props = OBC.IfcPropertiesUtils.getEntityName(properties, id.value)
-                            console.log(props)
-                            const set = properties[id.value]
-                        } */
-                        
-                        if (!(name in this._qtoResultByElementName)) {
-                            this._qtoResultByElementName[name] = {}
-                        }
-                        const resultRow = this._qtoResultByElementName[name]
-                        console.log(idMap) // List of express ids of either IFC SLAB or IFC SLAB TYPE
-
-                    console.log("________________________________________________________________________")
-                    console.log("________________________________________________________________________")
-                    console.log("________________________________________________________________________")
-                        console.log("SUMMING UP SLABS:")
-                        OBC.IfcPropertiesUtils.getRelationMap(
-                            properties, 
-                            WEBIFC.IFCRELDEFINESBYPROPERTIES,
-                            (setID, relatedIDs) => {
-                                const set = properties[setID]
-                                if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                                //console.log(set)
-                                //console.log(idMap)
-                                const expressIDs = idMap
-                                //console.log(expressIDs)
-                                //console.log(relatedIDs)
-                                //const workingIDs = relatedIDs.filter(id => expressIDs.includes(id.toString())) //// <= NOT WORKING
-
-                                const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
-
-                                if (workingIDs.length > 0) {
-                                console.log('Working IDs:', workingIDs);
-                                } else {
-                                //console.log('No common IDs found between expressIDs and relatedIDs');
-                                }
-
-                                const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
-                                //console.log(setName)
-                                //console.log(workingIDs)
-                                if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                                
-                                if (!(setName in resultRow)) {
-                                    resultRow[setName] = {}
-                                }
-                                //console.log("SetID")
-                                //console.log(setID)
-                                
-                                OBC.IfcPropertiesUtils.getQsetQuantities(
-                                    properties,
-                                    setID,
-                                    (qtoID) => {
-                                        //console.log(properties[qtoID])
-                                        const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
-                                        console.log(qtoName)
-                                        const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
-                                        console.log(value)
-                                        if(!qtoName || !value) {return}
-                                        //console.log(qtoName)
-                                        if (!(qtoName in resultRow[setName])) {
-                                            resultRow[setName][qtoName] = 0
-                                        
-                                        }
-                                        resultRow[setName][qtoName] += value
-                                    }
-                                )
-                            }
-                            
-                        )
-                        console.log("________________________________________________________________________")
-                        console.log("########################################################################")
-                    }
+        const doors = OBC.IfcPropertiesUtils.getAllItemsOfType(
+                        properties,
+                        WEBIFC.IFCDOOR
+        )
                     
-                    }
+                    
+        const elements = typeList
+                    
+        //const elements = slabs
+        console.log(elements)
+                    
+        this._qtoResultByElementName = this.calculateQuantities(properties, walls, "walls")
+        
+                
+                        
 
 
 
 
-
-                        }
+            
                         
                         
 
-
-                        console.log(this._qtoResultByElementName)
-                        this.resetWindow()
-                        this.updateUI()
-                        }
+        
+        console.log(this._qtoResultByElementName)
+        this.resetWindow()
+        this.updateUI()
+    }
                     
                     
                     
                
                     
-                }
+}
     
 

@@ -14,8 +14,8 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
     }
 
     set setName(value: string) {
-        const setNameElement = this.getInnerElement("setName") as HTMLParagraphElement
-        setNameElement.textContent = value
+        //const setNameElement = this.getInnerElement("setName") as HTMLParagraphElement
+        //setNameElement.textContent = value
     }
     set qtyValueList(values: any) {
         
@@ -54,10 +54,7 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
                 <div style="display: flex; column-gap: 15px; align-items: center;">
                 
                     <div>
-                        <div style="padding-left: 15px" id="setName" >
-                            SetName
-                        </div>
-                        <div style="padding-left: 30px" id="qtyValueList">
+                        <div class="qtyValueList" style="padding-left: 15px" id="qtyValueList">
                         
                         </div>
                     </div>
