@@ -77,7 +77,7 @@ export function IFCViewer(props: Props) {
     
         const ifcLoader = new OBC.FragmentIfcLoader(viewer)
         ifcLoader.settings.wasm = {
-          path: "https://unpkg.com/web-ifc@0.0.43/",
+          path: "https://unpkg.com/web-ifc@0.0.44/",
           absolute: true
         }
     
@@ -85,14 +85,24 @@ export function IFCViewer(props: Props) {
         highlighter.setup()
     
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
-        highlighter.events.select.onClear.add(() => {
-          propertiesProcessor.cleanPropertiesList()
+        
+        
+        highlighter.events.select.onHighlight.add(() => {
+          
+        })
+
+        highlighter.events.select.onClear.add(async (e) => {
+          console.log(e)
+          await propertiesProcessor.cleanPropertiesList()
+          const propsListElement = propertiesProcessor.uiElement.get("propsList")
+          propsListElement.removeChild()
+          console.log(propsListElement)
+          for (const prop in propsListElement) {
+            console.log(prop)
+          }
+          
         })
         
-        highlighter.events.select.onHighlight.add((e) => {
-          console.log("selected")
-          console.log(e)
-        })
 
         const classifier = new OBC.FragmentClassifier(viewer)
         const classificationWindow = new OBC.FloatingWindow(viewer)
@@ -160,7 +170,7 @@ export function IFCViewer(props: Props) {
         fragmentManager.onFragmentsLoaded.add((model) => {
           model.properties = {} //Get this from a JSON file exported from the IFC first load!
           importJSON(model)
-          onModelLoaded(model)
+          
         })
 
         function exportJSON (model: FragmentsGroup) {
