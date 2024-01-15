@@ -87,6 +87,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             elementCard.elementName = elementName
             qtoList.addChild(elementCard)
             const set = this._qtoResultByElementName[elementName]
+            this._qtoList = []
             for (const setName in set) {
                 
                 if (set.hasOwnProperty(setName)) {
@@ -94,11 +95,12 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                    
                     qtyCard.setName = setName
                     
-                    const qtoValues = this._qtoResult[setName];
+                    const qtoValues = set[setName];
                    
                     
                     
                     for (const qtoName in qtoValues) {
+                        console.log(qtoName)
                         if (qtoValues.hasOwnProperty(qtoName)) {
                             const qtoValue = qtoValues[qtoName];
                             //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
@@ -109,7 +111,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         }
                     }
                     console.log(qtyCard)
-                    //qtyCard.qtyElementList = this._qtoList
+                    qtyCard.qtyValueList = this._qtoList
                     //console.log(qtyCard)
                     console.log(qtyCard)
                     qtoList.addChild(qtyCard)

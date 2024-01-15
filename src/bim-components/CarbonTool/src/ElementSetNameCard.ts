@@ -54,10 +54,10 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
                 <div style="display: flex; column-gap: 15px; align-items: center;">
                 
                     <div>
-                        <div id="setName" >
+                        <div style="padding-left: 15px" id="setName" >
                             SetName
                         </div>
-                        <div id="qtyValueList">
+                        <div style="padding-left: 30px" id="qtyValueList">
                         
                         </div>
                     </div>
