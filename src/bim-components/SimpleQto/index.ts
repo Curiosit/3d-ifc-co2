@@ -177,15 +177,19 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                     const expressIDs = fragmentIdMap[fragmentID]
                     console.log(fragmentIdMap)
                     console.log(expressIDs)
+                    console.log(relatedIDs)
                     
                     const workingIDs = relatedIDs.filter(id => expressIDs.has(id.toString()))
+                   
                     const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
                     
                     /* console.log(setName)
                     console.log(workingIDs.length)
                     console.log(set.type) */
                     if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                    //console.log("")
+                    console.log("?@?@?@?@@?@?@?@?@@?@?@@@?")
+                    console.log("FOUND!")
+                    console.log(workingIDs)
                     if (!(setName in this._qtoResult)) {
                         this._qtoResult[setName] = {}
                     }

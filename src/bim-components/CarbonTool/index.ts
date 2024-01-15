@@ -7,6 +7,7 @@ import * as Firestore from "firebase/firestore"
 import { parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
 import { BuildingCarbonFootprint, Status } from "../../types/types"
 import  {FragmentsGroup} from "bim-fragment"
+import { ElementCard } from "./src/ElementCard"
 
 //const todosCollection = getCollection<ToDoData>("/todos")
 type QtoResult = {
@@ -20,6 +21,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
 
     private _qtoResult: QtoResult
+    private _qtoList: { [key: string]: any }[] = [];
     enabled: boolean = true
     private _components: OBC.Components
     uiElement = new OBC.UIElement<
@@ -62,7 +64,65 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.uiElement.set({activationBtn, qtoWindow})
 
     }
+    updateUI () {
+        const qtoList = this.uiElement.get("qtoWindow")
+        //console.log(this._qtoList)
+        this._qtoList = []
+        
+        for (const setName in this._qtoResult) {
+            
+            if (this._qtoResult.hasOwnProperty(setName)) {
+                const qtyCard = new ElementCard(this.components)
+                console.log(`Set Name: ${setName}`);
+                qtyCard.setName = setName
+                // Iterate over qto names and values within each set
+                const qtoValues = this._qtoResult[setName];
+                //console.log(qtoValues)
+                
+                
+                for (const qtoName in qtoValues) {
+                    if (qtoValues.hasOwnProperty(qtoName)) {
+                        const qtoValue = qtoValues[qtoName];
+                        //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
+                        const item = { [qtoName]: qtoValue };
 
+                        // Push the object into qlist
+                        this._qtoList.push(item);
+                    }
+                }
+                console.log(qtyCard)
+                qtyCard.qtyValueList = this._qtoList
+                //console.log(qtyCard)
+                console.log(qtyCard)
+                qtoList.addChild(qtyCard)
+            }
+            
+        }
+    }
+    resetWindow() {
+        
+        const qtoList = this.uiElement.get("qtoWindow")
+        //console.log(qtoList)
+        //console.log(qtoList.children[0].children)
+        for (const childID in qtoList.children[0].children) {
+            
+            const qtyCard = qtoList.children[0].children[childID] as ElementCard
+            
+            
+            //qtyCard.dispose()
+            
+            //console.log(childID)
+            //console.log(qtyCard)
+            qtyCard.qtyValueList = []
+            qtyCard.dispose()
+            qtyCard.removeFromParent()
+            
+        }
+        qtoList.cleanData()
+        /* while (qtoList.children[0]) {
+            qtoList.removeChild(qtoList.children[0]);
+        } */
+    }
 
 
 
@@ -95,19 +155,19 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
                     
                     const fragmentIdMap = fragmentMap[fragmentUUID]
-                    console.log(fragmentIdMap)
+                    /* console.log(fragmentIdMap)
                     const walls = OBC.IfcPropertiesUtils.getAllItemsOfType(
                         properties,
                         WEBIFC.IFCWALLTYPE
-                        )
+                        ) */
 
                     
                     const slabs = OBC.IfcPropertiesUtils.getAllItemsOfType(
                         properties,
-                        WEBIFC.IFCSLABTYPE
+                        WEBIFC.IFCSLAB
                         )
                     
-                    console.log(walls)
+                    //console.log(walls)
                     console.log(slabs)
                     //WEBIFC.IFCELEMENTQUANTITY
                     console.log(slabs[0].HasPropertySets)
@@ -133,27 +193,43 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
 
                     }
-                    console.log(idMap)
+                    console.log(idMap) // List of express ids of either IFC SLAB or IFC SLAB TYPE
+
+                    console.log("________________________________________________________________________")
+                    console.log("________________________________________________________________________")
+                    console.log("________________________________________________________________________")
+                        console.log("SUMMING UP SLABS:")
                         OBC.IfcPropertiesUtils.getRelationMap(
                             properties, 
                             WEBIFC.IFCRELDEFINESBYPROPERTIES,
                             (setID, relatedIDs) => {
                                 const set = properties[setID]
                                 if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                                console.log(set)
-                                console.log(idMap)
+                                //console.log(set)
+                                //console.log(idMap)
                                 const expressIDs = idMap
-                                const workingIDs = relatedIDs.filter(id => expressIDs.includes(id.toString())) //// <= NOT WORKING
+                                //console.log(expressIDs)
+                                //console.log(relatedIDs)
+                                //const workingIDs = relatedIDs.filter(id => expressIDs.includes(id.toString())) //// <= NOT WORKING
+
+                                const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
+
+                                if (workingIDs.length > 0) {
+                                console.log('Working IDs:', workingIDs);
+                                } else {
+                                //console.log('No common IDs found between expressIDs and relatedIDs');
+                                }
+
                                 const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
-                                console.log(setName)
-                                console.log(workingIDs)
+                                //console.log(setName)
+                                //console.log(workingIDs)
                                 if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
                                 
                                 if (!(setName in this._qtoResult)) {
                                     this._qtoResult[setName] = {}
                                 }
-                                console.log("SetID")
-                                console.log(setID)
+                                //console.log("SetID")
+                                //console.log(setID)
                                 
                                 OBC.IfcPropertiesUtils.getQsetQuantities(
                                     properties,
@@ -165,7 +241,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                                         const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
                                         console.log(value)
                                         if(!qtoName || !value) {return}
-                                        console.log(qtoName)
+                                        //console.log(qtoName)
                                         if (!(qtoName in this._qtoResult[setName])) {
                                             this._qtoResult[setName][qtoName] = 0
                                         
@@ -176,6 +252,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             }
                             
                         )
+                        console.log("________________________________________________________________________")
+                        console.log("########################################################################")
                     }
 
 
@@ -265,8 +343,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
 
                         }
-                        console.log(this._qtoResult)
-               
+                        
                         /* const sets = slabs[slabID].HasPropertySets
                         for (const psetID in sets) {
                             const id = sets[psetID]
@@ -351,6 +428,12 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                                 /*     }
                                 ) 
                             } */
+
+
+
+                        console.log(this._qtoResult)
+                        this.resetWindow()
+                        this.updateUI()
                         }
                     
                     
