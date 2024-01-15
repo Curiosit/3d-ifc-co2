@@ -1,7 +1,7 @@
 import * as OBC from "openbim-components"
 import { roundNumber } from "../../../utils/utils"
 
-export class QtyValueCard extends OBC.SimpleUIComponent {
+export class ElementQtyCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
 

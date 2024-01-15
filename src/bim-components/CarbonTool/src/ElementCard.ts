@@ -1,47 +1,22 @@
 import * as OBC from "openbim-components"
-import { QtyValueCard } from "./ElementQtyCard"
+import { ElementQtyCard } from "./ElementQtyCard"
+import { ElementSetNameCard } from "./ElementSetNameCard"
 
-export type qtyValue = [
-    {[qtoName: string]: number}
-]
 
 export class ElementCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
-    private _qtyValueListElement: HTMLParagraphElement
+    
+    private _qtyElement: HTMLParagraphElement
     slots: {
         actionButtons: OBC.SimpleUIComponent
     }
 
-    set setName(value: string) {
-        const setNameElement = this.getInnerElement("setName") as HTMLParagraphElement
-        setNameElement.textContent = value
+    set elementName(value: string) {
+        const elementNameHTML = this.getInnerElement("ElementName") as HTMLParagraphElement
+        elementNameHTML.textContent = value
     }
-    set qtyValueList(values: any) {
-        
-        console.log(this._qtyValueListElement)
-        while (this._qtyValueListElement.firstChild) {
-            console.log("clearing children:")
-            console.log(this._qtyValueListElement.firstChild)
-            this._qtyValueListElement.removeChild(this._qtyValueListElement.firstChild)
-
-        }
-        for (const qtyEntry of values) {
-            console.log(qtyEntry)
-            for (const qtoName in qtyEntry) {
-                const number = qtyEntry[qtoName];
-                const qtyValueCard = new QtyValueCard(this.components)
-
-                //console.log(`qtoName: ${qtoName}, number: ${number}`);
-                qtyValueCard.qtyName = qtoName
-                qtyValueCard.qtyValue = number
-                
-                //console.log(qtyValueCard)
-                this._qtyValueListElement.appendChild(qtyValueCard.domElement)
-            }
-        }
-        console.log(this._qtyValueListElement)
-    }
+    
 
     
 
@@ -54,10 +29,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 <div style="display: flex; column-gap: 15px; align-items: center;">
                 
                     <div>
-                        <h3 id="setName" >
-                            SetName
-                        </h3>
-                        <div id="qtyValueList">
+                        <div id="ElementName">
                         
                         </div>
                     </div>
@@ -72,8 +44,9 @@ export class ElementCard extends OBC.SimpleUIComponent {
         super(components, template)
         
         
-        this._qtyValueListElement = this.getInnerElement("qtyValueList") as HTMLParagraphElement
-        console.log(this._qtyValueListElement)
+        this._qtyElement = this.getInnerElement("ElementName") as HTMLParagraphElement
+        
+        console.log(this._qtyElement)
 
         
         const cardElement = this.get()
@@ -87,10 +60,10 @@ export class ElementCard extends OBC.SimpleUIComponent {
     }
     async dispose () {
         
-        while (this._qtyValueListElement.firstChild) {
+        while (this._qtyElement.firstChild) {
             console.log("child:")
-            console.log(this._qtyValueListElement.firstChild)
-            this._qtyValueListElement.removeChild(this._qtyValueListElement.firstChild)
+            console.log(this._qtyElement.firstChild)
+            this._qtyElement.removeChild(this._qtyElement.firstChild)
         }
         
         //this.dispose()

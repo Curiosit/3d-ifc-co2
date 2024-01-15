@@ -8,6 +8,8 @@ import { parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
 import { BuildingCarbonFootprint, Status } from "../../types/types"
 import  {FragmentsGroup} from "bim-fragment"
 import { ElementCard } from "./src/ElementCard"
+import { ElementQtyCard } from "./src/ElementQtyCard"
+import { ElementSetNameCard } from "./src/ElementSetNameCard"
 
 //const todosCollection = getCollection<ToDoData>("/todos")
 type QtoResult = {
@@ -76,38 +78,45 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     }
     updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
-        //console.log(this._qtoList)
+        console.log(this._qtoResultByElementName)
         this._qtoList = []
-        
-        for (const setName in this._qtoResult) {
+        for (const elementName in this._qtoResultByElementName) {
+            console.log(this._qtoResultByElementName[elementName])
             
-            if (this._qtoResult.hasOwnProperty(setName)) {
-                const qtyCard = new ElementCard(this.components)
-                console.log(`Set Name: ${setName}`);
-                qtyCard.setName = setName
-                // Iterate over qto names and values within each set
-                const qtoValues = this._qtoResult[setName];
-                //console.log(qtoValues)
+            const elementCard = new ElementCard(this.components)
+            elementCard.elementName = elementName
+            qtoList.addChild(elementCard)
+            const set = this._qtoResultByElementName[elementName]
+            for (const setName in set) {
                 
-                
-                for (const qtoName in qtoValues) {
-                    if (qtoValues.hasOwnProperty(qtoName)) {
-                        const qtoValue = qtoValues[qtoName];
-                        //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
-                        const item = { [qtoName]: qtoValue };
+                if (set.hasOwnProperty(setName)) {
+                    const qtyCard = new ElementSetNameCard(this.components)
+                   
+                    qtyCard.setName = setName
+                    
+                    const qtoValues = this._qtoResult[setName];
+                   
+                    
+                    
+                    for (const qtoName in qtoValues) {
+                        if (qtoValues.hasOwnProperty(qtoName)) {
+                            const qtoValue = qtoValues[qtoName];
+                            //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
+                            const item = { [qtoName]: qtoValue };
 
-                        // Push the object into qlist
-                        this._qtoList.push(item);
+                            // Push the object into qlist
+                            this._qtoList.push(item);
+                        }
                     }
+                    console.log(qtyCard)
+                    //qtyCard.qtyElementList = this._qtoList
+                    //console.log(qtyCard)
+                    console.log(qtyCard)
+                    qtoList.addChild(qtyCard)
                 }
-                console.log(qtyCard)
-                qtyCard.qtyValueList = this._qtoList
-                //console.log(qtyCard)
-                console.log(qtyCard)
-                qtoList.addChild(qtyCard)
+                
             }
-            
-        }
+        } 
     }
     resetWindow() {
         
@@ -123,7 +132,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
             //console.log(childID)
             //console.log(qtyCard)
-            qtyCard.qtyValueList = []
+            //qtyCard.qtyElementList = []
             qtyCard.dispose()
             qtyCard.removeFromParent()
             
