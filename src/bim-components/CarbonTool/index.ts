@@ -4,7 +4,7 @@ import * as WEBIFC from "web-ifc"
 import { addDocument, deleteDocument, getCollection } from "../../firebase"
 import { Project } from "../../classes/Project"
 import * as Firestore from "firebase/firestore"
-import { addArrayList, parseFragmentIdMap, stringifyFragmentIdMap } from "../../utils/utils"
+import { addArrayList, parseFragmentIdMap, showModal, stringifyFragmentIdMap } from "../../utils/utils"
 import { BuildingCarbonFootprint, Status } from "../../types/types"
 import  {FragmentsGroup} from "bim-fragment"
 import { ElementCard } from "./src/ElementCard"
@@ -39,6 +39,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     {
         activationBtn: OBC.Button
         qtoWindow: OBC.FloatingWindow
+        carbonWindow: OBC.FloatingWindow
     }>()
 
     async dispose() {
@@ -67,13 +68,19 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         qtoWindow.title = "Quantities"
         this._components.ui.add(qtoWindow)
         qtoWindow.visible = false
+
+        const carbonWindow = new OBC.FloatingWindow(this._components)
+        carbonWindow.title = "Carbon Footprint"
+        this._components.ui.add(carbonWindow)
+        carbonWindow.visible = false
+
         activationBtn.onClick.add(() => {
             this.getQuantities()
             activationBtn.active = !activationBtn.active
             qtoWindow.visible = activationBtn.active
         })
 
-        this.uiElement.set({activationBtn, qtoWindow})
+        this.uiElement.set({activationBtn, qtoWindow, carbonWindow})
 
     }
     updateUI () {
@@ -85,6 +92,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
             const elementCard = new ElementCard(this.components)
             elementCard.elementName = elementName
+            
+
+            
             qtoList.addChild(elementCard)
             const set = this._qtoResultByElementName[elementName]
             this._qtoList = []
@@ -117,7 +127,10 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         elementCard.addChild(qtyCard)
                     }
                 }
-                    
+            elementCard.onCardClick.add(() => {
+                console.log(elementCard)
+                
+            })    
             }
         } 
     }
