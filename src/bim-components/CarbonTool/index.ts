@@ -26,7 +26,9 @@ type QtoResultByElementName = {
 }
 
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
-    materialForm
+    materialForm: OBC.Modal
+    GWPInput
+    currentElementCard
     carbonFootprint: BuildingCarbonFootprint
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
     properties
@@ -111,8 +113,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this._components.ui.add(this.materialForm)
         this.materialForm.title = "Set Material Data"
 
-        const GWPInput = new OBC.TextArea(this._components)
-        GWPInput.label = "Component GWP"
+        const GWPInput = new OBC.TextInput(this._components)
+        GWPInput.label = "Component GWP [kgCO2e/unit]"
+        this.GWPInput = GWPInput
         this.materialForm.slots.content.addChild(GWPInput)
 
 
@@ -120,16 +123,21 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.materialForm.slots.content.get().style.display = "flex"
         this.materialForm.slots.content.get().style.flexDirection = "column"
         this.materialForm.slots.content.get().style.rowGap = "20px"
+        
 
         this.materialForm.onAccept.add(() => {
             //elementCard.updateGWP(GWPInput.value)
+            this.currentElementCard.data["CF values"]["Element GWP / unit"] = this.GWPInput.value 
+            
             GWPInput.value = ""
             this.materialForm.visible = false
+
         })
 
         this.materialForm.onCancel.add(() => {
             this.materialForm.visible = false
         })
+        console.log(this.materialForm)
     }
     async updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
@@ -139,6 +147,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             console.log(this._qtoResultByElementName[elementName])
             
             const elementCard = new ElementCard(this.components)
+            elementCard.data = this._qtoResultByElementName[elementName]
             elementCard.elementName = elementName
             console.log(this.materialForm)
             await elementCard.setupOnClick(this.materialForm)
@@ -148,7 +157,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             const set = this._qtoResultByElementName[elementName]
             this._qtoList = []
             for (const setName in set) {
-                if(setName == "Calculated values") {
+                if(setName == "CF values") {
                     if (set.hasOwnProperty(setName)) {
                         const qtyCard = new ElementSetNameCard(this.components)
                     
@@ -176,11 +185,16 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         elementCard.addChild(qtyCard)
                     }
                 }
+            console.log(this.materialForm)
             elementCard.onCardClick.add(() => {
                 console.log(elementCard)
+                this.currentElementCard = elementCard
                 
-            })    
+                
+                this.GWPInput.value = this.currentElementCard.data["CF values"]["Element GWP / unit"]
+                })    
             }
+            
         } 
     }
     resetWindow() {
@@ -385,9 +399,13 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     console.log("Element area: ")
                     const area = volume / thickness
                     console.log(area)
-                    
-                    qtoResultByElementName[nameWithID]["Calculated values"] = {"Area": area} 
-                    
+                    //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
+                    //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
+                    qtoResultByElementName[nameWithID]["CF values"] =   {
+                        "Area": area,
+                        "Element GWP / unit": 0,
+                        "Carbon Footprint": 0
+                    } 
                 }
                 
             )
