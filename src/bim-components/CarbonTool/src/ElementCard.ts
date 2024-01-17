@@ -3,6 +3,7 @@ import { ElementQtyCard } from "./ElementQtyCard"
 import { ElementSetNameCard } from "./ElementSetNameCard"
 
 
+
 export class ElementCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
@@ -18,7 +19,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
     }
     
 
-    
+    elementCardCarbonModal
 
     constructor(components: OBC.Components) {
         
@@ -45,6 +46,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
         super(components, template)
         
         
+
         this._qtyElement = this.getInnerElement("ElementName") as HTMLParagraphElement
         
         console.log(this._qtyElement)
@@ -68,6 +70,18 @@ export class ElementCard extends OBC.SimpleUIComponent {
         }
         
         //this.dispose()
+    }
+
+    async setupOnClick(materialForm) {
+        this.onCardClick.add(() => {
+
+            console.log("Setup onclick")
+            console.log(materialForm)
+            //this.setupEditForm(materialForm)  
+            materialForm.visible = true
+        })
+        
+        
     }
 
 }

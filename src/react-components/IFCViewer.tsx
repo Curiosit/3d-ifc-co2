@@ -155,6 +155,7 @@ export function IFCViewer(props: Props) {
             highlighter.events.select.onHighlight.add((fragmentMap) => {
               const expressID = [...Object.values(fragmentMap)[0]][0]
               propertiesProcessor.renderProperties(model, Number(expressID))
+              console.log(propertiesProcessor.getProperties(model, String(expressID)))
             })
           } catch (error) {
             alert(error)

@@ -26,7 +26,7 @@ type QtoResultByElementName = {
 }
 
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
-
+    materialForm
     carbonFootprint: BuildingCarbonFootprint
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
     properties
@@ -64,26 +64,60 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         activationBtn.materialIcon = "co2"
         activationBtn.tooltip = "Carbon Footprint"
 
+        
+
         const qtoWindow = new OBC.FloatingWindow(this._components)
         qtoWindow.title = "Quantities"
         this._components.ui.add(qtoWindow)
         qtoWindow.visible = false
 
         const carbonWindow = new OBC.FloatingWindow(this._components)
-        carbonWindow.title = "Carbon Footprint"
+        carbonWindow.title = "Results"
         this._components.ui.add(carbonWindow)
         carbonWindow.visible = false
 
         activationBtn.onClick.add(() => {
-            this.getQuantities()
+            //this.getQuantities()
             activationBtn.active = !activationBtn.active
-            qtoWindow.visible = activationBtn.active
+            //qtoWindow.visible = activationBtn.active
         })
 
+        const qtoWindowBtn = new OBC.Button(this._components, {name: "Quantities"})
+        activationBtn.addChild(qtoWindowBtn)
+
+        const carbonWindowBtn = new OBC.Button(this._components, {name: "Results"})
+        activationBtn.addChild(carbonWindowBtn)
+
         this.uiElement.set({activationBtn, qtoWindow, carbonWindow})
+        
+        qtoWindowBtn.onClick.add(() => {
+            this.getQuantities()
+            qtoWindowBtn.active = !qtoWindowBtn.active
+            qtoWindow.visible = qtoWindowBtn.active
+            console.log(qtoWindowBtn.active)
+            console.log(qtoWindow.visible)
+        })
+
+        carbonWindowBtn.onClick.add(() => {
+            
+            carbonWindowBtn.active = !carbonWindowBtn.active
+            carbonWindow.visible = carbonWindowBtn.active
+            console.log(carbonWindowBtn.active)
+            console.log(carbonWindow.visible)
+        })
+
+
+        this.materialForm = new OBC.Modal(this._components)
+        this._components.ui.add(this.materialForm)
+        this.materialForm.title = "Set Material Data"
+
+        this.materialForm.slots.content.get().style.padding = "20px"
+        this.materialForm.slots.content.get().style.display = "flex"
+        this.materialForm.slots.content.get().style.flexDirection = "column"
+        this.materialForm.slots.content.get().style.rowGap = "20px"
 
     }
-    updateUI () {
+    async updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
         console.log(this._qtoResultByElementName)
         this._qtoList = []
@@ -92,7 +126,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
             const elementCard = new ElementCard(this.components)
             elementCard.elementName = elementName
-            
+            console.log(this.materialForm)
+            await elementCard.setupOnClick(this.materialForm)
 
             
             qtoList.addChild(elementCard)
@@ -149,8 +184,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             //console.log(childID)
             //console.log(qtyCard)
             //qtyCard.qtyElementList = []
-            qtyCard.dispose()
+            
             qtyCard.removeFromParent()
+            qtyCard.dispose()
             
         }
         qtoList.cleanData()

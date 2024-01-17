@@ -155,11 +155,6 @@ export class Todo extends OBC.Component<null>  {
         }
         this.TodoCard.count = this.fragmentMap[Object.keys(this.fragmentMap)[0]].size
 
-
-        /*  editForm.slots.actionButtons.children[1].onClick.add(() => {
-            this.editTodo(editForm)
-            editForm.visible = false
-        }) */
         this.TodoCard.onEdit.add(async () => {
 
             this.setupEditForm(editForm)  
@@ -175,16 +170,13 @@ export class Todo extends OBC.Component<null>  {
                 this.todoCamera.target.y,
                 this.todoCamera.target.z,
                 true
-
             )
             
             const fragmentMapLength = Object.keys(this.fragmentMap).length
-            //this.TodoCard.count = this.fragmentMap.set.size as unknown as number
-            //console.log (this.fragmentMap.set.size)
            
             if(fragmentMapLength === 0) {return}
             this.highlighter.highlightByID("select", this.fragmentMap)
-            //showModal("edit-todo")
+
         })
     }
     async setupSelection() {

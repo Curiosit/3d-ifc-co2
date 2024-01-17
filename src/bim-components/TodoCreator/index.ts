@@ -60,7 +60,6 @@ export class TodoCreator extends OBC.Component<number> implements OBC.UI, OBC.Di
                     const todoObject = new Todo(this.components, todo)
                     console.log("Calling setup on click!")
                     await todoObject.setupOnClick(this.editForm)
-                    //todoObject.countMaps()
                     this._list.push(todoObject)
                     const todoList = this.uiElement.get("todoList")
                     
