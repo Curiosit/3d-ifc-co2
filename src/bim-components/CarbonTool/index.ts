@@ -111,11 +111,25 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this._components.ui.add(this.materialForm)
         this.materialForm.title = "Set Material Data"
 
+        const GWPInput = new OBC.TextArea(this._components)
+        GWPInput.label = "Component GWP"
+        this.materialForm.slots.content.addChild(GWPInput)
+
+
         this.materialForm.slots.content.get().style.padding = "20px"
         this.materialForm.slots.content.get().style.display = "flex"
         this.materialForm.slots.content.get().style.flexDirection = "column"
         this.materialForm.slots.content.get().style.rowGap = "20px"
 
+        this.materialForm.onAccept.add(() => {
+            //elementCard.updateGWP(GWPInput.value)
+            GWPInput.value = ""
+            this.materialForm.visible = false
+        })
+
+        this.materialForm.onCancel.add(() => {
+            this.materialForm.visible = false
+        })
     }
     async updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
