@@ -7,7 +7,8 @@ import { ElementSetNameCard } from "./ElementSetNameCard"
 export class ElementCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
-    
+    data
+    elementGWP
     private _qtyElement: HTMLParagraphElement
     slots: {
         actionButtons: OBC.SimpleUIComponent
