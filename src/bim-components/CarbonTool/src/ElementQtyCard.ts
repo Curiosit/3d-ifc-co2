@@ -34,7 +34,7 @@ export class ElementQtyCard extends OBC.SimpleUIComponent {
         const template = `
         
             <div class="element-value-item" style="" >
-            <span id="qtyName" style="font-weight: bold;"></span>: <span id="qtyValue"></span>
+            <span id="qtyName" style="font-weight: bold;"></span>: <span id="qtyValue"></span> <span id="qtyUnit"></span>
 
             </div>
       

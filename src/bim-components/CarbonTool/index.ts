@@ -129,7 +129,12 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             //elementCard.updateGWP(GWPInput.value)
             console.log("Modifying")
             console.log(this.currentElementCard.elementData)
-            //this.currentElementCard.elementData["CF values"]["Element GWP / unit"] = this.GWPInput.value as Number
+            console.log(Number(this.GWPInput.value))
+            const elData = this.currentElementCard.elementData
+            elData["CF values"]["Element GWP / unit"] = Number(this.GWPInput.value)
+            console.log(elData)
+            this.currentElementCard.elementData = elData
+            console.log(elData)
             console.log(this.currentElementCard.elementData)
             GWPInput.value = ""
 
@@ -404,7 +409,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
                     //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
                     qtoResultByElementName[nameWithID]["CF values"] =   {
-                        "Area": area,
+                        "Amount": area,
                         "Element GWP / unit": 0,
                         "Carbon Footprint": 0
                     } 

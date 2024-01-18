@@ -10,6 +10,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
     //elementData
     elementDataset
     elementGWP
+    result: number
+    setList: HTMLParagraphElement
     private _qtyElement: HTMLParagraphElement
     slots: {
         actionButtons: OBC.SimpleUIComponent
@@ -23,10 +25,23 @@ export class ElementCard extends OBC.SimpleUIComponent {
         return this.elementDataset
     }
     set elementData(object) {
+        console.log("setting elementData")
         this.elementDataset = object
+        this.calculateGWP(object)
         console.log(this.elementDataset)
         const set = object
         console.log(set)
+        if (this.setList) {
+            while (this.setList.firstChild) {
+                console.log("clearing children:")
+                console.log(this.setList.firstChild)
+                const setCard = this.setList.firstChild
+                
+                this.setList.removeChild(this.setList.firstChild)
+                //setCard.dispose()
+
+            }
+        }
         
         for (const setName in set) {
             console.log(setName)
@@ -39,8 +54,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
                     setCard.setData = set[setName]
                     
                     console.log(setCard)
-                    
-                    this.addChild(setCard)
+                    this.setList.appendChild(setCard.domElement)
+                    //this.addChild(setCard)
                 }
             }
             
@@ -63,7 +78,14 @@ export class ElementCard extends OBC.SimpleUIComponent {
                         
                         </h3>
                     </div>
+                    <div>
+                        <h4 id="ElementResult">
+                        
+                        </h4>
+                    </div>
+                    
                 </div>
+                <div id="setList"> </ div>
                 <div data-tooeen-slot="actionButtons"></div>
             </div>
             
@@ -76,7 +98,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
         
 
         this._qtyElement = this.getInnerElement("ElementName") as HTMLParagraphElement
-        
+        this.setList = this.getInnerElement("setList") as HTMLParagraphElement
         console.log(this._qtyElement)
 
         
@@ -111,5 +133,20 @@ export class ElementCard extends OBC.SimpleUIComponent {
         
         
     }
+    calculateGWP(set) {
+        console.log("Calculating GWP")
+        
+        for (const setName in set) {
+            console.log(setName)
+            if(setName == "CF values") {
+                console.log(set["CF values"])
+                console.log(set["CF values"]["Amount"])
+                console.log(set["CF values"]["Element GWP / unit"])
+                set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
+                set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
+            }
+        }
 
+
+    }
 }
