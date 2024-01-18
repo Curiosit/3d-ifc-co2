@@ -6,6 +6,7 @@ import { TodoCreator } from "../bim-components/TodoCreator"
 import { Project } from "../classes/Project"
 import { SimpleQto } from "../bim-components/SimpleQto"
 import { CarbonTool } from "../bim-components/CarbonTool"
+import { ExpressSelect } from "../bim-components/ExpressSelect"
 
 interface Props {
   project: Project
@@ -88,8 +89,8 @@ export function IFCViewer(props: Props) {
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
         
         
-        highlighter.events.select.onHighlight.add(() => {
-          
+        highlighter.events.select.onHighlight.add((e) => {
+          console.log(e)
         })
 
         highlighter.events.select.onClear.add(async (e) => {
@@ -251,6 +252,8 @@ export function IFCViewer(props: Props) {
 
 
         const carbonTool = new CarbonTool(viewer)
+
+        const expressSelect = new ExpressSelect(viewer, highlighter)
         
         //carbonTool.getQuantities()
         const toolbar = new OBC.Toolbar(viewer)
@@ -262,7 +265,8 @@ export function IFCViewer(props: Props) {
           todoCreator.uiElement.get("activationButton"),
           fragmentManager.uiElement.get("main"),
           simpleQto.uiElement.get("activationBtn"),
-          carbonTool.uiElement.get("activationBtn")
+          carbonTool.uiElement.get("activationBtn"),
+          expressSelect.uiElement.get("activationBtn"),
         )
         viewer.ui.addToolbar(toolbar)
         
