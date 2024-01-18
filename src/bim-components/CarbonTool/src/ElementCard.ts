@@ -62,7 +62,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
         }
     }
 
-    elementCardCarbonModal
+    
 
     constructor(components: OBC.Components) {
         

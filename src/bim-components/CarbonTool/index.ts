@@ -10,6 +10,7 @@ import  {FragmentsGroup} from "bim-fragment"
 import { ElementCard } from "./src/ElementCard"
 import { ElementQtyCard } from "./src/ElementQtyCard"
 import { ElementSetNameCard } from "./src/ElementSetNameCard"
+import { ResultsCard } from "./src/ResultsCard"
 
 //const todosCollection = getCollection<ToDoData>("/todos")
 type QtoResult = {
@@ -28,7 +29,9 @@ type QtoResultByElementName = {
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
     materialForm: OBC.Modal
     GWPInput
+    resultsCard: ResultsCard
     currentElementCard: ElementCard
+    elementCardList : ElementCard[] = []
     carbonFootprint: BuildingCarbonFootprint
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
     properties
@@ -37,6 +40,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     private _qtoList: { [key: string]: any }[] = [];
     enabled: boolean = true
     private _components: OBC.Components
+    
     uiElement = new OBC.UIElement<
     {
         activationBtn: OBC.Button
@@ -79,9 +83,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         carbonWindow.visible = false
 
         activationBtn.onClick.add(() => {
-            //this.getQuantities()
+
             activationBtn.active = !activationBtn.active
-            //qtoWindow.visible = activationBtn.active
+
         })
 
         const qtoWindowBtn = new OBC.Button(this._components, {name: "Quantities"})
@@ -96,14 +100,15 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             this.getQuantities()
             qtoWindowBtn.active = !qtoWindowBtn.active
             qtoWindow.visible = qtoWindowBtn.active
-            //console.log(qtoWindowBtn.active)
-            //console.log(qtoWindow.visible)
+
         })
+        
 
         carbonWindowBtn.onClick.add(() => {
             
             carbonWindowBtn.active = !carbonWindowBtn.active
             carbonWindow.visible = carbonWindowBtn.active
+
             console.log(carbonWindowBtn.active)
             console.log(carbonWindow.visible)
         })
@@ -137,7 +142,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             console.log(elData)
             console.log(this.currentElementCard.elementData)
             GWPInput.value = ""
-
+            this.updateUI()
             this.materialForm.visible = false
 
         })
@@ -151,6 +156,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         const qtoList = this.uiElement.get("qtoWindow")
         console.log(this._qtoResultByElementName)
         this._qtoList = []
+
         for (const elementName in this._qtoResultByElementName) {
             console.log(this._qtoResultByElementName[elementName])
             
@@ -166,35 +172,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             this._qtoList = []
             console.log(set)
             elementCard.elementData = set
-            /* for (const setName in set) {
-                if(setName == "CF values") {
-                    if (set.hasOwnProperty(setName)) {
-                        const qtyCard = new ElementSetNameCard(this.components)
-                    
-                        qtyCard.setName = setName
-                        
-                        const qtoValues = set[setName];
-                    
-                        
-                        
-                        for (const qtoName in qtoValues) {
-                            console.log(qtoName)
-                            if (qtoValues.hasOwnProperty(qtoName)) {
-                                const qtoValue = qtoValues[qtoName];
-                                //console.log(`  Qto Name: ${qtoName}, Value: ${qtoValue}`);
-                                const item = { [qtoName]: qtoValue };
-
-                                // Push the object into qlist
-                                this._qtoList.push(item);
-                            }
-                        }
-                        console.log(qtyCard)
-                        qtyCard.qtyValueList = this._qtoList
-                        //console.log(qtyCard)
-                        console.log(qtyCard)
-                        elementCard.addChild(qtyCard)
-                    }
-                } */
+            this.elementCardList.push(elementCard)
             console.log(this.materialForm)
             elementCard.onCardClick.add(() => {
                 console.log(elementCard)
@@ -203,31 +181,36 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                 this.GWPInput.value = this.currentElementCard.elementData["CF values"]["Element GWP / unit"]
             })    
         }
+        const resultsWindow = this.uiElement.get("carbonWindow")
+        if(this.resultsCard) {
+            this.resultsCard.removeFromParent()
+        }
+        const resultsCard = new ResultsCard(this.components)
+        this.resultsCard = resultsCard
+        let elementData = new Array()
+        for (const card in this.elementCardList) {
+            elementData.push(this.elementCardList[card].elementData)
+        }
+        console.log(elementData)
+        console.log("UPDATING RESULTS")
+        resultsCard.resultData=elementData
+        resultsWindow.addChild(resultsCard)
     }
     resetWindow() {
         
         const qtoList = this.uiElement.get("qtoWindow")
-        //console.log(qtoList)
-        //console.log(qtoList.children[0].children)
+
         for (const childID in qtoList.children[0].children) {
             
             const qtyCard = qtoList.children[0].children[childID] as ElementCard
-            
-            
-            //qtyCard.dispose()
-            
-            //console.log(childID)
-            //console.log(qtyCard)
-            //qtyCard.qtyElementList = []
+
             
             qtyCard.removeFromParent()
             qtyCard.dispose()
             
         }
         qtoList.cleanData()
-        /* while (qtoList.children[0]) {
-            qtoList.removeChild(qtoList.children[0]);
-        } */
+
     }
 
 
@@ -333,10 +316,6 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             const nameWithID = name + '#' + elements[elementID].expressID
             idMap.push(elements[elementID].expressID)
             
-            /* if (!(name in qtoResultByElementName)) {
-                qtoResultByElementName[name] = {}
-                result.elements.push(name)
-            } */
             qtoResultByElementName[nameWithID] = {}
             const resultRow = qtoResultByElementName[nameWithID]
             console.log(qtoResultByElementName[nameWithID])
@@ -351,10 +330,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     
                     const set = properties[setID]
                     if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                    //console.log(setID)
-                    //console.log(set)
-                    //console.log(relatedIDs)
-                    //console.log(idMap)
+
                     const expressIDs = idMap
 
                     const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
@@ -426,38 +402,10 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     
 
     getQuantities() {
-        console.log("_______________________________________") 
-        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$") 
-            /*
-            const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
-            console.log(fragmentManager)
-            console.log(fragmentManager.groups)
-            let properties
-            for (const groupID in fragmentManager.groups) {
-                console.log(groupID)
-                const group = fragmentManager.groups[groupID]
-                console.log(group.keyFragments)
-                const fragmentMap = group.keyFragments 
-                for (const fragmentID in fragmentMap) {
-                    console.log(fragmentID)
                     
-                    const fragmentUUID = fragmentMap[fragmentID]
-                    console.log(fragmentUUID as string)
-                    const fragment = fragmentManager.list[fragmentUUID]
-                    console.log(fragment)
-                    const model = fragment.mesh.parent
-                    if (!(model instanceof FragmentsGroup && model.properties )) { continue }
-                    properties = model.properties
-                    console.log(properties)
-                }   
-            }     
-            console.log(properties) */
-            
         const properties = this.properties      
         console.log(properties)  
-
-                    
-                    
+   
         let typeList = new Array()
         typeList = []
         const walls = OBC.IfcPropertiesUtils.getAllItemsOfType(
@@ -466,7 +414,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         ) 
         console.log(walls)
                     
-                    
+     
         const slabs = OBC.IfcPropertiesUtils.getAllItemsOfType(
                         properties,
                         WEBIFC.IFCSLAB
@@ -477,25 +425,13 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         properties,
                         WEBIFC.IFCDOOR
         )
-                    
-                    
+         
         const elements = typeList
                     
         //const elements = slabs
         console.log(elements)
                     
         this._qtoResultByElementName = this.calculateQuantities(properties, walls, "walls")
-        
-                
-                        
-
-
-
-
-            
-                        
-                        
-
         
         console.log(this._qtoResultByElementName)
         this.resetWindow()
