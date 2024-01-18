@@ -13,6 +13,7 @@ Welcome to the slad.ai project repository! slad.ai is a carbon footprint calcula
 
 ## Screenshots
 
+![image](https://github.com/Curiosit/slad.ai-3d-ifc-co2-calculator/assets/17218693/633c60a4-c4f8-4638-9c87-c1f4511df15c)
 
 ![quant](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/effa8bbe-27e4-4e65-a43c-e727a16c43e2)
 
