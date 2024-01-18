@@ -7,7 +7,8 @@ import { ElementSetNameCard } from "./ElementSetNameCard"
 export class ElementCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
-    data
+    //elementData
+    elementDataset
     elementGWP
     private _qtyElement: HTMLParagraphElement
     slots: {
@@ -18,7 +19,33 @@ export class ElementCard extends OBC.SimpleUIComponent {
         const elementNameHTML = this.getInnerElement("ElementName") as HTMLParagraphElement
         elementNameHTML.textContent = value
     }
-    
+    get elementData() {
+        return this.elementDataset
+    }
+    set elementData(object) {
+        this.elementDataset = object
+        console.log(this.elementDataset)
+        const set = object
+        console.log(set)
+        
+        for (const setName in set) {
+            console.log(setName)
+            if(setName == "CF values") {
+                console.log(set[setName])
+                if (set.hasOwnProperty(setName)) {
+                    const setCard = new ElementSetNameCard(this.components)
+                
+                    setCard.setName = setName
+                    setCard.setData = set[setName]
+                    
+                    console.log(setCard)
+                    
+                    this.addChild(setCard)
+                }
+            }
+            
+        }
+    }
 
     elementCardCarbonModal
 

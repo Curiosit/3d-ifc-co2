@@ -5,7 +5,7 @@ export class QtyValueCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
 
-
+    
     set qtyName(value: string) {
         const qtyNameElement = this.getInnerElement("qtyName") as HTMLParagraphElement
         qtyNameElement.textContent = value

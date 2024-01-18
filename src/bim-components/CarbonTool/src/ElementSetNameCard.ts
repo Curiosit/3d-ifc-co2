@@ -1,5 +1,5 @@
 import * as OBC from "openbim-components"
-import { ElementQtyCard } from "./ElementQtyCard"
+import { ElementQtyCard, QtyValuePairData } from "./ElementQtyCard"
 
 export type qtyValue = [
     {[qtoName: string]: number}
@@ -8,17 +8,22 @@ export type qtyValue = [
 export class ElementSetNameCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
+
+    setDataset
     private _qtyValueListElement: HTMLParagraphElement
     slots: {
         actionButtons: OBC.SimpleUIComponent
     }
 
+    
+
     set setName(value: string) {
         //const setNameElement = this.getInnerElement("setName") as HTMLParagraphElement
         //setNameElement.textContent = value
     }
-    set qtyValueList(values: any) {
-        
+    set setData(values: any) {
+        this.setDataset = values
+        console.log(values)
         console.log(this._qtyValueListElement)
         while (this._qtyValueListElement.firstChild) {
             console.log("clearing children:")
@@ -26,20 +31,23 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
             this._qtyValueListElement.removeChild(this._qtyValueListElement.firstChild)
 
         }
-        for (const qtyEntry of values) {
-            console.log(qtyEntry)
-            for (const qtoName in qtyEntry) {
-                const number = qtyEntry[qtoName];
+        console.log("reading values")
+        console.log(values)
+        
+        for (let key in values) {
+            if (values.hasOwnProperty(key)) {
+                const value = values[key];
+                console.log(`${key}: ${value}`);
                 const qtyValueCard = new ElementQtyCard(this.components)
 
-                //console.log(`qtoName: ${qtoName}, number: ${number}`);
-                qtyValueCard.qtyName = qtoName
-                qtyValueCard.qtyValue = number
-                
-                //console.log(qtyValueCard)
+                console.log(key)
+                console.log(value)
+                qtyValueCard.qtyValuePairData = {[key]: value}
+                console.log(qtyValueCard)
                 this._qtyValueListElement.appendChild(qtyValueCard.domElement)
             }
         }
+        
         console.log(this._qtyValueListElement)
     }
 

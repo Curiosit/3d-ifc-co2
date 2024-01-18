@@ -28,7 +28,7 @@ type QtoResultByElementName = {
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
     materialForm: OBC.Modal
     GWPInput
-    currentElementCard
+    currentElementCard: ElementCard
     carbonFootprint: BuildingCarbonFootprint
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
     properties
@@ -96,8 +96,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             this.getQuantities()
             qtoWindowBtn.active = !qtoWindowBtn.active
             qtoWindow.visible = qtoWindowBtn.active
-            console.log(qtoWindowBtn.active)
-            console.log(qtoWindow.visible)
+            //console.log(qtoWindowBtn.active)
+            //console.log(qtoWindow.visible)
         })
 
         carbonWindowBtn.onClick.add(() => {
@@ -127,9 +127,12 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         this.materialForm.onAccept.add(() => {
             //elementCard.updateGWP(GWPInput.value)
-            this.currentElementCard.data["CF values"]["Element GWP / unit"] = this.GWPInput.value 
-            
+            console.log("Modifying")
+            console.log(this.currentElementCard.elementData)
+            //this.currentElementCard.elementData["CF values"]["Element GWP / unit"] = this.GWPInput.value as Number
+            console.log(this.currentElementCard.elementData)
             GWPInput.value = ""
+
             this.materialForm.visible = false
 
         })
@@ -156,7 +159,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             qtoList.addChild(elementCard)
             const set = this._qtoResultByElementName[elementName]
             this._qtoList = []
-            for (const setName in set) {
+            console.log(set)
+            elementCard.elementData = set
+            /* for (const setName in set) {
                 if(setName == "CF values") {
                     if (set.hasOwnProperty(setName)) {
                         const qtyCard = new ElementSetNameCard(this.components)
@@ -184,18 +189,15 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         console.log(qtyCard)
                         elementCard.addChild(qtyCard)
                     }
-                }
+                } */
             console.log(this.materialForm)
             elementCard.onCardClick.add(() => {
                 console.log(elementCard)
                 this.currentElementCard = elementCard
-                
-                
-                this.GWPInput.value = this.currentElementCard.data["CF values"]["Element GWP / unit"]
-                })    
-            }
-            
-        } 
+
+                this.GWPInput.value = this.currentElementCard.elementData["CF values"]["Element GWP / unit"]
+            })    
+        }
     }
     resetWindow() {
         
