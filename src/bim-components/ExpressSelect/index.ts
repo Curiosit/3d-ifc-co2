@@ -93,6 +93,13 @@ export class ExpressSelect extends OBC.Component<void> implements OBC.UI, OBC.Di
     }
 
     async highlightByExpressID(expressID) {
+        const model = this.model as FragmentsGroup
+        const fragmentMap = model.getFragmentMap([expressID])
+        console.log(fragmentMap)
+        //const fragmentIdMap = ((this.model as FragmentsGroup).getFragmentMap([expressID]))
+        //console.log(fragmentIdMap)
+        //this.highlighter.highlightByID('select', fragmentIdMap);
+
         console.log(this.model)
         const fragments = this.model.keyFragments
         const properties = this.model.properties
