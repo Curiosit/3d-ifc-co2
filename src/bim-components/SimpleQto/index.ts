@@ -172,12 +172,12 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                 WEBIFC.IFCRELDEFINESBYPROPERTIES,
                 (setID, relatedIDs) => {
                     const set = properties[setID]
-                    console.log(setID)
-                    console.log(set)
+                    /* console.log(setID)
+                    console.log(set) */
                     const expressIDs = fragmentIdMap[fragmentID]
-                    console.log(fragmentIdMap)
+                    /* console.log(fragmentIdMap)
                     console.log(expressIDs)
-                    console.log(relatedIDs)
+                    console.log(relatedIDs) */
                     
                     const workingIDs = relatedIDs.filter(id => expressIDs.has(id.toString()))
                    
@@ -187,14 +187,14 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                     console.log(workingIDs.length)
                     console.log(set.type) */
                     if ( !setName || workingIDs.length === 0  || set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
-                    console.log("?@?@?@?@@?@?@?@?@@?@?@@@?")
-                    console.log("FOUND!")
-                    console.log(workingIDs)
+                    //console.log("?@?@?@?@@?@?@?@?@@?@?@@@?")
+                    //console.log("FOUND!")
+                    //console.log(workingIDs)
                     if (!(setName in this._qtoResult)) {
                         this._qtoResult[setName] = {}
                     }
-                    console.log("SetID")
-                    console.log(setID)
+                    //console.log("SetID")
+                    //console.log(setID)
                     
                     OBC.IfcPropertiesUtils.getQsetQuantities(
                         properties,
@@ -205,7 +205,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
                             const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
                            
                             if(!qtoName || !value) {return}
-                            console.log(qtoName)
+                            //console.log(qtoName)
                             if (!(qtoName in this._qtoResult[setName])) {
                                 this._qtoResult[setName][qtoName] = 0
                             

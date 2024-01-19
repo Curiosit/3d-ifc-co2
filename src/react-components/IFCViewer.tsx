@@ -91,6 +91,10 @@ export function IFCViewer(props: Props) {
         
         highlighter.events.select.onHighlight.add((e) => {
           console.log(e)
+          
+
+          
+          
         })
 
         highlighter.events.select.onClear.add(async (e) => {
@@ -162,6 +166,7 @@ export function IFCViewer(props: Props) {
             alert(error)
           }
           todoCreator.update()
+          expressSelect.addModel(model)
         }
     
         ifcLoader.onIfcLoaded.add(async (model) => {

@@ -6,11 +6,13 @@ import { addArrayList, parseFragmentIdMap, showModal, stringifyFragmentIdMap } f
 import  {FragmentsGroup} from "bim-fragment"
 
 export class ExpressSelect extends OBC.Component<void> implements OBC.UI, OBC.Disposable {
+    static uuid = "47ba1e1f-6e6d-4924-abb0-7dcd3ec4f962"
     private _components: OBC.Components
     enabled: boolean = true
     expressModal: OBC.Modal
     expressIDInput: OBC.TextInput
     highlighter: OBC.FragmentHighlighter
+    model
     uiElement = new OBC.UIElement<
     {
         activationBtn: OBC.Button
@@ -56,17 +58,75 @@ export class ExpressSelect extends OBC.Component<void> implements OBC.UI, OBC.Di
             this.highlightByExpressID(this.expressIDInput.value)
         })
 
+        this.highlighter.events.select.onHighlight.add((e) => {
+            console.log(e)
+            
+  
+            console.log("Express ID")
+            
+              
+            for(const id in e) {
+              console.log(id)
+              console.log(e[id])
+              var elementsArray = Array.from(e[id]);
+              var element = elementsArray[0];
+              console.log(element) //EXPRESS ID
+              /* for(const i in e[id]) {
+                console.log(e[id][i])
+              } */
+            }
+            
+        })
+        this.highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+            
+            console.log(fragmentIdMap)
+            
+        })
+
 
         this.uiElement.set({activationBtn})
     }
 
-    highlightByExpressID(expressID) {
-        //OBC.IfcPropertiesUtils.getEntityName(properties, expressID)
-        //this._components.
-       // this.highlighter.highlightByID
-       // this.highlighter.highlight()
+    
+    addModel(model) {
+        this.model = model
     }
 
+    async highlightByExpressID(expressID) {
+        console.log(this.model)
+        const fragments = this.model.keyFragments
+        const properties = this.model.properties
+        const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
+
+        console.log(fragmentManager.list)
+        for (const fragmentID in fragments) {
+
+            const fragment = fragmentManager.list[fragments[fragmentID]]
+
+            const model = fragment.mesh.parent
+            if (!(model instanceof FragmentsGroup && model.properties )) { continue }
+            if(fragment.items.includes(expressID)) {
+                console.log("FOUND!")
+                console.log(fragment.id)
+                const fragmentIdMap = this.createFragmentIdMap(fragment, expressID) as OBC.FragmentIdMap
+                console.log(fragmentIdMap)
+                this.highlighter.highlightByID("select", fragmentIdMap)
+            }
+
+        }
+
+    }
+    createFragmentIdMap(fragment, expressID) {
+        const id = fragment.id
+        const mySet = new Set([expressID]);
+
+
+        const myObject = {
+        [id]: mySet
+        };
+        return myObject
+        
+    }
 
     get(): void {
 
