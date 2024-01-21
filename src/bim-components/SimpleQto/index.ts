@@ -163,7 +163,7 @@ export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.D
             if (!(model instanceof FragmentsGroup && model.properties )) { continue }
             const properties = model.properties
             
-            console.log(properties)
+            //console.log(properties)
             
            
             

@@ -71,11 +71,15 @@ export class Todo extends OBC.Component<null>  {
         //camera.controls
 
         const position = new THREE.Vector3()
+        console.log(position)
         camera.controls.getPosition(position)
+        console.log(position)
         const target = new THREE.Vector3()
+        console.log(target)
         camera.controls.getTarget(target)
+        console.log(target)
         this.camera = camera
-        
+        console.log(camera)
         
         
         if(!todoCamera) {
@@ -84,36 +88,17 @@ export class Todo extends OBC.Component<null>  {
         else {
             this.todoCamera = todoCamera
         }
-        
-
-
-        
-
-
+        console.log(todoCamera)
         this.description = description
         this.date = date
-        
-        
         this.priority = priority
-        
-        
 
         this.TodoCard = new TodoCard(components)
         this.TodoCard.priority = this.priority
         this.TodoCard.status = this.status
-        console.log(this.fragmentMap)
-        
-        console.log (this.TodoCard)
         this.TodoCard.description = this.description
         this.TodoCard.date = this.date
-        
-        
-        
-        /* this.TodoCard.onDelete.add(() => {
-            this.removeTodo(todo, todoCard)
-            
-        })  */
-        
+
     }
     editTodo(editForm) {
         console.log(editForm)
@@ -141,9 +126,7 @@ export class Todo extends OBC.Component<null>  {
         editForm.slots.content.children[0].value = this.description
         editForm.slots.content.children[1].value = this.priority
         editForm.slots.content.children[2].value = this.status
-        
-        
-        
+
     }
 
     async setupOnClick(editForm) {
@@ -154,9 +137,7 @@ export class Todo extends OBC.Component<null>  {
             this.fragmentMap = this.highlighter.selection.select
         }
         this.TodoCard.count = this.fragmentMap[Object.keys(this.fragmentMap)[0]].size
-
         this.TodoCard.onEdit.add(async () => {
-
             this.setupEditForm(editForm)  
         })
         this.TodoCard.onCardClick.add(async () => {
@@ -173,7 +154,6 @@ export class Todo extends OBC.Component<null>  {
             )
             
             const fragmentMapLength = Object.keys(this.fragmentMap).length
-           
             if(fragmentMapLength === 0) {return}
             this.highlighter.highlightByID("select", this.fragmentMap)
 

@@ -276,6 +276,7 @@ export function IFCViewer(props: Props) {
         viewer.ui.addToolbar(toolbar)
         
       }
+      
     viewer = new OBC.Components()
     React.useEffect(() => {
         createViewer()
