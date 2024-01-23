@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Status } from "../../../types/types"
 import { parseFragmentIdMap, showModal } from "../../../utils/utils"
 import { updateDocument } from "../../../firebase"
+import TWEEN from '@tweenjs/tween.js'
 
 export type ToDoPriority = "Low" | "Medium" | "High"
 
@@ -98,7 +99,7 @@ export class Todo extends OBC.Component<null>  {
         this.TodoCard.status = this.status
         this.TodoCard.description = this.description
         this.TodoCard.date = this.date
-
+        
     }
     editTodo(editForm) {
         console.log(editForm)
@@ -140,10 +141,13 @@ export class Todo extends OBC.Component<null>  {
         this.TodoCard.onEdit.add(async () => {
             this.setupEditForm(editForm)  
         })
+        
         this.TodoCard.onCardClick.add(async () => {
             console.log("clicked!!!")
             console.log(this.todoCamera)
-            this.camera.controls.setLookAt(
+           
+            
+            /* this.camera.controls.setLookAt(
                 this.todoCamera.position.x,
                 this.todoCamera.position.y,
                 this.todoCamera.position.z,
@@ -151,7 +155,43 @@ export class Todo extends OBC.Component<null>  {
                 this.todoCamera.target.y,
                 this.todoCamera.target.z,
                 true
-            )
+            ) */
+            const position = new THREE.Vector3()
+            this.camera.controls.getPosition(position)
+            const startPosition = {
+                x: position.x,
+                y: position.y,
+                z: position.z,
+            };
+    
+            const targetPosition = {
+                x: this.todoCamera.position.x,
+                y: this.todoCamera.position.y,
+                z: this.todoCamera.position.z,
+            };
+    
+            // Create a new TWEEN animation
+            new TWEEN.Tween(startPosition)
+                .to(targetPosition, 1000) // Set the duration of the tween (in milliseconds)
+                .easing(TWEEN.Easing.Quadratic.Out) // Set the easing function (you can choose a different one)
+                .onUpdate(() => {
+                    
+                    this.camera.controls.setLookAt(
+                        startPosition.x, 
+                        startPosition.y, 
+                        startPosition.z, 
+                        this.todoCamera.target.x,
+                        this.todoCamera.target.y,
+                        this.todoCamera.target.z,);
+                })
+                .onComplete(() => {
+                    
+                    console.log("Tween complete!");
+                })
+                .start();
+            
+
+            
             
             const fragmentMapLength = Object.keys(this.fragmentMap).length
             if(fragmentMapLength === 0) {return}
@@ -159,6 +199,14 @@ export class Todo extends OBC.Component<null>  {
 
         })
     }
+    
+    
+
+    
+
+    
+
+
     async setupSelection() {
         this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
         this.fragmentMap = this.highlighter.selection.select

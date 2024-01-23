@@ -95,44 +95,26 @@ export class ExpressSelect extends OBC.Component<void> implements OBC.UI, OBC.Di
     async highlightByExpressID(expressID) {
         const model = this.model as FragmentsGroup
         const fragmentMap = model.getFragmentMap([expressID])
-        console.log(fragmentMap)
-        //const fragmentIdMap = ((this.model as FragmentsGroup).getFragmentMap([expressID]))
-        //console.log(fragmentIdMap)
-        //this.highlighter.highlightByID('select', fragmentIdMap);
-
-        console.log(this.model)
         const fragments = this.model.keyFragments
         const properties = this.model.properties
         const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
-
-        console.log(fragmentManager.list)
         for (const fragmentID in fragments) {
-
             const fragment = fragmentManager.list[fragments[fragmentID]]
-
             const model = fragment.mesh.parent
             if (!(model instanceof FragmentsGroup && model.properties )) { continue }
             if(fragment.items.includes(expressID)) {
-                console.log("FOUND!")
-                console.log(fragment.id)
                 const fragmentIdMap = this.createFragmentIdMap(fragment, expressID) as OBC.FragmentIdMap
-                console.log(fragmentIdMap)
                 this.highlighter.highlightByID("select", fragmentIdMap)
             }
-
         }
-
     }
     createFragmentIdMap(fragment, expressID) {
         const id = fragment.id
         const mySet = new Set([expressID]);
-
-
         const myObject = {
         [id]: mySet
         };
         return myObject
-        
     }
 
     get(): void {
@@ -142,4 +124,6 @@ export class ExpressSelect extends OBC.Component<void> implements OBC.UI, OBC.Di
     async dispose() {
 
     }
+
+
 }

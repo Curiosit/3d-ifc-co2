@@ -7,6 +7,9 @@ import { Project } from "../classes/Project"
 import { SimpleQto } from "../bim-components/SimpleQto"
 import { CarbonTool } from "../bim-components/CarbonTool"
 import { ExpressSelect } from "../bim-components/ExpressSelect"
+import { Color } from "three"
+import { GUI } from 'dat.gui'
+import TWEEN from '@tweenjs/tween.js'
 
 interface Props {
   project: Project
@@ -53,7 +56,18 @@ export function IFCViewer(props: Props) {
     
         const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
         const rendererComponent = new OBC.PostproductionRenderer(viewer, viewerContainer)
+        
+        //rendererComponent.postproduction.enabled = true
+        //rendererComponent.postproduction.customEffects.lineColor = 0x000000
+
+        //rendererComponent.postproduction.customEffects.lineColor
+
+
+
+
         viewer.renderer = rendererComponent
+        
+       
     
         const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
         viewer.camera = cameraComponent
@@ -63,10 +77,68 @@ export function IFCViewer(props: Props) {
     
         viewer.init()
         cameraComponent.updateAspect()
-        rendererComponent.postproduction.enabled = true
+        //rendererComponent.postproduction.enabled = true
+        //rendererComponent.postproduction.customEffects.outlineEnabled = true
+
+        function animate() {
+          requestAnimationFrame(animate);
+          TWEEN.update();
+      
+        }
+        animate()
+
+        rendererComponent.postproduction.enabled = true;
+        const postproduction =  rendererComponent.postproduction;
+        //postproduction.customEffects.excludedMeshes.push(grid.get());
+        /* const gui = new GUI()
+        
+        gui.add(postproduction, 'enabled');
+        const guiGamma = gui.addFolder('Gamma');
+        guiGamma.add(postproduction.settings, 'gamma').name("Gamma correction").onChange((value) => {
+        postproduction.setPasses({gamma: value});
+        });
+        const guiCustomEffects = gui.addFolder('Custom effects');
+        guiCustomEffects.add(postproduction.settings, 'custom').name("Custom effects").onChange((value) => {
+        postproduction.setPasses({custom: value});
+        });
+        guiCustomEffects.add(postproduction.customEffects, 'opacity').name('Line opacity').min(0).max(1).step(0.1);
+        guiCustomEffects.add(postproduction.customEffects, 'tolerance').name('Line tolerance').min(0).max(6).step(1);
+        guiCustomEffects.addColor(postproduction.customEffects, 'lineColor').name('Line color');
+        //guiCustomEffects.add(postproduction.customEffects, 'glossEnabled').name('Gloss enabled').min(0).max(2).step(0.1);
+        guiCustomEffects.add(postproduction.customEffects, 'glossExponent').name('Gloss exponent').min(0).max(5).step(0.1);
+        guiCustomEffects.add(postproduction.customEffects, 'maxGloss').name('Max gloss').min(-2).max(2).step(0.05);
+        guiCustomEffects.add(postproduction.customEffects, 'minGloss').name('Min gloss').min(-2).max(2).step(0.05);
+        const guiAO = gui.addFolder('SAO');
+        const configuration = postproduction.n8ao.configuration;
+        guiAO.add(postproduction.settings, 'ao').name("Ambient occlusion").onChange((value) => {
+        postproduction.setPasses({ao: value});
+        });
+        guiAO.add(configuration, 'aoSamples').step(1).min(1).max(16);
+        guiAO.add(configuration, 'denoiseSamples').step(1).min(0).max(16);
+        guiAO.add(configuration, 'denoiseRadius').step(1).min(0).max(100);
+        guiAO.add(configuration, 'aoRadius').step(1).min(0).max(16);
+        guiAO.add(configuration, 'distanceFalloff').step(1).min(0).max(16);
+        guiAO.add(configuration, 'intensity').step(1).min(0).max(16);
+        guiAO.add(configuration, 'halfRes');
+        guiAO.add(configuration, 'screenSpaceRadius');
+        guiAO.addColor(configuration, 'color'); */
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
     
         const fragmentManager = new OBC.FragmentManager(viewer)
-        function exportFragments(model: FragmentsGroup) {
+        function  exportFragments(model: FragmentsGroup) {
           const fragmentBinary = fragmentManager.export(model)
           const blob = new Blob([fragmentBinary])
           const url = URL.createObjectURL(blob)
@@ -79,9 +151,13 @@ export function IFCViewer(props: Props) {
     
         const ifcLoader = new OBC.FragmentIfcLoader(viewer)
         ifcLoader.settings.wasm = {
+          path: "../src/web-ifc/",
+          absolute: false
+        }
+        /* ifcLoader.settings.wasm = {
           path: "https://unpkg.com/web-ifc@0.0.44/",
           absolute: true
-        }
+        } */
     
         const highlighter = new OBC.FragmentHighlighter(viewer)
         highlighter.setup()
@@ -250,6 +326,8 @@ export function IFCViewer(props: Props) {
           input.click()
         })
     
+
+
         const todoCreator = new TodoCreator(viewer)
         await todoCreator.setup(props.project)
     
@@ -260,6 +338,29 @@ export function IFCViewer(props: Props) {
 
         const expressSelect = new ExpressSelect(viewer, highlighter)
         
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //carbonTool.getQuantities()
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
