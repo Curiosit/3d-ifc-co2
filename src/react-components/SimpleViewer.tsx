@@ -74,12 +74,28 @@ export function IFCViewer(props: Props) {
         const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
 
         const renderer = rendererComponent.get()
-        console.log(renderer)
 
+        console.log(window.devicePixelRatio)
         renderer.setPixelRatio( window.devicePixelRatio );
+
         
+        function resizeRendererToDisplaySize(renderer) {
+          const canvas = renderer.domElement;
+          const pixelRatio = window.devicePixelRatio;
+          const width  = canvas.clientWidth  * pixelRatio | 0;
+          const height = canvas.clientHeight * pixelRatio | 0;
+          const needResize = canvas.width !== width || canvas.height !== height;
+          if (needResize) {
+            renderer.setSize(width, height, false);
+          }
+          return needResize;
+        }
+
         
         viewer.renderer = rendererComponent as unknown as OBC.SimpleRenderer
+        
+
+				
         
         const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
         viewer.camera = cameraComponent
@@ -87,9 +103,56 @@ export function IFCViewer(props: Props) {
         const raycasterComponent = new OBC.SimpleRaycaster(viewer)
         viewer.raycaster = raycasterComponent
         
-        const grid = new OBC.SimpleGrid(viewer);
-        renderer.shadowMap.enabled = true;
 
+        renderer.shadowMap.enabled = true;
+        const boxMaterial = new THREE.MeshStandardMaterial({ color: '#6528D7' });
+        const boxGeometry = new THREE.BoxGeometry(5,5,5)
+        const cube = new THREE.Mesh(boxGeometry, boxMaterial);
+
+
+        function addSpheresToGeometry(object, color) {
+          var geometry = object.geometry
+          var spheres: any[] = []
+          if (geometry && geometry.attributes && geometry.attributes.position) {
+
+            var positions = geometry.attributes.position.array;
+            var sphereMaterial = new THREE.MeshBasicMaterial({
+              color: color,
+            });
+            
+            const positionss = object.geometry.attributes.position;
+
+
+            const worldPositions: THREE.Vector3[] = [];
+
+            
+            for (var i = 0; i < positions.length; i += 3) {
+              var x = positions[i];
+              var y = positions[i + 1];
+              var z = positions[i + 2];
+              console.log("Vertice ", x, y, z)
+
+              const dotGeometry = new THREE.BufferGeometry();
+              dotGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([x,y,z]), 3));
+              const dotMaterial = new THREE.PointsMaterial({ size: 0.3, color: 0xff0000 });
+              const dot = new THREE.Points(dotGeometry, dotMaterial);
+              scene.add(dot);
+
+            }
+          }
+          return spheres
+        }
+
+        function process (mesh) {
+          const geometry = mesh.geometry
+          console.log(geometry)
+          addSpheresToGeometry(mesh, 0xff0000)
+          const edges = new THREE.EdgesGeometry(geometry);
+                
+          const line2 = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color : 0x333333 }));
+          scene.add(line2)
+        }
+       
 
         viewer.init()
 
@@ -98,9 +161,12 @@ export function IFCViewer(props: Props) {
         function animate() {
           requestAnimationFrame(animate);
           TWEEN.update();
+          
+          
         }
-        animate() 
 
+
+        cameraComponent.updateAspect()
 
 
     
@@ -138,46 +204,26 @@ export function IFCViewer(props: Props) {
 
         highlighter.events.select.onClear.add(async (e) => {
           console.log(e)
+          console.log("STOPPING HIGHLIGHTING")
           await propertiesProcessor.cleanPropertiesList()
           const propsListElement = propertiesProcessor.uiElement.get("propsList")
           propsListElement.removeChild()
 
+          for (const prop in propsListElement) {
+
+          }
           
         })
         
 
-        const classifier = new OBC.FragmentClassifier(viewer)
-        const classificationWindow = new OBC.FloatingWindow(viewer)
-        classificationWindow.visible = false
-        viewer.ui.add(classificationWindow)
-        classificationWindow.title = "Model Groups"
     
-        const classificationsBtn = new OBC.Button(viewer)
-        classificationsBtn.materialIcon = "account_tree"
-    
-        classificationsBtn.onClick.add(() => {
-          classificationWindow.visible = !classificationWindow.visible
-          classificationsBtn.active = classificationWindow.visible
-        })
-    
-        async function createModelTree() {
-          const fragmentTree = new OBC.FragmentTree(viewer)
-          await fragmentTree.init()
-          await fragmentTree.update(["storeys", "entities"])
-          fragmentTree.onHovered.add((fragmentMap) => {
-            highlighter.highlightByID("hover", fragmentMap)
-            
-          })
-          fragmentTree.onSelected.add((fragmentMap) => {
-            
-            highlighter.highlightByID("select", fragmentMap)
-          })
-          const tree = fragmentTree.get().uiElement.get("tree")
-          return tree
-        }
-    
+        
+ 
+ 
 
-
+     
+       
+      
     
         async function onModelLoaded(model: FragmentsGroup) {
           highlighter.update()
@@ -234,14 +280,32 @@ export function IFCViewer(props: Props) {
 
               
           }
-        }
 
+
+
+
+
+
+
+
+
+
+          console.log(meshes)
+
+          const meshes2: any[] = [];
+          for (const mesh of meshes) {
+            
+            meshes2.push(mesh);
+          }
+          console.log(meshes2)
+
+
+
+        }
     
         ifcLoader.onIfcLoaded.add(async (model) => {
           exportFragments(model)
           exportJSON(model)
-          properties = model.properties
-          carbonTool.properties = properties
           console.log(properties)
           onModelLoaded(model)
         })
@@ -249,7 +313,7 @@ export function IFCViewer(props: Props) {
         fragmentManager.onFragmentsLoaded.add((model) => {
           model.properties = {} 
           importJSON(model)
-          
+          onModelLoaded(model)
         })
 
         function exportJSON (model: FragmentsGroup) {
@@ -276,9 +340,6 @@ export function IFCViewer(props: Props) {
               model.properties = JSON.parse(json)
               const loadedModel =  { ...model, properties:JSON.parse(json)};
 
-              properties = loadedModel.properties
-              carbonTool.properties = properties
-              console.log(properties)
               onModelLoaded(loadedModel) 
               return;
               
@@ -312,7 +373,10 @@ export function IFCViewer(props: Props) {
             
             scene.add(group);
             highlighter.update();
-
+            function isOdd(number) {
+              return number % 2 !== 0;
+            }
+            
           })
           input.addEventListener('change', () => {
             const filesList = input.files
@@ -321,25 +385,12 @@ export function IFCViewer(props: Props) {
           })
           input.click()
         })
-    
 
-
-        const todoCreator = new TodoCreator(viewer)
-        await todoCreator.setup(props.project)
-        const simpleQto = new SimpleQto(viewer)
-        const carbonTool = new CarbonTool(viewer)
-        const expressSelect = new ExpressSelect(viewer, highlighter)
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),
           importFragmentBtn,
-          classificationsBtn,
-          propertiesProcessor.uiElement.get("main"),
-          todoCreator.uiElement.get("activationButton"),
-          fragmentManager.uiElement.get("main"),
-          simpleQto.uiElement.get("activationBtn"),
-          carbonTool.uiElement.get("activationBtn"),
-          expressSelect.uiElement.get("activationBtn"),
+
         )
         viewer.ui.addToolbar(toolbar)
         

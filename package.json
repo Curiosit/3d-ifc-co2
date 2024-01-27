@@ -27,7 +27,9 @@
     "react-dom": "18.2.0",
     "react-router-dom": "6.18.0",
     "seedrandom": "^3.0.5",
-    "three": "0.152.2",
+    "three": "0.160.1",
+    "three-addons": "^1.2.0",
+    "three-shader-fxaa": "^5.1.1",
     "uuid": "^9.0.1",
     "web-ifc": "0.0.44"
   }
