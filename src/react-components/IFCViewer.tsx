@@ -60,6 +60,7 @@ export function IFCViewer(props: Props) {
     let viewer: OBC.Components
     let scene
 
+    const meshes: any[] = [];
     const createViewer = async () => {
         viewer = new OBC.Components()
         setViewer(viewer)
@@ -190,7 +191,7 @@ export function IFCViewer(props: Props) {
             alert(error)
           }
 
-          const meshes: any[] = [];
+          
           for (const fragment of model.items) {
 
             meshes.push(fragment.mesh);
@@ -234,6 +235,11 @@ export function IFCViewer(props: Props) {
 
               
           }
+          console.log(meshes)
+          
+          /* meshObjects = meshes.filter(obj => obj instanceof THREE.Mesh || obj instanceof THREE.InstancedMesh);
+
+          console.log(meshObjects) */
         }
 
     
@@ -322,6 +328,51 @@ export function IFCViewer(props: Props) {
           input.click()
         })
     
+
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+
+        var sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+        var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
+        var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        scene.add(sphere);
+
+        
+        viewerContainer.addEventListener('mousemove', onMouseMove, false);
+
+        function onMouseMove(event) {
+          
+            
+            mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
+            mouse.y = -(event.offsetY / viewerContainer.clientHeight) * 2 + 1;
+
+            
+            raycaster.setFromCamera(mouse, cameraComponent.activeCamera);
+            
+           
+            var intersects = raycaster.intersectObjects(meshes);
+   
+
+            if (intersects.length > 0) {
+                
+                var intersectionPoint = intersects[0].point;
+
+                console.log(intersectionPoint)
+                sphere.position.copy(intersectionPoint.clone());
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         const todoCreator = new TodoCreator(viewer)
