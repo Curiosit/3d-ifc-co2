@@ -25,7 +25,7 @@ import { Line2 } from "three/examples/jsm/lines/Line2"
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry';
-
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 interface Props {
   project: Project
 }
@@ -123,12 +123,12 @@ export function IFCViewer(props: Props) {
           absolute: false
         }
     
-        const highlighter = new OBC.FragmentHighlighter(viewer)
-        highlighter.setup()
+        //const highlighter = new OBC.FragmentHighlighter(viewer)
+        //highlighter.setup()
     
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
         
-        
+        /* 
         highlighter.events.select.onHighlight.add((e) => {
           console.log(e)
           console.log("HIGHLIGHTING")
@@ -144,7 +144,7 @@ export function IFCViewer(props: Props) {
           propsListElement.removeChild()
 
           
-        })
+        }) */
         
 
         const classifier = new OBC.FragmentClassifier(viewer)
@@ -166,12 +166,12 @@ export function IFCViewer(props: Props) {
           await fragmentTree.init()
           await fragmentTree.update(["storeys", "entities"])
           fragmentTree.onHovered.add((fragmentMap) => {
-            highlighter.highlightByID("hover", fragmentMap)
+            //highlighter.highlightByID("hover", fragmentMap)
             
           })
           fragmentTree.onSelected.add((fragmentMap) => {
             
-            highlighter.highlightByID("select", fragmentMap)
+            //highlighter.highlightByID("select", fragmentMap)
           })
           const tree = fragmentTree.get().uiElement.get("tree")
           return tree
@@ -181,7 +181,7 @@ export function IFCViewer(props: Props) {
 
     
         async function onModelLoaded(model: FragmentsGroup) {
-          highlighter.update()
+          //highlighter.update()
 
           try {
             
@@ -221,7 +221,7 @@ export function IFCViewer(props: Props) {
                   mesh.setRotationFromQuaternion(rotation);
                   mesh.scale.copy(scale);
 
-                  const edgesGeometry = new THREE.EdgesGeometry(geometry);
+                  const edgesGeometry = new THREE.EdgesGeometry(geometry, 18);
 
                   const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
                   const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
@@ -247,7 +247,7 @@ export function IFCViewer(props: Props) {
           exportFragments(model)
           exportJSON(model)
           properties = model.properties
-          carbonTool.properties = properties
+          //carbonTool.properties = properties
           console.log(properties)
           onModelLoaded(model)
         })
@@ -283,7 +283,7 @@ export function IFCViewer(props: Props) {
               const loadedModel =  { ...model, properties:JSON.parse(json)};
 
               properties = loadedModel.properties
-              carbonTool.properties = properties
+              //carbonTool.properties = properties
               console.log(properties)
               onModelLoaded(loadedModel) 
               return;
@@ -317,7 +317,7 @@ export function IFCViewer(props: Props) {
 
             
             scene.add(group);
-            highlighter.update();
+            //highlighter.update();
 
           })
           input.addEventListener('change', () => {
@@ -335,10 +335,69 @@ export function IFCViewer(props: Props) {
         var sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
         var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
         var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        scene.add(sphere);
+        //scene.add(sphere);
+
+        let pegman
+        const loader = new GLTFLoader()
+        loader.load(
+          // resource URL
+          '.././assets/scene.gltf',
+          // called when the resource is loaded
+          function ( gltf ) {
+        
+            scene.add( gltf.scene );
+        
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+            pegman = gltf.scene
+            const scale = 0.025
+            pegman.scale.set(scale, scale, scale);
+          },
+          // called while loading is progressing
+          function ( xhr ) {
+        
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        
+          },
+          // called when loading has errors
+          function ( error ) {
+        
+            console.log( 'An error happened' );
+        
+          }
+        );
 
         
         viewerContainer.addEventListener('mousemove', onMouseMove, false);
+        //viewerContainer.addEventListener('click', onMouseClick, false);
+
+
+
+            var mDragging = false;
+            var mDown = false;
+
+            window.addEventListener('mousedown', function () {
+                mDown = true;
+            });
+            window.addEventListener('mousemove', function () {
+                if(mDown) {
+                    mDragging = true;
+                }
+            });
+            window.addEventListener('mouseup', function(event) {
+                // If not dragging, then it's a click!
+                if(mDragging === false) {
+                    // Perform all your click calculations here
+                    onMouseClick(event)
+                }
+
+                // Reset variables
+                mDown = false;
+                mDragging = false;
+            });
 
         function onMouseMove(event) {
           
@@ -357,9 +416,149 @@ export function IFCViewer(props: Props) {
                 
                 var intersectionPoint = intersects[0].point;
 
-                console.log(intersectionPoint)
-                sphere.position.copy(intersectionPoint.clone());
+                //console.log(intersectionPoint)
+                const pegmanLocation = {
+                  x: intersectionPoint.x,
+                  y: intersectionPoint.y,
+                  z: intersectionPoint.z,
+                }
+                pegman.position.copy(pegmanLocation);
             }
+        }
+
+        function onMouseClick(event) {
+          mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
+          mouse.y = -(event.offsetY / viewerContainer.clientHeight) * 2 + 1;
+
+            
+            raycaster.setFromCamera(mouse, cameraComponent.activeCamera);
+            
+           
+            var intersects = raycaster.intersectObjects(meshes);
+   
+
+            if (intersects.length > 0) {
+                
+                var intersectionPoint = intersects[0].point;
+
+                console.log("clicked point ", intersectionPoint)
+                const newCameraLocation = {
+                  x: intersectionPoint.x,
+                  y: intersectionPoint.y+1.7,
+                  z: intersectionPoint.z,
+                }
+                console.log("new camera point ", newCameraLocation)
+                tweenCamera(newCameraLocation as THREE.Vector3)
+            }
+        }
+        setNavigationMode('FirstPerson')
+        function setNavigationMode(navMode) {
+          cameraComponent.setNavigationMode(navMode);
+        }
+
+        function tweenCamera(finalPosition: THREE.Vector3) {
+          
+          const position = new THREE.Vector3()
+            cameraComponent.controls.getPosition(position)
+            const startPosition = {
+                x: position.x,
+                y: position.y,
+                z: position.z,
+            };
+
+            const finalLocation = {
+              x: finalPosition.x,
+                y: finalPosition.y,
+                z: finalPosition.z,
+            }
+            console.log("Camera position: ", position.x,
+            position.y,
+          position.z)
+          const target = new THREE.Vector3()
+          cameraComponent.controls.getTarget(target)
+          const startTarget = {
+                x: target.x,
+                y: target.y,
+                z: target.z,
+            };
+            console.log("start target ", startTarget)
+            const deltaPosition = {
+              x: finalPosition.x - position.x,
+              y: finalPosition.y - position.y,
+              z: finalPosition.z - position.z,
+            }
+            console.log("delta positiont ", deltaPosition)
+            const finalTarget = {
+              x: startTarget.x + deltaPosition.x,
+              y: startTarget.y + deltaPosition.y,
+              z: startTarget.z + deltaPosition.z,
+            }
+            console.log("final target ", finalTarget)
+            /* const targetPosition = {
+                x: this.todoCamera.position.x,
+                y: this.todoCamera.position.y,
+                z: this.todoCamera.position.z,
+            }; */
+    
+            // Create a new TWEEN animation
+            const tweenValues = {
+              startX: startPosition.x,
+              startY: startPosition.y,
+              startZ: startPosition.z,
+              targetX: startTarget.x,
+              targetY: startTarget.y,
+              targetZ: startTarget.z
+            };
+            const tweenFinal = {
+              finalX: finalLocation.x,
+              finalY: finalLocation.y,
+              finalZ: finalLocation.z,
+              targetX: finalTarget.x,
+              targetY: finalTarget.y,
+              targetZ: finalTarget.z
+            };
+
+            const positionTween = new TWEEN.Tween({ x: startPosition.x, y: startPosition.y, z: startPosition.z });
+            const targetTween = new TWEEN.Tween({ x: startTarget.x, y: startTarget.y, z: startTarget.z });
+
+            positionTween.to({ x: finalLocation.x, y: finalLocation.y, z: finalLocation.z }, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate((obj) => {
+              cameraComponent.controls.setPosition(obj.x, obj.y, obj.z);
+            })
+            .start();
+
+            targetTween.to({ x: finalTarget.x, y: finalTarget.y, z: finalTarget.z }, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate((obj) => {
+              cameraComponent.controls.setTarget(obj.x, obj.y, obj.z);
+            })
+            .start();
+                      
+            /* new TWEEN.Tween(tweenValues)
+                .to(tweenFinal, 1000) // Set the duration of the tween (in milliseconds)
+                .easing(TWEEN.Easing.Quadratic.Out) // Set the easing function (you can choose a different one)
+                .onUpdate(() => {
+                  console.log("Tweening: ",  {
+                  startx: tweenValues.startX, 
+                  starty: tweenValues.startY, 
+                  startz: tweenValues.startZ, 
+                  targetx: tweenValues.targetX,
+                  targety: tweenValues.targetY,
+                  targetz: tweenValues.targetZ})  
+                  cameraComponent.controls.setLookAt(
+                    tweenValues.startX, 
+                    tweenValues.startY, 
+                    tweenValues.startZ, 
+                    tweenValues.targetX,
+                    tweenValues.targetY,
+                    tweenValues.targetZ,);
+                })
+                .onComplete(() => {
+                    
+                    console.log("Tween complete!");
+                })
+                .start(); */
         }
 
 
@@ -377,9 +576,9 @@ export function IFCViewer(props: Props) {
 
         const todoCreator = new TodoCreator(viewer)
         await todoCreator.setup(props.project)
-        const simpleQto = new SimpleQto(viewer)
-        const carbonTool = new CarbonTool(viewer)
-        const expressSelect = new ExpressSelect(viewer, highlighter)
+        //const simpleQto = new SimpleQto(viewer)
+        //const carbonTool = new CarbonTool(viewer)
+        //const expressSelect = new ExpressSelect(viewer, highlighter)
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),
@@ -388,9 +587,9 @@ export function IFCViewer(props: Props) {
           propertiesProcessor.uiElement.get("main"),
           todoCreator.uiElement.get("activationButton"),
           fragmentManager.uiElement.get("main"),
-          simpleQto.uiElement.get("activationBtn"),
-          carbonTool.uiElement.get("activationBtn"),
-          expressSelect.uiElement.get("activationBtn"),
+          //simpleQto.uiElement.get("activationBtn"),
+          //carbonTool.uiElement.get("activationBtn"),
+          //expressSelect.uiElement.get("activationBtn"),
         )
         viewer.ui.addToolbar(toolbar)
         

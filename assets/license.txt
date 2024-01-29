@@ -1,0 +1,11 @@
+Model Information:
+* title:	Male Low Poly Human Body
+* source:	https://sketchfab.com/3d-models/male-low-poly-human-body-0ddf37d5ed164f47bae0df21fbc0c474
+* author:	Burenop (https://sketchfab.com/Burenop)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Male Low Poly Human Body" (https://sketchfab.com/3d-models/male-low-poly-human-body-0ddf37d5ed164f47bae0df21fbc0c474) by Burenop (https://sketchfab.com/Burenop) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
