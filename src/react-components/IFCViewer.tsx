@@ -26,6 +26,8 @@ import { LineGeometry } from "three/examples/jsm/lines/LineGeometry"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { WalkingCameraTool } from "../bim-components/WalkingCameraTool"
+import html2canvas from "html2canvas"
 interface Props {
   project: Project
 }
@@ -66,9 +68,70 @@ export function IFCViewer(props: Props) {
         setViewer(viewer)
         
         const sceneComponent = new OBC.SimpleScene(viewer)
-        sceneComponent.setup()
+        //sceneComponent.setup()
+
+
+        
         viewer.scene = sceneComponent
         scene = sceneComponent.get()
+
+
+        const setupLights = () => {
+          const config = {
+            directionalLight: {
+                color: new THREE.Color(0xFEFAF3),
+                intensity: 0.6,
+                position: new THREE.Vector3(5, 10, 3),
+            },
+            ambientLight: {
+                color: new THREE.Color(0xF4FCFF ),
+                intensity: 0.5,
+            },
+        };
+          const directionalLight = new THREE.DirectionalLight(config.directionalLight.color, config.directionalLight.intensity);
+          directionalLight.position.copy(config.directionalLight.position);
+
+
+         
+          directionalLight.position.set(10,45,25)
+          directionalLight.intensity = 2
+
+
+          directionalLight.castShadow = true
+          directionalLight.shadow.mapSize.width = 4096
+          directionalLight.shadow.mapSize.height = 4096
+          directionalLight.shadow.camera.near = 1
+          directionalLight.shadow.camera.far = 75
+          directionalLight.shadow.camera.left = -25
+          directionalLight.shadow.camera.right= 25
+          directionalLight.shadow.camera.bottom = -25
+          directionalLight.shadow.camera.top= 25
+
+          
+          
+          const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+          scene.add( helper );
+
+
+          const ambientLight = new THREE.AmbientLight(config.ambientLight.color, config.ambientLight.intensity);
+          ambientLight.intensity =0.45
+
+
+          const planeGeo = new THREE.PlaneGeometry(100,100)
+          const planeMat  = new THREE.MeshPhongMaterial({color: 0xC3C3C3 , dithering: true})
+          const plane = new THREE.Mesh(planeGeo, planeMat)
+          plane.rotation.x = -0.5 * Math.PI;
+          plane.receiveShadow = true
+          scene.add(plane)
+          
+
+         
+          scene.add(ambientLight, directionalLight);
+
+        }
+        
+        setupLights()
+
         scene.background = null
         const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement
         //const rendererComponent = new OBC.PostproductionRenderer(viewer, viewerContainer)
@@ -85,6 +148,8 @@ export function IFCViewer(props: Props) {
         const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
         viewer.camera = cameraComponent
     
+       
+
         const raycasterComponent = new OBC.SimpleRaycaster(viewer)
         viewer.raycaster = raycasterComponent
         
@@ -118,10 +183,14 @@ export function IFCViewer(props: Props) {
         }
     
         const ifcLoader = new OBC.FragmentIfcLoader(viewer)
-        ifcLoader.settings.wasm = {
+        await ifcLoader.setup();
+
+        ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
+        ifcLoader.settings.webIfc.OPTIMIZE_PROFILES = true;
+        /* ifcLoader.settings.wasm = {
           path: "../src/web-ifc/",
           absolute: false
-        }
+        } */
     
         //const highlighter = new OBC.FragmentHighlighter(viewer)
         //highlighter.setup()
@@ -185,6 +254,12 @@ export function IFCViewer(props: Props) {
 
           try {
             
+            model.traverse(function(node) {
+              
+              node.castShadow = true
+              node.receiveShadow = true
+              console.log(node.receiveShadow)
+            })
             console.log(model)
            
           } catch (error) {
@@ -193,10 +268,11 @@ export function IFCViewer(props: Props) {
 
           
           for (const fragment of model.items) {
-
+            console.log(fragment.mesh.material)
+            fragment.mesh.receiveShadow = true
             meshes.push(fragment.mesh);
           }
-
+          walkingCameraTool.addMeshes(meshes)
 
           for (let index = 0;index < model.items.length;index++) {
               
@@ -329,50 +405,15 @@ export function IFCViewer(props: Props) {
         })
     
 
-        var raycaster = new THREE.Raycaster();
+        /* var raycaster = new THREE.Raycaster();
         var mouse = new THREE.Vector2();
 
-        var sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-        var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
-        var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        //scene.add(sphere);
 
-        let pegman
-        const loader = new GLTFLoader()
-        loader.load(
-          // resource URL
-          '.././assets/scene.gltf',
-          // called when the resource is loaded
-          function ( gltf ) {
-        
-            scene.add( gltf.scene );
-        
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            pegman = gltf.scene
-            const scale = 0.025
-            pegman.scale.set(scale, scale, scale);
-          },
-          // called while loading is progressing
-          function ( xhr ) {
-        
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-        
-          },
-          // called when loading has errors
-          function ( error ) {
-        
-            console.log( 'An error happened' );
-        
-          }
-        );
 
+        
         
         viewerContainer.addEventListener('mousemove', onMouseMove, false);
-        //viewerContainer.addEventListener('click', onMouseClick, false);
+
 
 
 
@@ -398,8 +439,8 @@ export function IFCViewer(props: Props) {
                 mDown = false;
                 mDragging = false;
             });
-
-        function onMouseMove(event) {
+ */
+        /* function onMouseMove(event) {
           
             
             mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
@@ -422,11 +463,11 @@ export function IFCViewer(props: Props) {
                   y: intersectionPoint.y,
                   z: intersectionPoint.z,
                 }
-                pegman.position.copy(pegmanLocation);
+                //pegman.position.copy(pegmanLocation);
             }
-        }
+        } */
 
-        function onMouseClick(event) {
+        /* function onMouseClick(event) {
           mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
           mouse.y = -(event.offsetY / viewerContainer.clientHeight) * 2 + 1;
 
@@ -454,9 +495,9 @@ export function IFCViewer(props: Props) {
         setNavigationMode('FirstPerson')
         function setNavigationMode(navMode) {
           cameraComponent.setNavigationMode(navMode);
-        }
+        } */
 
-        function tweenCamera(finalPosition: THREE.Vector3) {
+        /* function tweenCamera(finalPosition: THREE.Vector3) {
           
           const position = new THREE.Vector3()
             cameraComponent.controls.getPosition(position)
@@ -494,11 +535,11 @@ export function IFCViewer(props: Props) {
               z: startTarget.z + deltaPosition.z,
             }
             console.log("final target ", finalTarget)
-            /* const targetPosition = {
+             const targetPosition = {
                 x: this.todoCamera.position.x,
                 y: this.todoCamera.position.y,
                 z: this.todoCamera.position.z,
-            }; */
+            }; 
     
             // Create a new TWEEN animation
             const tweenValues = {
@@ -535,31 +576,8 @@ export function IFCViewer(props: Props) {
             })
             .start();
                       
-            /* new TWEEN.Tween(tweenValues)
-                .to(tweenFinal, 1000) // Set the duration of the tween (in milliseconds)
-                .easing(TWEEN.Easing.Quadratic.Out) // Set the easing function (you can choose a different one)
-                .onUpdate(() => {
-                  console.log("Tweening: ",  {
-                  startx: tweenValues.startX, 
-                  starty: tweenValues.startY, 
-                  startz: tweenValues.startZ, 
-                  targetx: tweenValues.targetX,
-                  targety: tweenValues.targetY,
-                  targetz: tweenValues.targetZ})  
-                  cameraComponent.controls.setLookAt(
-                    tweenValues.startX, 
-                    tweenValues.startY, 
-                    tweenValues.startZ, 
-                    tweenValues.targetX,
-                    tweenValues.targetY,
-                    tweenValues.targetZ,);
-                })
-                .onComplete(() => {
-                    
-                    console.log("Tween complete!");
-                })
-                .start(); */
-        }
+            
+        } */
 
 
 
@@ -579,17 +597,35 @@ export function IFCViewer(props: Props) {
         //const simpleQto = new SimpleQto(viewer)
         //const carbonTool = new CarbonTool(viewer)
         //const expressSelect = new ExpressSelect(viewer, highlighter)
+        
+        const walkingCameraTool = new WalkingCameraTool(viewer)
+        await walkingCameraTool.setup()
+
+        const thumbnailBtn = new OBC.Button(viewer)
+        thumbnailBtn.tooltip = "Generate Thumbnail"
+        thumbnailBtn.materialIcon ="photo"
+
+        thumbnailBtn.onClick.add(() => {
+          
+          html2canvas(viewerContainer).then(canvas => {
+            document.body.appendChild(canvas)
+        });
+        })
+
         const toolbar = new OBC.Toolbar(viewer)
         toolbar.addChild(
           ifcLoader.uiElement.get("main"),
           importFragmentBtn,
           classificationsBtn,
+          thumbnailBtn,
           propertiesProcessor.uiElement.get("main"),
           todoCreator.uiElement.get("activationButton"),
           fragmentManager.uiElement.get("main"),
           //simpleQto.uiElement.get("activationBtn"),
           //carbonTool.uiElement.get("activationBtn"),
           //expressSelect.uiElement.get("activationBtn"),
+          walkingCameraTool.uiElement.get("walkingActivationButton"),
+          walkingCameraTool.uiElement.get("orbitActivationButton")
         )
         viewer.ui.addToolbar(toolbar)
         
