@@ -7,7 +7,7 @@ import { ProjectCard } from "./ProjectCard";
 import * as Firestore from "firebase/firestore"
 import { firebaseDB } from "../firebase";
 import * as Router from "react-router-dom"
-import { SearchBox } from "./Searchbox";
+import { SearchBox } from "./SearchBox";
 import { getCollection } from "../firebase";
 
 interface Props {
