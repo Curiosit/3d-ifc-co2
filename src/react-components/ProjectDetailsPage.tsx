@@ -18,17 +18,18 @@ interface Props {
 export function ProjectDetailsPage(props: Props) {
     
     const [hiddenProjectDetails, setHiddenProjectDetails] = React.useState(true);
+    const [updateViewerDimensions, setUpdateViewerDimensions]  = React.useState(true);
 
     const routeParams = Router.useParams<{id: string}>()
     if (!routeParams.id) { return  }
     const project = props.projectsManager.getProject(routeParams.id)
-    console.log(routeParams.id)
-    console.log(project)
+    //console.log(routeParams.id)
+    //console.log(project)
     if (!project) { return  }
 
     const navigateTo = Router.useNavigate()
     props.projectsManager.onProjectDeleted = async (id) => {
-        console.log("deleting...")
+        //console.log("deleting...")
         await deleteDocument("projects", id)
         navigateTo("/")
         }
@@ -50,7 +51,15 @@ export function ProjectDetailsPage(props: Props) {
     
     
     
-    
+    React.useEffect(() => {
+
+        console.log("Dispatching event: ", hiddenProjectDetails)
+        setUpdateViewerDimensions(!updateViewerDimensions)
+        return () => {
+            
+            
+        }
+      }, [hiddenProjectDetails])
     return(
         
             <div className="page" id="project-details" >
@@ -353,7 +362,7 @@ export function ProjectDetailsPage(props: Props) {
                         </div>
                     </div>
                     }
-                    <IFCViewer project={project }/>
+                    <IFCViewer project={project } updateDimensions = {updateViewerDimensions} />
                 </div>
             </div>
         

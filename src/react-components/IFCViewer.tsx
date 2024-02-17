@@ -1,72 +1,61 @@
 import * as React from "react"
-
 import * as OBC from "openbim-components"
 import { FragmentsGroup } from "bim-fragment"
 import { TodoCreator } from "../bim-components/TodoCreator"
 import { Project } from "../classes/Project"
-import { SimpleQto } from "../bim-components/SimpleQto"
 import { CarbonTool } from "../bim-components/CarbonTool"
-import { ExpressSelect } from "../bim-components/ExpressSelect"
-import { Color } from "three"
-import { GUI } from 'dat.gui'
 import TWEEN from '@tweenjs/tween.js'
-import { render } from "react-dom"
-import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass"
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass"
-import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass"
-import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 import * as THREE from "three"
-import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader"
-import { SAOPass } from 'three/examples/jsm/postprocessing/SAOPass';
-import * as THREE_ADDONS from 'three-addons';
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial"
-import { Line2 } from "three/examples/jsm/lines/Line2"
-import { LineGeometry } from "three/examples/jsm/lines/LineGeometry"
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
-import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry';
+
 
 //import { WalkingCameraTool } from "../bim-components/WalkingCameraTool"
 import html2canvas from "html2canvas"
 interface Props {
-  project: Project
+  project: Project,
+  updateDimensions: boolean
 }
 
 interface IViewerContext {
-    viewer: OBC.Components | null,
-    setViewer: (viewer: OBC.Components | null) => void
+  viewerComponent: OBC.Components | null,
+    setViewerComponent: (viewer: OBC.Components | null) => void
 }
 
 export const ViewerContext = React.createContext<IViewerContext>({
-    viewer: null, 
-    setViewer: () => {}
+    viewerComponent: null, 
+    setViewerComponent: () => {}
 })
 
-export function ViewerProvider (props: {children: React.ReactNode}) {
-    const [viewer, setViewer] = React.useState<OBC.Components | null>(null)
-    return (
-        <ViewerContext.Provider value={{
-            viewer,setViewer
-        }} >
-            { props.children }
-        </ViewerContext.Provider >
-    )
+export function ViewerProvider(props: { children: React.ReactNode }) {
+  const [viewerComponent, setViewerComponent] = React.useState<OBC.Components | null>(null);
+
+  return (
+      <ViewerContext.Provider value={{ viewerComponent, setViewerComponent }}>
+          {props.children}
+      </ViewerContext.Provider>
+  );
 }
+
 
 
 
 
 export function IFCViewer(props: Props) {
+
+    const [initialized, setInitialized] = React.useState(false);
+    //const [viewer, setViewer] = React.useState(new OBC.Components())
     let properties
-    const { setViewer } = React.useContext(ViewerContext)
-    let viewer: OBC.Components
+    const { viewerComponent, setViewerComponent } = React.useContext(ViewerContext);
+    let viewer
+    let tempViewer: OBC.Components
     let scene
 
     const meshes: any[] = [];
     const createViewer = async () => {
         viewer = new OBC.Components()
-        setViewer(viewer)
         
+        setViewerComponent(viewer)
+        console.log(viewer)
+        if(!viewer) {return}
         const sceneComponent = new OBC.SimpleScene(viewer)
         viewer.scene = sceneComponent
         scene = sceneComponent.get()
@@ -138,14 +127,12 @@ export function IFCViewer(props: Props) {
         renderer.shadowMap.enabled = true;
 
         viewer.init()
+
         function animate() {
           requestAnimationFrame(animate);
           TWEEN.update();
         }
         animate() 
-
-
-
 
     
         const fragmentManager = new OBC.FragmentManager(viewer)
@@ -233,6 +220,7 @@ export function IFCViewer(props: Props) {
         })
     
         async function createModelTree() {
+          if(!viewer) {return}
           const fragmentTree = new OBC.FragmentTree(viewer)
           await fragmentTree.init()
           await fragmentTree.update(["storeys", "entities"])
@@ -436,18 +424,58 @@ export function IFCViewer(props: Props) {
         )
         viewer.ui.addToolbar(toolbar)
         
+        setViewerComponent(viewer)
+        console.log(viewer)
+        //return viewer
+        
       }
       
-    viewer = new OBC.Components()
-    React.useEffect(() => {
-        createViewer()
+    
+
+      const initializedRef = React.useRef(false);
+
+     
+      React.useEffect(() => {
+        if(!initialized) {
+          createViewer()
+          setInitialized(true)
+        }
+        else {
+          console.log("Initialized")
+        }
         
         return () => {
             
             viewer.dispose()
-            setViewer(null)
+            setViewerComponent(null)
         }
       }, [])
+      React.useEffect(() => {
+        if(initialized) {
+          console.log(viewerComponent)
+          const renderer = viewerComponent?.renderer.get()
+          const camera = viewerComponent?.camera.get() as THREE.PerspectiveCamera;
+          if (!renderer) {return}
+
+          const viewerContainer = document.getElementById("viewer-container") as HTMLDivElement;
+          const { clientWidth, clientHeight } = viewerContainer;
+
+          
+          renderer.setSize(clientWidth, clientHeight);
+          if (camera) {
+            
+            camera.aspect = clientWidth / clientHeight;
+            camera.updateProjectionMatrix();
+          }
+        }
+        else {
+          
+        }
+        
+        return () => {
+
+        }
+      }, [initialized, props.updateDimensions])
 
     return (
         <div
