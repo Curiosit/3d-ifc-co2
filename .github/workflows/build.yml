@@ -31,5 +31,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ inputs.artifact-name }}
-          path: ./build
+          path: ./dist
           retention-days: 3 # we only store these for 3 days because they're almost always immediately used
