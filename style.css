@@ -94,6 +94,11 @@
   cursor: pointer;
 }
 
+.rotate:hover {
+  transform: rotate(-15deg);
+  cursor: pointer;
+}
+
 .logo-container {
   display: flex;
   justify-content: center;
@@ -332,14 +337,23 @@ input:focus, textarea:focus, select:focus {
   flex-direction: column;
 }
 
-#project-details > .main-page-content {
+#project-details > .main-page-content-show {
   display: grid;
   padding: 20px 40px;
   gap: 30px;
-  grid-template-columns: 475px 1fr;
+  
+  grid-template-columns: 475px 1fr; 
   height: 100%;
 }
 
+#project-details > .main-page-content-hide {
+  display: grid;
+  padding: 20px 40px;
+  gap: 30px; 
+  
+  grid-template-columns: 1fr;  
+  /* height: 100%; */
+}
 .btn-secondary {
   background-color: transparent; 
   outline: 2px solid #969696; 

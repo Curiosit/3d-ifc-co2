@@ -23,9 +23,9 @@ export function Sidebar() {
                         Projects
                     </li>
                 </Router.Link>
-                <Router.Link to="/users">
-                    <li><span className="material-symbols-rounded">person</span>
-                        Users
+                <Router.Link to="/materials">
+                    <li><span className="material-symbols-rounded">folder</span>
+                        Material Library
                     </li>
                 </Router.Link>
             </ul>

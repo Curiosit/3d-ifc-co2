@@ -17,7 +17,7 @@ interface Props {
 
 export function ProjectDetailsPage(props: Props) {
     
-    
+    const [hiddenProjectDetails, setHiddenProjectDetails] = React.useState(true);
 
     const routeParams = Router.useParams<{id: string}>()
     if (!routeParams.id) { return  }
@@ -186,145 +186,173 @@ export function ProjectDetailsPage(props: Props) {
                 <header>
                     <div></div>
                 </header>
-                <div className="main-page-content">
+                <div className={ hiddenProjectDetails ? "main-page-content-hide": "main-page-content-show"}>
+                { hiddenProjectDetails ? 
+                    
+                    
+                    <div className="" style={{ position:"absolute", padding: "30px 0", }}>
+                    <div
+                    style={{
+                        position:"absolute",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "0px 30px",
+                        marginTop: 20
+                    }}>
+                       
+                                <p data-project-info="initials" className="initials rotate" style={{ position:"absolute", background: project.inColor, cursor: "pointer", zIndex: 99 }} onClick = {() => {setHiddenProjectDetails(!hiddenProjectDetails); console.log(hiddenProjectDetails)}}>
+                                    { project.initials }
+                                </p>
+                                
+                                </div>
+                                </div>
+                                
+                                
+                                
+                
+                    : 
                     <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
-                    <div className="dashboard-card" style={{ padding: "30px 0" }}>
-                        <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "0px 30px",
-                            marginBottom: 30
-                        }}
-                        >
-                        <p data-project-info="initials" className="initials" style={{ background: project.inColor }}>
-                            { project.initials }
-                        </p>
-                        <button id="edit-project-details-btn" className="btn-secondary" onClick={onEditProjectClick}>
-                            <p style={{ width: "100%" }}>Edit</p>
-                        </button>
-                        <button className="btn-red" onClick={onDeleteClick}>Delete</button>
-                        </div>
-                        <div style={{ padding: "0 30px" }}>
-                        <div>
-                            <h2 data-project-info="name">{ project.name }</h2>
-                            <p style={{ color: "#969696" }} data-project-info="description">
-                            { project.description }
-                            </p>
-                        </div>
+                    
                         
-                        <div
-                            style={{
-                            display: "flex",
-                            columnGap: 30,
-                            padding: "30px 0px",
-                            justifyContent: "space-between"
-                            }}
-                        >
-                            <div>
-                            <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Status
-                            </p>
-                            <p data-project-info="status">{ project.status }</p>
-                            </div>
-                            <div>
-                            <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Cost
-                            </p>
-                            <p data-project-info="cost">$ { project.cost }</p>
-                            </div>
-                            <div>
-                            <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Role
-                            </p>
-                            <p data-project-info="userRole">{ project.userRole }</p>
-                            </div>
-                            
-                        </div>
-                        <div
-                            style={{
-                            display: "flex",
-                            columnGap: 30,
-                            padding: "30px 0px",
-                            justifyContent: "space-between"
-                            }}
-                        >
-                            <div>
-                            <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Created
-                            </p>
-                            <p data-project-info="createdDate">{ formatDate(project.createdDate)  }</p>
-                            </div>
-                            <div>
-                            <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
-                                Finish
-                            </p>
-                            <p data-project-info="finishDate">{ formatDate(project.finishDate)  }</p>
-                            </div>
-                        </div>
-                        <div
-                            style={{
-                            backgroundColor: "#202124",
-                            borderRadius: 9999,
-                            overflow: "auto"
-                            }}
-                        >
-
-                        <div
-                            style={{
-                            width:  `${  renderProgress(project.progress) }`,
-                            backgroundColor: "#404040",
-                            
-                            textAlign: "center"
-                            }}
-                        >
-                            <div data-project-info="progress" className="progress-bar">
-                            { project.progress*100 }%
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div className="dashboard-card" style={{ flexGrow: 1 }}>
-                        <div
-                        style={{
-                            padding: "20px 30px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                        }}
-                        >
-                        <h4>Results</h4>
-                        <div
-                            style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "end",
-                            columnGap: 20
-                            }}
-                        >
+                        <div className="dashboard-card" style={{ padding: "30px 0" }}>
                             <div
-                            style={{ display: "flex", alignItems: "center", columnGap: 10 }}
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                padding: "0px 30px",
+                                marginBottom: 30
+                            }}
                             >
-                            
-                            </div>
-                            <button id="add-to-do-btn" className="btn-secondary">
-                            <p style={{ width: "100%" }}>Add</p>
+                            <p data-project-info="initials" className="initials rotate" style={{ background: project.inColor, cursor: "pointer" }} onClick = {() => {setHiddenProjectDetails(!hiddenProjectDetails); console.log(hiddenProjectDetails)}}>
+                                    { project.initials }
+                                </p>
+                            <button id="edit-project-details-btn" className="btn-secondary" onClick={onEditProjectClick}>
+                                <p style={{ width: "100%" }}>Edit</p>
                             </button>
+                            <button className="btn-red" onClick={onDeleteClick}>Delete</button>
+                            </div>
+                            <div style={{ padding: "0 30px" }}>
+                            <div>
+                                <h2 data-project-info="name">{ project.name }</h2>
+                                <p style={{ color: "#969696" }} data-project-info="description">
+                                { project.description }
+                                </p>
+                            </div>
+                            
+                            <div
+                                style={{
+                                display: "flex",
+                                columnGap: 30,
+                                padding: "30px 0px",
+                                justifyContent: "space-between"
+                                }}
+                            >
+                                <div>
+                                <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                                    Status
+                                </p>
+                                <p data-project-info="status">{ project.status }</p>
+                                </div>
+                                <div>
+                                <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                                    Cost
+                                </p>
+                                <p data-project-info="cost">$ { project.cost }</p>
+                                </div>
+                                <div>
+                                <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                                    Role
+                                </p>
+                                <p data-project-info="userRole">{ project.userRole }</p>
+                                </div>
+                                
+                            </div>
+                            <div
+                                style={{
+                                display: "flex",
+                                columnGap: 30,
+                                padding: "30px 0px",
+                                justifyContent: "space-between"
+                                }}
+                            >
+                                <div>
+                                <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                                    Created
+                                </p>
+                                <p data-project-info="createdDate">{ formatDate(project.createdDate)  }</p>
+                                </div>
+                                <div>
+                                <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                                    Finish
+                                </p>
+                                <p data-project-info="finishDate">{ formatDate(project.finishDate)  }</p>
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                backgroundColor: "#202124",
+                                borderRadius: 9999,
+                                overflow: "auto"
+                                }}
+                            >
+
+                            <div
+                                style={{
+                                width:  `${  renderProgress(project.progress) }`,
+                                backgroundColor: "#404040",
+                                
+                                textAlign: "center"
+                                }}
+                            >
+                                <div data-project-info="progress" className="progress-bar">
+                                { project.progress*100 }%
+                                </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
+                        <div className="dashboard-card" style={{ flexGrow: 1 }}>
+                            <div
+                            style={{
+                                padding: "20px 30px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between"
+                            }}
+                            >
+                            <h4>Results</h4>
+                            <div
+                                style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "end",
+                                columnGap: 20
+                                }}
+                            >
+                                <div
+                                style={{ display: "flex", alignItems: "center", columnGap: 10 }}
+                                >
+                                
+                                </div>
+                                <button id="add-to-do-btn" className="btn-secondary">
+                                <p style={{ width: "100%" }}>Add</p>
+                                </button>
+                            </div>
+                            </div>
+                            <div
+                            id="to-do-list"
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "10px 30px",
+                                rowGap: 20
+                            }}
+                            ></div>
                         </div>
-                        <div
-                        id="to-do-list"
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            padding: "10px 30px",
-                            rowGap: 20
-                        }}
-                        ></div>
                     </div>
-                    </div>
+                    }
                     <IFCViewer project={project }/>
                 </div>
             </div>

@@ -68,10 +68,6 @@ export function IFCViewer(props: Props) {
         setViewer(viewer)
         
         const sceneComponent = new OBC.SimpleScene(viewer)
-        //sceneComponent.setup()
-
-
-        
         viewer.scene = sceneComponent
         scene = sceneComponent.get()
 
@@ -106,24 +102,9 @@ export function IFCViewer(props: Props) {
           directionalLight.shadow.camera.right= 25
           directionalLight.shadow.camera.bottom = -25
           directionalLight.shadow.camera.top= 25
-
-          
-          
-          const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
-          scene.add( helper );
-
-
           const ambientLight = new THREE.AmbientLight(config.ambientLight.color, config.ambientLight.intensity);
           ambientLight.intensity =0.45
 
-
-          const planeGeo = new THREE.PlaneGeometry(100,100)
-          const planeMat  = new THREE.MeshPhongMaterial({color: 0xC3C3C3 , dithering: true})
-          const plane = new THREE.Mesh(planeGeo, planeMat)
-          plane.rotation.x = -0.5 * Math.PI;
-          plane.receiveShadow = true
-          scene.add(plane)
-          
 
          
           scene.add(ambientLight, directionalLight);
@@ -156,16 +137,13 @@ export function IFCViewer(props: Props) {
         const grid = new OBC.SimpleGrid(viewer);
         renderer.shadowMap.enabled = true;
 
-
         viewer.init()
-
-
-
         function animate() {
           requestAnimationFrame(animate);
           TWEEN.update();
         }
         animate() 
+
 
 
 
@@ -187,17 +165,13 @@ export function IFCViewer(props: Props) {
 
         ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
         ifcLoader.settings.webIfc.OPTIMIZE_PROFILES = true;
-        /* ifcLoader.settings.wasm = {
-          path: "../src/web-ifc/",
-          absolute: false
-        } */
-    
-        //const highlighter = new OBC.FragmentHighlighter(viewer)
-        //highlighter.setup()
+
+        const highlighter = new OBC.FragmentHighlighter(viewer)
+        highlighter.setup()
     
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
         
-        /* 
+        
         highlighter.events.select.onHighlight.add((e) => {
           console.log(e)
           console.log("HIGHLIGHTING")
@@ -206,6 +180,32 @@ export function IFCViewer(props: Props) {
           
         })
 
+        /* const highlightMaterial = new THREE.MeshBasicMaterial({
+          color: '#BCF124',
+          depthTest: false,
+          opacity: 0.8,
+          transparent: true
+          });
+        highlighter.add('default', highlightMaterial); */
+          //highlighter.outlineMaterial.color.set(0xf0ff7a);
+
+
+        let lastSelection;
+        let singleSelection = {
+        value: true,
+        };
+        async function highlightOnClick(event) {
+          const result = await highlighter.highlight('default', singleSelection.value);
+          if (result) {
+          lastSelection = {};
+          for (const fragment of result.fragments) {
+          const fragmentID = fragment.id;
+          lastSelection[fragmentID] = [result.id];
+          }
+          }
+          }
+          viewerContainer.addEventListener('click', (event) => highlightOnClick(event));
+
         highlighter.events.select.onClear.add(async (e) => {
           console.log(e)
           await propertiesProcessor.cleanPropertiesList()
@@ -213,7 +213,7 @@ export function IFCViewer(props: Props) {
           propsListElement.removeChild()
 
           
-        }) */
+        }) 
         
 
         const classifier = new OBC.FragmentClassifier(viewer)
@@ -236,22 +236,17 @@ export function IFCViewer(props: Props) {
           await fragmentTree.update(["storeys", "entities"])
           fragmentTree.onHovered.add((fragmentMap) => {
             //highlighter.highlightByID("hover", fragmentMap)
-            
           })
           fragmentTree.onSelected.add((fragmentMap) => {
-            
             //highlighter.highlightByID("select", fragmentMap)
           })
           const tree = fragmentTree.get().uiElement.get("tree")
           return tree
         }
     
-
-
     
         async function onModelLoaded(model: FragmentsGroup) {
           //highlighter.update()
-
           try {
             
             model.traverse(function(node) {
@@ -311,11 +306,8 @@ export function IFCViewer(props: Props) {
 
               
           }
-          console.log(meshes)
-          
-          /* meshObjects = meshes.filter(obj => obj instanceof THREE.Mesh || obj instanceof THREE.InstancedMesh);
 
-          console.log(meshObjects) */
+    
         }
 
     
@@ -403,201 +395,14 @@ export function IFCViewer(props: Props) {
           })
           input.click()
         })
-    
-
-        /* var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2();
-
-
-
-        
-        
-        viewerContainer.addEventListener('mousemove', onMouseMove, false);
-
-
-
-
-            var mDragging = false;
-            var mDown = false;
-
-            window.addEventListener('mousedown', function () {
-                mDown = true;
-            });
-            window.addEventListener('mousemove', function () {
-                if(mDown) {
-                    mDragging = true;
-                }
-            });
-            window.addEventListener('mouseup', function(event) {
-                // If not dragging, then it's a click!
-                if(mDragging === false) {
-                    // Perform all your click calculations here
-                    onMouseClick(event)
-                }
-
-                // Reset variables
-                mDown = false;
-                mDragging = false;
-            });
- */
-        /* function onMouseMove(event) {
-          
-            
-            mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
-            mouse.y = -(event.offsetY / viewerContainer.clientHeight) * 2 + 1;
-
-            
-            raycaster.setFromCamera(mouse, cameraComponent.activeCamera);
-            
-           
-            var intersects = raycaster.intersectObjects(meshes);
-   
-
-            if (intersects.length > 0) {
-                
-                var intersectionPoint = intersects[0].point;
-
-                //console.log(intersectionPoint)
-                const pegmanLocation = {
-                  x: intersectionPoint.x,
-                  y: intersectionPoint.y,
-                  z: intersectionPoint.z,
-                }
-                //pegman.position.copy(pegmanLocation);
-            }
-        } */
-
-        /* function onMouseClick(event) {
-          mouse.x = (event.offsetX / viewerContainer.clientWidth) * 2 - 1;
-          mouse.y = -(event.offsetY / viewerContainer.clientHeight) * 2 + 1;
-
-            
-            raycaster.setFromCamera(mouse, cameraComponent.activeCamera);
-            
-           
-            var intersects = raycaster.intersectObjects(meshes);
-   
-
-            if (intersects.length > 0) {
-                
-                var intersectionPoint = intersects[0].point;
-
-                console.log("clicked point ", intersectionPoint)
-                const newCameraLocation = {
-                  x: intersectionPoint.x,
-                  y: intersectionPoint.y+1.7,
-                  z: intersectionPoint.z,
-                }
-                console.log("new camera point ", newCameraLocation)
-                tweenCamera(newCameraLocation as THREE.Vector3)
-            }
-        }
-        setNavigationMode('FirstPerson')
-        function setNavigationMode(navMode) {
-          cameraComponent.setNavigationMode(navMode);
-        } */
-
-        /* function tweenCamera(finalPosition: THREE.Vector3) {
-          
-          const position = new THREE.Vector3()
-            cameraComponent.controls.getPosition(position)
-            const startPosition = {
-                x: position.x,
-                y: position.y,
-                z: position.z,
-            };
-
-            const finalLocation = {
-              x: finalPosition.x,
-                y: finalPosition.y,
-                z: finalPosition.z,
-            }
-            console.log("Camera position: ", position.x,
-            position.y,
-          position.z)
-          const target = new THREE.Vector3()
-          cameraComponent.controls.getTarget(target)
-          const startTarget = {
-                x: target.x,
-                y: target.y,
-                z: target.z,
-            };
-            console.log("start target ", startTarget)
-            const deltaPosition = {
-              x: finalPosition.x - position.x,
-              y: finalPosition.y - position.y,
-              z: finalPosition.z - position.z,
-            }
-            console.log("delta positiont ", deltaPosition)
-            const finalTarget = {
-              x: startTarget.x + deltaPosition.x,
-              y: startTarget.y + deltaPosition.y,
-              z: startTarget.z + deltaPosition.z,
-            }
-            console.log("final target ", finalTarget)
-             const targetPosition = {
-                x: this.todoCamera.position.x,
-                y: this.todoCamera.position.y,
-                z: this.todoCamera.position.z,
-            }; 
-    
-            // Create a new TWEEN animation
-            const tweenValues = {
-              startX: startPosition.x,
-              startY: startPosition.y,
-              startZ: startPosition.z,
-              targetX: startTarget.x,
-              targetY: startTarget.y,
-              targetZ: startTarget.z
-            };
-            const tweenFinal = {
-              finalX: finalLocation.x,
-              finalY: finalLocation.y,
-              finalZ: finalLocation.z,
-              targetX: finalTarget.x,
-              targetY: finalTarget.y,
-              targetZ: finalTarget.z
-            };
-
-            const positionTween = new TWEEN.Tween({ x: startPosition.x, y: startPosition.y, z: startPosition.z });
-            const targetTween = new TWEEN.Tween({ x: startTarget.x, y: startTarget.y, z: startTarget.z });
-
-            positionTween.to({ x: finalLocation.x, y: finalLocation.y, z: finalLocation.z }, 1000)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .onUpdate((obj) => {
-              cameraComponent.controls.setPosition(obj.x, obj.y, obj.z);
-            })
-            .start();
-
-            targetTween.to({ x: finalTarget.x, y: finalTarget.y, z: finalTarget.z }, 1000)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .onUpdate((obj) => {
-              cameraComponent.controls.setTarget(obj.x, obj.y, obj.z);
-            })
-            .start();
-                      
-            
-        } */
-
-
-
-
-
-
-
-
-
-
-
 
 
 
         const todoCreator = new TodoCreator(viewer)
         await todoCreator.setup(props.project)
         //const simpleQto = new SimpleQto(viewer)
-        //const carbonTool = new CarbonTool(viewer)
+        const carbonTool = new CarbonTool(viewer)
         //const expressSelect = new ExpressSelect(viewer, highlighter)
-        
         const walkingCameraTool = new WalkingCameraTool(viewer)
         await walkingCameraTool.setup()
 
@@ -622,7 +427,7 @@ export function IFCViewer(props: Props) {
           todoCreator.uiElement.get("activationButton"),
           fragmentManager.uiElement.get("main"),
           //simpleQto.uiElement.get("activationBtn"),
-          //carbonTool.uiElement.get("activationBtn"),
+          carbonTool.uiElement.get("activationBtn"),
           //expressSelect.uiElement.get("activationBtn"),
           walkingCameraTool.uiElement.get("walkingActivationButton"),
           walkingCameraTool.uiElement.get("orbitActivationButton")
