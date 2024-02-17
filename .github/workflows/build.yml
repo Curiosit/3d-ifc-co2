@@ -26,6 +26,8 @@ jobs:
         run: npm ci
       - name: Build app
         run: npm run build
+      - name: Copy assets to dist
+        run: cp -r assets dist/assets
       - name: Archive build artifacts
         if: ${{ inputs.store-artifact }}
         uses: actions/upload-artifact@v2
