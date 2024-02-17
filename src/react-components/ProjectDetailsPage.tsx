@@ -31,7 +31,7 @@ export function ProjectDetailsPage(props: Props) {
     props.projectsManager.onProjectDeleted = async (id) => {
         //console.log("deleting...")
         await deleteDocument("projects", id)
-        navigateTo("/")
+        navigateTo("/3d-ifc-co2/")
         }
     
         const onDeleteClick = () => {

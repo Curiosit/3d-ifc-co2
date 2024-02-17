@@ -9,6 +9,7 @@ import { ViewerProvider } from "./react-components/IFCViewer"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { E404 } from "./react-components/E404"
 import { Modal } from "./react-components/Modal"
+import { MaterialsPage } from "./react-components/Materials"
 
 
 const projectsManager = new ProjectsManager()
@@ -28,7 +29,7 @@ appRoot.render(
         <Router.Route path="/3d-ifc-co2/404" element={<E404 message="" />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/" element={<ProjectsPage projectsManager = {projectsManager} />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/project/:id" element={<ProjectDetailsPage projectsManager = {projectsManager} />}></Router.Route>
-        <Router.Route path="/3d-ifc-co2/materials" element={<E404 message="Material Library not found!" />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/materials" element={<MaterialsPage />}></Router.Route>
         
       </Router.Routes>
       </ViewerProvider>

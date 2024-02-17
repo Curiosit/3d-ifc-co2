@@ -62,7 +62,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this._qtoResultByElementName = {}
         this._qtoResult = {}
         this.setUI()
-        //this.getQuantities()
+        this.getQuantities()
     }
 
     private setUI() {

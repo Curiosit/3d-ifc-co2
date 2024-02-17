@@ -305,7 +305,7 @@ export function IFCViewer(props: Props) {
           exportFragments(model)
           exportJSON(model)
           properties = model.properties
-          //carbonTool.properties = properties
+          carbonTool.properties = properties
           console.log(properties)
           onModelLoaded(model)
         })
@@ -341,7 +341,7 @@ export function IFCViewer(props: Props) {
               const loadedModel =  { ...model, properties:JSON.parse(json)};
 
               properties = loadedModel.properties
-              //carbonTool.properties = properties
+              carbonTool.properties = properties
               console.log(properties)
               onModelLoaded(loadedModel) 
               return;
