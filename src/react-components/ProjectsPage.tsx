@@ -223,12 +223,12 @@ export function ProjectsPage(props: Props) {
                     }}
                     >
                     <button
-                        id="close-new-project-modal-btn"
-                        type="button"
-                        style={{ backgroundColor: "transparent" }}
-                    >
-                        Cancel
-                    </button>
+                            id="close-new-project-modal-btn"
+                            type="button"
+                            style={{ backgroundColor: "transparent" }}
+                            className="btn-secondary" >
+                            Cancel
+                        </button>
                     <button type="submit" className="positive">
                         Accept
                     </button>

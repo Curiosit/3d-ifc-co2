@@ -109,7 +109,7 @@ export function IFCViewer(props: Props) {
 
         const renderer = rendererComponent.get()
         console.log(renderer)
-
+        
         renderer.setPixelRatio( window.devicePixelRatio );
         
         
@@ -425,6 +425,8 @@ export function IFCViewer(props: Props) {
         viewer.ui.addToolbar(toolbar)
         
         setViewerComponent(viewer)
+        const { clientWidth, clientHeight } = viewerContainer;
+        renderer.setSize(clientWidth, clientHeight);
         console.log(viewer)
         //return viewer
         
@@ -439,6 +441,7 @@ export function IFCViewer(props: Props) {
         if(!initialized) {
           createViewer()
           setInitialized(true)
+          
         }
         else {
           console.log("Initialized")

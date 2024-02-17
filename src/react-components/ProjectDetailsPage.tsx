@@ -60,6 +60,9 @@ export function ProjectDetailsPage(props: Props) {
             
         }
       }, [hiddenProjectDetails])
+
+
+    
     return(
         
             <div className="page" id="project-details" >

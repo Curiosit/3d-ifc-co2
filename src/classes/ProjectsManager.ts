@@ -6,6 +6,7 @@ import {
   isFirstCharacterLetterOrNumber,
   convertCurrencyStringToNumber,
 } from "../utils/utils";
+
 import { closeModal } from "../utils/utils";
 import { Status, ToDoTaskType, UserRole } from "../types/types";
 import { showModal } from "../utils/utils";
@@ -16,7 +17,7 @@ import { addDoc } from "firebase/firestore";
 
 export class ProjectsManager {
   list: Project[] = [];
-
+  
   onProjectCreated = (project: Project) => {
 
   }
@@ -530,6 +531,7 @@ export class ProjectsManager {
     });
     this.list = remaining;
     this.onProjectDeleted(id)
+   
   }
 
   editProject(id: string) {
