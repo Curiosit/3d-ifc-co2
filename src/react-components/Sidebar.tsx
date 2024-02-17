@@ -2,12 +2,14 @@ import * as React from "react"
 import * as Router from "react-router-dom"
 
 export function Sidebar() {
-    
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const assetPath = isDevelopment ? './assets/' : '/3d-ifc-co2/assets/';
+
     return (
         <aside id="sidebar">
             <nav className="navbar navbar-expand-md navbar-dark bg-dark">
             <div className="container-fluid logo-container">
-                    <img className="logo-image" src="./assets/logo-dark.png" alt=""></img>
+                    <img className="logo-image" src={`${assetPath}logo-dark.png`} alt=""></img>
                     <a className="navbar-brand fw-bold" href="../">
                         <div>
                             slad.ai
