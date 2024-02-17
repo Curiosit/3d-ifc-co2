@@ -18,12 +18,12 @@ export function Sidebar() {
                     </a>
             </div></nav>
             <ul id="nav-buttons">
-                <Router.Link to="/">
+                <Router.Link to="/3d-ifc-co2/">
                     <li id="menu-project-btn"><span  className="material-symbols-rounded">apartment</span>
                         Projects
                     </li>
                 </Router.Link>
-                <Router.Link to="/materials">
+                <Router.Link to="/3d-ifc-co2/materials">
                     <li><span className="material-symbols-rounded">folder</span>
                         Material Library
                     </li>

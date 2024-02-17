@@ -25,8 +25,8 @@ import { Line2 } from "three/examples/jsm/lines/Line2"
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { WalkingCameraTool } from "../bim-components/WalkingCameraTool"
+
+//import { WalkingCameraTool } from "../bim-components/WalkingCameraTool"
 import html2canvas from "html2canvas"
 interface Props {
   project: Project
@@ -167,6 +167,7 @@ export function IFCViewer(props: Props) {
         ifcLoader.settings.webIfc.OPTIMIZE_PROFILES = true;
 
         const highlighter = new OBC.FragmentHighlighter(viewer)
+        
         highlighter.setup()
     
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer)
@@ -179,7 +180,7 @@ export function IFCViewer(props: Props) {
           
           
         })
-
+        
         /* const highlightMaterial = new THREE.MeshBasicMaterial({
           color: '#BCF124',
           depthTest: false,
@@ -187,7 +188,7 @@ export function IFCViewer(props: Props) {
           transparent: true
           });
         highlighter.add('default', highlightMaterial); */
-          //highlighter.outlineMaterial.color.set(0xf0ff7a);
+        highlighter.outlineMaterial.color.set(0xf0ff7a);
 
 
         let lastSelection;
@@ -195,15 +196,16 @@ export function IFCViewer(props: Props) {
         value: true,
         };
         async function highlightOnClick(event) {
-          const result = await highlighter.highlight('default', singleSelection.value);
+          const result = await highlighter.highlight('', singleSelection.value)
+          //const result = await highlighter.highlight('default', singleSelection.value);
           if (result) {
-          lastSelection = {};
-          for (const fragment of result.fragments) {
-          const fragmentID = fragment.id;
-          lastSelection[fragmentID] = [result.id];
+            lastSelection = {};
+            for (const fragment of result.fragments) {
+              const fragmentID = fragment.id;
+              lastSelection[fragmentID] = [result.id];
+            }
           }
-          }
-          }
+        }
           viewerContainer.addEventListener('click', (event) => highlightOnClick(event));
 
         highlighter.events.select.onClear.add(async (e) => {
@@ -267,7 +269,7 @@ export function IFCViewer(props: Props) {
             fragment.mesh.receiveShadow = true
             meshes.push(fragment.mesh);
           }
-          walkingCameraTool.addMeshes(meshes)
+          //walkingCameraTool.addMeshes(meshes)
 
           for (let index = 0;index < model.items.length;index++) {
               
@@ -403,8 +405,8 @@ export function IFCViewer(props: Props) {
         //const simpleQto = new SimpleQto(viewer)
         const carbonTool = new CarbonTool(viewer)
         //const expressSelect = new ExpressSelect(viewer, highlighter)
-        const walkingCameraTool = new WalkingCameraTool(viewer)
-        await walkingCameraTool.setup()
+        //const walkingCameraTool = new WalkingCameraTool(viewer)
+        //await walkingCameraTool.setup()
 
         const thumbnailBtn = new OBC.Button(viewer)
         thumbnailBtn.tooltip = "Generate Thumbnail"
@@ -429,8 +431,8 @@ export function IFCViewer(props: Props) {
           //simpleQto.uiElement.get("activationBtn"),
           carbonTool.uiElement.get("activationBtn"),
           //expressSelect.uiElement.get("activationBtn"),
-          walkingCameraTool.uiElement.get("walkingActivationButton"),
-          walkingCameraTool.uiElement.get("orbitActivationButton")
+          //Tool.uiElement.get("walkingActivationButton"),
+          //walkingCameraTool.uiElement.get("orbitActivationButton")
         )
         viewer.ui.addToolbar(toolbar)
         

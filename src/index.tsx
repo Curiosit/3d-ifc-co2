@@ -32,10 +32,10 @@ appRoot.render(
       <Sidebar />
       <Modal />
       <Router.Routes>
-        <Router.Route path="/404" element={<E404 message="" />}></Router.Route>
-        <Router.Route path="/" element={<ProjectsPage projectsManager = {projectsManager} />}></Router.Route>
-        <Router.Route path="/project/:id" element={<ProjectDetailsPage projectsManager = {projectsManager} />}></Router.Route>
-        
+        <Router.Route path="/3d-ifc-co2/404" element={<E404 message="" />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/" element={<ProjectsPage projectsManager = {projectsManager} />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/project/:id" element={<ProjectDetailsPage projectsManager = {projectsManager} />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/materials" element={<E404 message="Material Library not found!" />}></Router.Route>
         
       </Router.Routes>
       </ViewerProvider>

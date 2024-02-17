@@ -45,7 +45,7 @@ export class WalkingCameraTool extends OBC.Component<void> implements OBC.UI, OB
         console.log(this._components)
         console.log("Setup")
         try {
-            this.pegman = await this.loadPegman()
+            //this.pegman = await this.loadPegman()
 
         } catch (error) {
             console.error('Error loading Pegman:', error);

@@ -24,7 +24,7 @@ export function ProjectsPage(props: Props) {
     
     
     const projectCards = projects.map((project) => {
-        return  <Router.Link to={`/project/${project.id}`} key={project.id}>
+        return  <Router.Link to={`/3d-ifc-co2/project/${project.id}`} key={project.id}>
                     <ProjectCard project={project} />
                 </Router.Link>
         
