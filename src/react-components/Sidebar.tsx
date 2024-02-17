@@ -7,7 +7,7 @@ export function Sidebar() {
         <aside id="sidebar">
             <nav className="navbar navbar-expand-md navbar-dark bg-dark">
             <div className="container-fluid logo-container">
-                    <img className="logo-image" src="./3d-ifc-co2/assets/logo-dark.png" alt=""></img>
+                    <img className="logo-image" src="./assets/logo-dark.png" alt=""></img>
                     <a className="navbar-brand fw-bold" href="../">
                         <div>
                             slad.ai
