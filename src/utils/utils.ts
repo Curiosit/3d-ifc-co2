@@ -2,7 +2,23 @@ import { FragmentIdMap } from "openbim-components";
 import { ErrorModal } from "../classes/ErrorModal";
 import seedrandom from 'seedrandom';
 
+export function extractDataFromDocuments(documents) {
+  return documents.map(doc => {
+      const docData = doc.data();
+      const extractedFields = {};
 
+      // Iterate over the keys of the document data
+      Object.keys(docData).forEach(key => {
+          // Skip internal Firestore properties (e.g., id, metadata)
+          if (!key.startsWith('__')) {
+              // Dynamically extract the field and its value
+              extractedFields[key] = docData[key];
+          }
+      });
+
+      return extractedFields;
+  });
+}
 
 export function formatDate(readDate: Date): string {
   // Get day, month, and year components
@@ -26,13 +42,60 @@ export function formatDate(readDate: Date): string {
 
   return formattedDate;
 }
+export function interpolateColor(value: number, color1: string = "#57ca8d", color2: string = "#ff2452", minValue: number = -200, maxValue: number = 200): string {
+  // Convert hex color to RGB
+  console.log(value)
+  const hexToRgb = (color: string) => {
+      const hex = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => r + r + g + g + b + b);
+      const bigint = parseInt(hex.slice(1), 16);
+      return {
+          r: (bigint >> 16) & 255,
+          g: (bigint >> 8) & 255,
+          b: bigint & 255
+      };
+  };
+
+  // Convert RGB to hex color
+  const componentToHex = (c) => {
+      var hex = c.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+  }
+  const rgbToHex = (r, g, b) => {
+      return "#" + componentToHex(Math.round(r)) + componentToHex(Math.round(g)) + componentToHex(Math.round(b));
+  }
+
+
+  const color1Rgb = hexToRgb(color1);
+  console.log("Color 1: ", color1Rgb)
+  const color2Rgb = hexToRgb(color2);
+  console.log("Color 2: ", color2Rgb)
+  // Interpolate RGB values
+  const interpolate = (start: number, end: number, ratio: number) => (start + (end - start) * ratio);
+
+  const ratio = (value - minValue) / (maxValue - minValue);
+
+
+  console.log("Ratio:", ratio);
+  const interpolatedColor = {
+      r: interpolate(color1Rgb.r, color2Rgb.r, ratio),
+      g: interpolate(color1Rgb.g, color2Rgb.g, ratio),
+      b: interpolate(color1Rgb.b, color2Rgb.b, ratio)
+  };
+  console.log("Interpolated Color:", interpolatedColor);
+  const hexColorFinal = rgbToHex(interpolatedColor.r, interpolatedColor.g, interpolatedColor.b)
+  console.log("Hex Interpolated Color:", hexColorFinal);
+  return hexColorFinal;
+}
 
 
 export const colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
 
 export function uppercaseInitials(inputString: string): string {
-  // Split the input string into words
-  const words = inputString.split(" ");
+  // Remove parentheses, curly braces, and square brackets from the input string
+  const sanitizedString = inputString.replace(/[(){}\[\]]/g, ' ');
+
+  // Split the sanitized input string into words
+  const words = sanitizedString.split(" ");
 
   // Extract the first letter of each word and convert it to uppercase
   const initials = words.map((word) => word.charAt(0).toUpperCase());

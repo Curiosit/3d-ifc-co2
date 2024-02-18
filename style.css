@@ -243,6 +243,18 @@ header {
     gap: 30px;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
+  #material-list {
+    display: grid;
+    padding: 20px 40px;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+  #material-details {
+    
+    padding: 20px 40px;
+    gap: 30px;
+    
+  }
 
   .action-icon {
     color: darkgray;

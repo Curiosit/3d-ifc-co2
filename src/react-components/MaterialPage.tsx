@@ -6,12 +6,15 @@ import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
 import { deleteDocument, getCollection } from "../firebase"
 import { Modal } from "./Modal"
-import { downloadData } from "../utils/materialdata"
+
 import { IMaterial } from "../classes/Material"
 import * as Firestore from "firebase/firestore"
+import { convertToEpdx } from "../utils/epdx"
 
-
-
+import { EPD } from "epdx"
+import { MaterialCard } from "./MaterialCard"
+import { SearchBox } from "./SearchBox";
+import { MaterialDetailsCard } from "./MaterialDetailsCard"
 
 const materialsCollection = getCollection<IMaterial>("/materials")
 interface Props {
@@ -20,31 +23,14 @@ interface Props {
 
 
 
-export function MaterialsPage(props: Props) {
+export function MaterialPage(props: Props) {
     
-    
-    const [materialData, setMaterialData] = React.useState([{}]);
     const [initialized, setInitialized] = React.useState(false);
-    
-    
-    let num = 0
-    const materialCards = materialData.map((material) => {
-        
-        
-        num += 1
+    const [epdxData, setEpdxData] = React.useState<EPD[]>([]);
+    const [materialEpd, setMaterialEpd] = React.useState<EPD>();
 
-        console.log(material)
-        
-        let valueOfA1A2A3 = material.gwp?.A1A2A3;
-        if (valueOfA1A2A3 !== undefined) {
-            console.log("Value of A1A2A3:", valueOfA1A2A3);
-        } else {
-            console.error("Property 'A1A2A3' not found in the material data or 'gwp' is undefined.", material.name);
-        }
-        return  <p>{material.name} {valueOfA1A2A3} kgCO2e / {material.unit}</p>
-        
-    })
-    
+    const routeParams = Router.useParams<{id: string}>()
+    if (!routeParams.id) { return  }
     const getFirestoreMaterials = async () => {
         
         const firebaseMaterials = await Firestore.getDocs(materialsCollection)
@@ -53,56 +39,70 @@ export function MaterialsPage(props: Props) {
             const data = doc.data() 
             const material: IMaterial = {
                 ...data,
-                
             }
             try {
-                
-                console.log(material)
-                console.log(material.name)
                 materialList.push(material)
-                //materialList.push(material)
+
             }
             catch (error) {
                 console.log(error)
             }
             
         }
-        setMaterialData(materialList)
-        return firebaseMaterials.docs
+
+        
+        return materialList
     }
     
     
     React.useEffect(() => {
         const getData = async () => {
             const data = await getFirestoreMaterials()
-            //setMaterialData(data)
-            if(data) {
+            const epdData = convertToEpdx(data)
+            setEpdxData(epdData)
+            if(epdData) {
                 setInitialized(true)
             }
-            
         }
         if(!initialized) {
             getData()
         }
         else {
-            console.log(materialData)
+
         }
         return () => {
-            
-            
         }
       }, [initialized])
 
+      React.useEffect(() => {
+        console.log("epdxData changed: ", epdxData)
+        console.log("initialized: ", initialized)
+        if(initialized) {
+            
+            console.log("params: ", routeParams)
+            
+            const material= epdxData.find(epd => epd.id === routeParams.id);
+            console.log(material)
+            setMaterialEpd(material);
+            console.log(materialEpd)
+            
+        }
+        else {
+            
+        }
+        return () => {
+        }
+      }, [epdxData])
 
-    
-    return(
+
+      return(
         
            <div className="page">
             <header>
                 <h2>
                 <span className="material-symbols-rounded">folder_copy</span> Material Library
                 </h2>
-               
+                
                 <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
                 
                 <button id="new-material-btn">
@@ -113,15 +113,14 @@ export function MaterialsPage(props: Props) {
            
 
             {
-                materialData.length > 0 ? 
-                <div id="material-list">
-                    { materialCards }
+                materialEpd != null ? 
+                <div id="material-details">
+                    <MaterialDetailsCard epd={materialEpd} />
                 </div>
                 :
-                <div id="material-list">
-                    
+                <div id="material-details">
+                No material found...
                 </div>
-
             }
             </div>
 
