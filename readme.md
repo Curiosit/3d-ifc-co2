@@ -4,6 +4,9 @@
 
 Welcome to the slad.ai project repository! slad.ai is a carbon footprint calculation program, powered by IFC.js
 
+See the live demo: https://curiosit.github.io/3d-ifc-co2/
+
+
 ## Getting Started
 
 ### Developer guide
