@@ -10,7 +10,7 @@ export function SearchBox(props: Props) {
       <input
         onChange={(e) => {props.onChange(e.target.value)}}
         type="text"
-        placeholder="Search projects by name..."
+        placeholder="Search..."
         style={{ width: "100%", height: "40px", backgroundColor: "var(--background-100)" }}
       />
     </div>
