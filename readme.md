@@ -2,7 +2,13 @@
 
 <hr>
 
-Welcome to the slad.ai project repository! slad.ai is a carbon footprint calculation program, powered by IFC.js
+Welcome to the slad.ai project repository! slad.ai is a carbon footprint calculation program, powered by:
+- Open BIM Components https://github.com/IFCjs/components
+- EPDx https://github.com/ocni-dtu/epdx/
+- LCAx https://github.com/ocni-dtu/lcax/
+
+See the live demo: https://curiosit.github.io/3d-ifc-co2/
+
 
 ## Getting Started
 
@@ -13,15 +19,9 @@ Welcome to the slad.ai project repository! slad.ai is a carbon footprint calcula
 
 ## Screenshots
 
-![image](https://github.com/Curiosit/slad.ai-3d-ifc-co2-calculator/assets/17218693/633c60a4-c4f8-4638-9c87-c1f4511df15c)
+![image](https://github.com/Curiosit/3d-ifc-co2/assets/17218693/277f5816-4e54-474a-9033-86e4c5799973)
 
-![quant](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/effa8bbe-27e4-4e65-a43c-e727a16c43e2)
+![model](https://github.com/Curiosit/3d-ifc-co2/assets/17218693/6bb26585-8f0c-4813-8d5e-10fdb9335c22)
 
-![props](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/94a3e5af-06bc-46ab-a8b7-50546b5fdff9)
-
-![priority](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/b570d370-f0f3-4f56-9380-7b308e538579)
-
-![select](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/a9a0b833-23fa-4373-80ce-8d16f9c3e6db)
-
-![search](https://github.com/Curiosit/master-bim-software-developer/assets/17218693/b602f8e3-a9e2-49ec-8780-f8e4e00a7289)
+![project](https://github.com/Curiosit/3d-ifc-co2/assets/17218693/2a48c97d-5228-441f-abac-90c1e8436ff8)
 
