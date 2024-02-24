@@ -44,7 +44,7 @@ export function formatDate(readDate: Date): string {
 }
 export function interpolateColor(value: number, color1: string = "#57ca8d", color2: string = "#ff2452", minValue: number = -200, maxValue: number = 200): string {
   // Convert hex color to RGB
-  console.log(value)
+  //console.log(value)
   const hexToRgb = (color: string) => {
       const hex = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => r + r + g + g + b + b);
       const bigint = parseInt(hex.slice(1), 16);
@@ -66,24 +66,24 @@ export function interpolateColor(value: number, color1: string = "#57ca8d", colo
 
 
   const color1Rgb = hexToRgb(color1);
-  console.log("Color 1: ", color1Rgb)
+  //console.log("Color 1: ", color1Rgb)
   const color2Rgb = hexToRgb(color2);
-  console.log("Color 2: ", color2Rgb)
+  //console.log("Color 2: ", color2Rgb)
   // Interpolate RGB values
   const interpolate = (start: number, end: number, ratio: number) => (start + (end - start) * ratio);
 
   const ratio = (value - minValue) / (maxValue - minValue);
 
 
-  console.log("Ratio:", ratio);
+  //console.log("Ratio:", ratio);
   const interpolatedColor = {
       r: interpolate(color1Rgb.r, color2Rgb.r, ratio),
       g: interpolate(color1Rgb.g, color2Rgb.g, ratio),
       b: interpolate(color1Rgb.b, color2Rgb.b, ratio)
   };
-  console.log("Interpolated Color:", interpolatedColor);
+  //console.log("Interpolated Color:", interpolatedColor);
   const hexColorFinal = rgbToHex(interpolatedColor.r, interpolatedColor.g, interpolatedColor.b)
-  console.log("Hex Interpolated Color:", hexColorFinal);
+  //console.log("Hex Interpolated Color:", hexColorFinal);
   return hexColorFinal;
 }
 

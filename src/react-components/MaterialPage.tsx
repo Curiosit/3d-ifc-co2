@@ -75,16 +75,16 @@ export function MaterialPage(props: Props) {
       }, [initialized])
 
       React.useEffect(() => {
-        console.log("epdxData changed: ", epdxData)
-        console.log("initialized: ", initialized)
+        //console.log("epdxData changed: ", epdxData)
+        //console.log("initialized: ", initialized)
         if(initialized) {
             
             console.log("params: ", routeParams)
             
             const material= epdxData.find(epd => epd.id === routeParams.id);
-            console.log(material)
+            //console.log(material)
             setMaterialEpd(material);
-            console.log(materialEpd)
+            //console.log(materialEpd)
             
         }
         else {

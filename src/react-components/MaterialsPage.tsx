@@ -33,24 +33,27 @@ export function MaterialsPage(props: Props) {
 
     let num = 0
     const onMaterialSearch = (value: string) => {
-        
-        setShowEpdxData(filterMaterials(value))
+        const mats = filterMaterials(value)
+        console.log(epdxData)
+        setShowEpdxData(mats)
+        console.log(epdxData)
     }
     const filterMaterials = (value: string) => { // Change from function declaration to arrow function
+        console.log("Search: ", value)
         const filteredMaterials = epdxData.filter((mat) => {
             return (mat.name.toLowerCase().includes(value.toLowerCase()));
         })
-        //console.log(filteredMaterials)
+        console.log(filteredMaterials)
         return filteredMaterials
       }
     
 
-    const materialCards = epdxData.map((epdx) => {
+    let materialCards = showEpdxData.map((epdx) => {
         
         
         num += 1
 
-        console.log(epdx)
+        //console.log(epdx)
         
       
         return  <Router.Link to={`/3d-ifc-co2/materials/${epdx.id}`} key={epdx.id}>
@@ -107,7 +110,7 @@ export function MaterialsPage(props: Props) {
       }, [initialized])
 
     React.useEffect(() => {
-        
+        console.log("Epdx data modified")
     }, [showEpdxData])
     return(
         
