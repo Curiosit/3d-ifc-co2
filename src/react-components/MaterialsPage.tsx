@@ -14,8 +14,9 @@ import { convertToEpdx } from "../utils/epdx"
 import { EPD } from "epdx"
 import { MaterialCard } from "./MaterialCard"
 import { SearchBox } from "./SearchBox";
+import { getFirestoreMaterials } from "../utils/materialdata"
 
-const materialsCollection = getCollection<IMaterial>("/materials")
+
 interface Props {
     
 }
@@ -24,9 +25,9 @@ interface Props {
 
 export function MaterialsPage(props: Props) {
     
-
-    const [materialData, setMaterialData] = React.useState([{}]);
     const [initialized, setInitialized] = React.useState(false);
+    const [materialData, setMaterialData] = React.useState([{}]);
+    
     const [epdxData, setEpdxData] = React.useState<EPD[]>([]);
     
     const [showEpdxData, setShowEpdxData] = React.useState<EPD[]>([]);
@@ -63,7 +64,7 @@ export function MaterialsPage(props: Props) {
         
     })
     
-    const getFirestoreMaterials = async () => {
+    /* const getFirestoreMaterials = async () => {
         
         const firebaseMaterials = await Firestore.getDocs(materialsCollection)
         const materialList = [{}]
@@ -84,7 +85,7 @@ export function MaterialsPage(props: Props) {
 
         
         return materialList
-    }
+    } */
     
     
     React.useEffect(() => {

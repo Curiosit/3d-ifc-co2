@@ -30,6 +30,11 @@ export function Sidebar() {
                         Material Library
                     </li>
                 </Router.Link>
+                <Router.Link to="/3d-ifc-co2/components">
+                    <li><span className="material-symbols-rounded">notebook</span>
+                        Components Library
+                    </li>
+                </Router.Link>
             </ul>
         </aside>
     ) 

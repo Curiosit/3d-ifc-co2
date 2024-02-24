@@ -11,6 +11,7 @@ import { E404 } from "./react-components/E404"
 import { Modal } from "./react-components/Modal"
 import { MaterialsPage } from "./react-components/MaterialsPage"
 import { MaterialPage } from "./react-components/MaterialPage"
+import { ComponentsPage } from "./react-components/ComponentsPage"
 
 
 const projectsManager = new ProjectsManager()
@@ -32,6 +33,7 @@ appRoot.render(
         <Router.Route path="/3d-ifc-co2/project/:id" element={<ProjectDetailsPage projectsManager = {projectsManager} />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/materials" element={<MaterialsPage />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/materials/:id" element={<MaterialPage />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/components" element={<ComponentsPage />}></Router.Route>
       </Router.Routes>
       </ViewerProvider>
     </Router.BrowserRouter>

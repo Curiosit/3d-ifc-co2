@@ -3,7 +3,7 @@ import { Project } from '../classes/Project'
 import * as Router from "react-router-dom"
 import { EPD } from 'epdx'
 import { roundNumber, uppercaseInitials } from '../utils/utils'
-import { calculateTotalGWP } from '../utils/epdx'
+import { calculateTotalEPDGWP } from '../utils/epdx'
 
 interface Props {
     epd: EPD
@@ -32,7 +32,7 @@ export function MaterialDetailsCard (props: Props) {
                     <div className="card-property">
                     <p style={{ color: "#969696" }}>Total GWP</p>
                     <p>
-                        { roundNumber(calculateTotalGWP(props.epd)) } kgCO2e
+                        { roundNumber(calculateTotalEPDGWP(props.epd)) } kgCO2e
                     </p>
                     </div>
                     <div className="card-property">

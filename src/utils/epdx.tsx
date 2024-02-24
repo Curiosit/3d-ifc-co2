@@ -9,8 +9,8 @@ export function convertToEpdx(data) {
     const epdArray: EPD[] = [];
     for (const mat of data) {
         if(mat.gwp != null) {
-        console.log(mat)
-        console.log(mat.gwp)
+        //console.log(mat)
+        //console.log(mat.gwp)
         const epd = createEPD({
             id: mat.uuid,
             name: mat.name,
@@ -41,14 +41,14 @@ export function convertToEpdx(data) {
             });
         epdArray.push(epd);
 
-        console.log(epd)
+        //console.log(epd)
         }
     }
-    console.log(epdArray)
+    //console.log(epdArray)
     return epdArray;
 }
 
-export function calculateTotalGWP(epd: EPD): number {
+export function calculateTotalEPDGWP(epd: EPD): number {
     let totalGWP = 0;
     if (epd.gwp != null) {
         const gwp = epd.gwp;
