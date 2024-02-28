@@ -34,6 +34,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     currentElementCard: ElementCard
     elementCardList : ElementCard[] = []
     carbonFootprint: BuildingCarbonFootprint
+    definedComponents
     static uuid = "932ed24b-87de-46a2-869f-8fda0d684c15"
     properties
     private _qtoResult: QtoResult
@@ -59,14 +60,19 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     constructor (components: OBC.Components) {
         super(components)
         this._components = components
+        
         components.scene
         this._qtoResultByElementName = {}
         this._qtoResult = {}
         this.setUI()
         this.getQuantities()
+        
     }
-
+    private async loadConstructions() {
+        this.definedComponents = await getFirestoreComponents();
+    }
     private async setUI() {
+        
         const activationBtn = new OBC.Button(this._components)
         activationBtn.materialIcon = "co2"
         activationBtn.tooltip = "Carbon Footprint"
@@ -114,7 +120,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             console.log(carbonWindow.visible)
         })
 
-
+        await this.loadConstructions()
         this.materialForm = new OBC.Modal(this._components)
         this._components.ui.add(this.materialForm)
         this.materialForm.title = "Set predefined component:"
@@ -123,22 +129,22 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.materialForm.slots.content.addChild(GWPInput)
         GWPInput.label = "Select component"
         GWPInput.innerElements.dropdownList = document.createElement('ul');
-        const definedComponents = await getFirestoreComponents();
-        console.log (definedComponents)
+        console.log("Loaded components: ")
+        console.log (this.definedComponents)
         let dropdownOptions = ''; // Define dropdownOptions variable
 
-        definedComponents.forEach(entry => {
+        this.definedComponents.forEach(entry => {
             const listItem = document.createElement('li');
             listItem.dataset.value = entry.id;
             listItem.textContent = entry.name;
-            GWPInput.addOption("Option 1", "Option 2", "Option 3")
+            
             dropdownOptions += listItem.outerHTML; // Append listItem HTML to dropdownOptions
         });
         console.log(dropdownOptions)
         
-
+        GWPInput.addOption("Option 1", "Option 2", "Option 3")
         // Set the innerHTML of dropdownList to dropdownOptions
-        GWPInput.innerElements.dropdownList.innerHTML = dropdownOptions;
+        //GWPInput.innerElements.dropdownList.innerHTML = dropdownOptions;
         // Append dropdownHTML to the .layer-dropdown element inside dropdownList
         //GWPInput.innerElements.dropdownList.querySelector('.layer-dropdown').innerHTML += dropdownHTML;
 
