@@ -5,13 +5,31 @@ import { EPD } from 'epdx'
 import { interpolateColor, roundNumber, uppercaseInitials } from '../utils/utils'
 //import { calculateTotalGWP } from '../utils/epdx'
 import { Component } from '../classes/Component'
+import { calculateTotalEPDGWP } from '../utils/epdx'
 
 interface Props {
-    component: Component
+    component: Component,
+    epdxData: EPD[]
 }
 
 export function ComponentCard (props: Props) {
     let desc = ''
+    const layers = JSON.parse(props.component.layers)
+    console.log (layers)
+
+    const calculateTotalComponentGWP = () => {
+        let totalGWP = 0;
+    
+        layers.forEach((layer) => {
+            const epdxEntry = props.epdxData.find(entry => entry.id === layer);
+            if (epdxEntry && epdxEntry.gwp) {
+                const entryGWP = calculateTotalEPDGWP(epdxEntry)
+                totalGWP += entryGWP;
+            }
+        });
+    
+        return totalGWP;
+    };
     //const totalGWP = roundNumber(calculateTotalGWP(props.epd))
     return (
     /* <Router.Routes>
@@ -34,9 +52,23 @@ export function ComponentCard (props: Props) {
                     <div className="card-property">
                     <p style={{ color: "#969696" }}>Total GWP</p>
                     <p>
-                        0 kgCO2e
+                        {roundNumber(calculateTotalComponentGWP())} kgCO2e
                     </p>
                     </div>
+                    
+                    {layers.map((layer, index) => {
+                    
+                    const epdxEntry = props.epdxData.find(entry => entry.id === layer);
+                    if (epdxEntry) {
+                        return (
+                            <div className="card-property" key={index}>
+                                <p style={{ color: "#969696" }}>{epdxEntry.name}</p>
+                            </div>
+                        );
+                    } else {
+                        return null; 
+                    }
+                })}
                     
                     
                 </div>

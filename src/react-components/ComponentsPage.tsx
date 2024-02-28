@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as Router from "react-router-dom"
 import { ProjectsManager } from "../classes/ProjectsManager"
-import { formatDate, setupModal, showModal } from "../utils/utils"
+import { formatDate, roundNumber, setupModal, showModal } from "../utils/utils"
 import { renderProgress } from "../utils/utils"
 import { IFCViewer } from "./IFCViewer"
 import { deleteDocument, getCollection } from "../firebase"
@@ -9,7 +9,7 @@ import { Modal } from "./Modal"
 import { v4 as uuidv4 } from 'uuid'
 import { Component, IComponent } from "../classes/Component"
 import * as Firestore from "firebase/firestore"
-import { convertToEpdx } from "../utils/epdx"
+import { calculateTotalEPDGWP, convertToEpdx } from "../utils/epdx"
 
 import { EPD } from "epdx"
 import { MaterialCard } from "./MaterialCard"
@@ -29,6 +29,7 @@ export function ComponentsPage(props: Props) {
     
     const [initialized, setInitialized] = React.useState(false);
     const [epdxData, setEpdxData] = React.useState<EPD[]>([]);
+    
     const [componentData, setComponentData] = React.useState<Component[]>([]);
     
     const [showComponentData, setShowComponentData] = React.useState<Component[]>([]);
@@ -44,7 +45,7 @@ export function ComponentsPage(props: Props) {
         
       
         return  <Router.Link to={`/3d-ifc-co2/component/${component.id}`} key={component.id}>
-                    <ComponentCard component={component} />
+                    <ComponentCard component={component} epdxData={epdxData} />
                 </Router.Link>
         
         
@@ -67,6 +68,7 @@ export function ComponentsPage(props: Props) {
 
             console.log(compData)
             setEpdxData(epdData)
+
             setComponentData(compData)
             setShowComponentData(compData)
             if(data) {
@@ -96,17 +98,41 @@ export function ComponentsPage(props: Props) {
     const onFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Submit!")
-        const componentForm = document.getElementById("new-component-form")
-        if (!(componentForm && componentForm instanceof HTMLFormElement)) {return}
-        e.preventDefault()
-        const formData = new FormData(componentForm)
-        console.log(formData)
-        const numberOfLayers = countLayers(formData);
-        const layerValues = extractLayerValues(formData);
+        const form = e.target;
+        console.log(form)
+        console.log(e)
+    
+        if (!(form && form instanceof HTMLFormElement)) {return}
+        const nameInput = form.querySelector('input[name="name"]');
+        const name = nameInput.value;
+
+
+        console.log("Name:", name);
+
+
+        const layerInputs = form.querySelectorAll('input[name^="layer-"], select[name^="layer-"]');
+        const layerValues = [];
+        
+        layerInputs.forEach(layerInput => {
+            let value;
+            if (layerInput.tagName === 'INPUT') {
+                value = layerInput.value;
+            } else if (layerInput.tagName === 'SELECT') {
+                const selectedIndex = layerInput.selectedIndex;
+                value = layerInput.options[selectedIndex].value;
+            }
+            layerValues.push(value); // Push the value into the layerValues array
+        });
+        
+        console.log("Layer values:", layerValues);
+
+
+
+        
         const layersJSON = JSON.stringify(layerValues);
         console.log(layersJSON)
         const component = new Component(
-            formData.get("name") as string,
+            name as string,
             uuidv4(),
             layersJSON,
             'wall'
@@ -115,14 +141,11 @@ export function ComponentsPage(props: Props) {
         const componentData = component.toPlainObject();
         try {
             if(true) {
-                //const result = await Firestore.addDoc(componentsCollection, componentData)
+                const result = await Firestore.addDoc(componentsCollection, componentData)
                 
-                
+ 
                     
-                    
-                    
-                    
-                componentForm.reset()
+                form.reset()
                 const modal = document.getElementById("new-component-modal");
                 if (modal && modal instanceof HTMLDialogElement) {
                     modal.close();
@@ -136,7 +159,7 @@ export function ComponentsPage(props: Props) {
         }
         catch (err) {
             alert(err)
-        }
+        } 
     }
     function extractLayerValues(formData: any): { [key: string]: any } {
         const layerValues: { [key: string]: any } = {};
@@ -159,7 +182,8 @@ export function ComponentsPage(props: Props) {
         return layerCount;
     }
 
-    const onAddLayerClick = () => {
+    const onAddLayerClick = (e) => {
+        e.preventDefault()
         const layerDiv = document.getElementById("component-layers");
 
         if (layerDiv && layerDiv instanceof HTMLDivElement) {
@@ -174,22 +198,37 @@ export function ComponentsPage(props: Props) {
           console.warn("The provided div wasn't found. ");
         }
     }
+
+
+    function populateDropdown(dropdown) {
+        
+        dropdown.innerHTML = '<option value="" selected disabled>Select Layer 01</option>';
+        
+        epdxData.forEach(function(entry) {
+            var option = document.createElement("option");
+            option.text = entry.name;
+            option.value = entry.id; 
+            dropdown.add(option);
+        });
+    }
     
 
     function generateAnotherLayerDiv(layerNumber: number): string {
+        let dropdownOptions = '';
+        epdxData.forEach(entry => {
+            dropdownOptions += `<option value="${entry.id}">${entry.name}: ${roundNumber(calculateTotalEPDGWP(entry))}kgCO2/unit</option>`;
+        });
+    
         return `
-            
-                <div class="form-field-container">
-                    <label>
-                        <span class="material-symbols-rounded">note</span>Layer ${layerNumber.toString().padStart(2, '0')}
-                    </label>
-                    <input
-                        name="name"
-                        type="text"
-                        placeholder="Layer ${layerNumber.toString().padStart(2, '0')}"
-                    />
-                </div>
-            
+            <div class="form-field-container">
+                <label>
+                    <span class="material-symbols-rounded">note</span>Layer ${layerNumber.toString().padStart(2, '0')}
+                </label>
+                <select name="layer-${layerNumber.toString().padStart(2, '0')}" class="layer-dropdown">
+                    <option value="" selected disabled>Select Layer ${layerNumber.toString().padStart(2, '0')}</option>
+                    ${dropdownOptions}
+                </select>
+            </div>
         `;
     }
     return(
@@ -220,17 +259,16 @@ export function ComponentsPage(props: Props) {
                     </p>
                     </div>
                     <div id="component-layers">
-                        <div className="form-field-container" >
+                        {/* <div className="form-field-container" >
                         <label>
                             <span className="material-symbols-rounded">note</span>Layer 01
                         </label>
-                        <input
-                            name="name"
-                            type="text"
-                            placeholder="Layer 01"
-                        />
+                        <select name="layer-01" id="layer-01-dropdown">
+                            <option value="" selected disabled>Select Layer 01</option>
+                            
+                        </select>
                         
-                        </div>
+                        </div> */}
                     </div>
                     <button onClick={onAddLayerClick} className="positive">
                         ...add another layer
