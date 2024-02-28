@@ -11,6 +11,7 @@ import { ElementCard } from "./src/ElementCard"
 import { ElementQtyCard } from "./src/ElementQtyCard"
 import { ElementSetNameCard } from "./src/ElementSetNameCard"
 import { ResultsCard } from "./src/ResultsCard"
+import { getFirestoreComponents } from "../../utils/materialdata"
 
 //const todosCollection = getCollection<ToDoData>("/todos")
 type QtoResult = {
@@ -65,7 +66,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.getQuantities()
     }
 
-    private setUI() {
+    private async setUI() {
         const activationBtn = new OBC.Button(this._components)
         activationBtn.materialIcon = "co2"
         activationBtn.tooltip = "Carbon Footprint"
@@ -116,12 +117,39 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         this.materialForm = new OBC.Modal(this._components)
         this._components.ui.add(this.materialForm)
-        this.materialForm.title = "Set Material Data"
+        this.materialForm.title = "Set predefined component:"
 
-        const GWPInput = new OBC.TextInput(this._components)
-        GWPInput.label = "Component GWP [kgCO2e/unit]"
+        const GWPInput = new OBC.Dropdown(this._components);
+        this.materialForm.slots.content.addChild(GWPInput)
+        GWPInput.label = "Select component"
+        GWPInput.innerElements.dropdownList = document.createElement('ul');
+        const definedComponents = await getFirestoreComponents();
+        console.log (definedComponents)
+        let dropdownOptions = ''; // Define dropdownOptions variable
+
+        definedComponents.forEach(entry => {
+            const listItem = document.createElement('li');
+            listItem.dataset.value = entry.id;
+            listItem.textContent = entry.name;
+            GWPInput.addOption("Option 1", "Option 2", "Option 3")
+            dropdownOptions += listItem.outerHTML; // Append listItem HTML to dropdownOptions
+        });
+        console.log(dropdownOptions)
+        
+
+        // Set the innerHTML of dropdownList to dropdownOptions
+        GWPInput.innerElements.dropdownList.innerHTML = dropdownOptions;
+        // Append dropdownHTML to the .layer-dropdown element inside dropdownList
+        //GWPInput.innerElements.dropdownList.querySelector('.layer-dropdown').innerHTML += dropdownHTML;
+
+        console.log(GWPInput.innerElements.dropdownList)
+
+        GWPInput.label = "Component"
         this.GWPInput = GWPInput
         this.materialForm.slots.content.addChild(GWPInput)
+
+
+
 
 
         this.materialForm.slots.content.get().style.padding = "20px"
@@ -178,7 +206,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                 console.log(elementCard)
                 this.currentElementCard = elementCard
 
-                this.GWPInput.value = this.currentElementCard.elementData["CF values"]["Element GWP / unit"]
+                //this.GWPInput.value = this.currentElementCard.elementData["CF values"]["Element GWP / unit"]
             })    
         }
         const resultsWindow = this.uiElement.get("carbonWindow")
