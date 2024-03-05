@@ -69,8 +69,26 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         
     }
     private async loadConstructions() {
-        this.definedComponents = await getFirestoreComponents();
+        try {
+            
+            const components = await getFirestoreComponents();
+    
+            
+            components.forEach(component => {
+                
+                const listItem = document.createElement('li');
+                listItem.dataset.value = component.id;
+                listItem.textContent = component.name;
+    
+                
+                this.GWPInput.innerElements.dropdownList.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error("Error loading components:", error);
+        }
     }
+
+
     private async setUI() {
         
         const activationBtn = new OBC.Button(this._components)
