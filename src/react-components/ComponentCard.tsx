@@ -21,10 +21,13 @@ export function ComponentCard (props: Props) {
         let totalGWP = 0;
     
         layers.forEach((layer) => {
-            const epdxEntry = props.epdxData.find(entry => entry.id === layer);
+            console.log(layer.value)
+            console.log(layer.amount)
+            const epdxEntry = props.epdxData.find(entry => entry.id === layer.value);
             if (epdxEntry && epdxEntry.gwp) {
                 const entryGWP = calculateTotalEPDGWP(epdxEntry)
-                totalGWP += entryGWP;
+                
+                totalGWP += entryGWP * layer.amount
             }
         });
     
@@ -58,11 +61,12 @@ export function ComponentCard (props: Props) {
                     
                     {layers.map((layer, index) => {
                     
-                    const epdxEntry = props.epdxData.find(entry => entry.id === layer);
+                    const epdxEntry = props.epdxData.find(entry => entry.id === layer.value);
                     if (epdxEntry) {
                         return (
                             <div className="card-property" key={index}>
-                                <p style={{ color: "#969696" }}>{epdxEntry.name}</p>
+                                <p style={{ color: "#969696" }}>{epdxEntry.name}</p><p>{layer.amount} {epdxEntry.declared_unit}</p>
+                                
                             </div>
                         );
                     } else {

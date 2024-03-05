@@ -17,7 +17,7 @@ import { SearchBox } from "./SearchBox";
 import { getFirestoreComponents, getFirestoreMaterials } from "../utils/materialdata"
 import { ComponentCard } from "./ComponentCard"
 import { generateUUID } from "three/src/math/MathUtils"
-
+import { ComponentSubtype } from "../classes/Component"
 const componentsCollection = getCollection<IComponent>("/components")
 interface Props {
     
@@ -33,8 +33,8 @@ export function ComponentsPage(props: Props) {
     const [componentData, setComponentData] = React.useState<Component[]>([]);
     
     const [showComponentData, setShowComponentData] = React.useState<Component[]>([]);
-
-    let newComponentLayers = 1;
+    const [newComponentLayers, setNewComponentLayers] = React.useState(1);
+    
     let num = 0
     const componentCards = showComponentData.map((component) => {
         
@@ -88,31 +88,44 @@ export function ComponentsPage(props: Props) {
       const onNewComponentClick = () => {
         const modal = document.getElementById("new-component-modal");
         if (modal && modal instanceof HTMLDialogElement) {
-            newComponentLayers = 1
+            setNewComponentLayers(1)
+
+            const simulatedEvent = {
+                preventDefault: () => {}, 
+            };
+        
+    
+            onAddLayerClick(simulatedEvent);
             modal.showModal();
+            
         } 
         else {
           console.warn("The provided modal wasn't found. ");
         }
     }
     const onFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("Submit!")
-        const form = e.target;
-        console.log(form)
-        console.log(e)
+        e.preventDefault();
     
-        if (!(form && form instanceof HTMLFormElement)) {return}
-        const nameInput = form.querySelector('input[name="name"]');
-        const name = nameInput.value;
-
-
+        const form = e.target as HTMLFormElement;
+        const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
+        const name = nameInput.value.trim();
+    
+        if (!name) {
+            alert('Please provide a name for the component.');
+            return;
+        }
+    
         console.log("Name:", name);
-
-
+    
+        const subtypeInput = form.querySelector('select[name="subtype"]') as HTMLSelectElement;
+        const subtype = subtypeInput.value;
+    
         const layerInputs = form.querySelectorAll('input[name^="layer-"], select[name^="layer-"]');
         const layerValues = [];
-        
+        const amountValues = [];
+    
+        let isValid = true; // Flag to track overall validity
+    
         layerInputs.forEach(layerInput => {
             let value;
             if (layerInput.tagName === 'INPUT') {
@@ -121,46 +134,61 @@ export function ComponentsPage(props: Props) {
                 const selectedIndex = layerInput.selectedIndex;
                 value = layerInput.options[selectedIndex].value;
             }
-            layerValues.push(value); // Push the value into the layerValues array
+            layerValues.push(value);
+    
+            const layerNumber = layerInput.getAttribute('name').split('-')[1];
+            const amountInput = form.querySelector(`input[name="amount-${layerNumber}"]`) as HTMLInputElement;
+        const amount = amountInput ? parseFloat(amountInput.value.trim()) : NaN;
+
+        if (!value || isNaN(amount)) { 
+            isValid = false;
+            return; 
+        }
+        amountValues.push(amount);
         });
-        
+
+        if (!isValid) {
+            alert('Please select a value and specify a valid amount for each layer.');
+            return;
+        }
+    
         console.log("Layer values:", layerValues);
-
-
-
-        
-        const layersJSON = JSON.stringify(layerValues);
-        console.log(layersJSON)
+        console.log("Amount values:", amountValues);
+    
+        const layersData = layerValues.map((layerValue, index) => ({
+            value: layerValue,
+            amount: amountValues[index]
+        }));
+    
+        const layersJSON = JSON.stringify(layersData);
+        console.log(layersJSON);
+    
         const component = new Component(
             name as string,
             uuidv4(),
             layersJSON,
-            'wall'
-        )
-        console.log(e)
+            subtype as ComponentSubtype
+        );
+    
         const componentData = component.toPlainObject();
         try {
             if(true) {
-                const result = await Firestore.addDoc(componentsCollection, componentData)
-                
- 
-                    
-                form.reset()
+                const result = await Firestore.addDoc(componentsCollection, componentData);
+                form.reset();
                 const modal = document.getElementById("new-component-modal");
                 if (modal && modal instanceof HTMLDialogElement) {
                     modal.close();
-                } 
-                else {
-                    console.warn("The provided modal wasn't found. ");
+                } else {
+                    console.warn("The provided modal wasn't found.");
                 }
-                
             }
-            
         }
         catch (err) {
-            alert(err)
-        } 
-    }
+            alert(err);
+        }
+    };
+    
+    
     function extractLayerValues(formData: any): { [key: string]: any } {
         const layerValues: { [key: string]: any } = {};
         for (const key in formData) {
@@ -183,22 +211,69 @@ export function ComponentsPage(props: Props) {
     }
 
     const onAddLayerClick = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const layerDiv = document.getElementById("component-layers");
-
-        if (layerDiv && layerDiv instanceof HTMLDivElement) {
-            newComponentLayers = newComponentLayers + 1
-            const newLayerHTML = generateAnotherLayerDiv(newComponentLayers);
-
     
-            layerDiv.insertAdjacentHTML("beforeend", newLayerHTML);
+        if (layerDiv && layerDiv instanceof HTMLDivElement) {
+            const newLayerHTML = generateAnotherLayerDiv(newComponentLayers, epdxData);
 
-        } 
-        else {
-          console.warn("The provided div wasn't found. ");
+            layerDiv.insertAdjacentHTML("beforeend", newLayerHTML);
+            const newLayerSelect = layerDiv.querySelector(`select[name="layer-${newComponentLayers.toString().padStart(2, '0')}"]`) as HTMLSelectElement;
+            if (newLayerSelect) {
+                newLayerSelect.addEventListener('change', handleDropdownChange);
+            }
+            setNewComponentLayers(prevLayers => prevLayers + 1); 
+        } else {
+            console.warn("The provided div wasn't found.");
         }
     }
+    
+    function generateAnotherLayerDiv(layerNumber: number, epdxData: EPD[]): string {
+        let dropdownOptions = '';
+        epdxData.forEach(entry => {
+            dropdownOptions += `<option value="${entry.id}" data-unit="${entry.declared_unit}">${entry.name}: ${roundNumber(calculateTotalEPDGWP(entry))}kgCO2/${entry.declared_unit}</option>`;
+        });
 
+        return `
+            <div class="form-field-container">
+                <p>
+                    <select name="layer-${layerNumber.toString().padStart(2, '0')}" style="margin-top: 5px;" >
+                        <option value="" selected disabled>Select Layer ${layerNumber.toString().padStart(2, '0')}</option>
+                        ${dropdownOptions}
+                    </select>
+                </p>
+                <p>
+                    <input type="number" step="0.01" name="amount-${layerNumber.toString().padStart(2, '0')}" placeholder="amount" style="margin-top: 5px;"> 
+                    <span class="unit-placeholder"></span>
+                </p>
+            </div>
+        `;
+    }
+    
+
+    function handleDropdownChange(event: Event) {
+        const select = event.target as HTMLSelectElement;
+        const selectedOption = select.options[select.selectedIndex];
+        const unit = selectedOption.getAttribute('data-unit');
+        console.log('Selected unit:', unit);
+    
+        
+        const unitPlaceholder = select.closest('.form-field-container').querySelector('.unit-placeholder') as HTMLElement;
+    
+        
+        if (unitPlaceholder) {
+            unitPlaceholder.textContent = unit || ''; 
+        } else {
+            console.warn("Unit placeholder not found.");
+        }
+    }
+    
+   
+    function updateUnit(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const unitPlaceholder = selectElement.parentNode.nextElementSibling.querySelector('.unit-placeholder');
+        unitPlaceholder.textContent = selectedOption.getAttribute('data-unit');
+    }
 
     function populateDropdown(dropdown) {
         
@@ -212,25 +287,21 @@ export function ComponentsPage(props: Props) {
         });
     }
     
-
-    function generateAnotherLayerDiv(layerNumber: number): string {
-        let dropdownOptions = '';
-        epdxData.forEach(entry => {
-            dropdownOptions += `<option value="${entry.id}">${entry.name}: ${roundNumber(calculateTotalEPDGWP(entry))}kgCO2/unit</option>`;
-        });
+    const onCancelClick = () => {
+        const modal = document.getElementById("new-component-modal");
+        const layerDiv = document.getElementById("component-layers");
     
-        return `
-            <div class="form-field-container">
-                <label>
-                    <span class="material-symbols-rounded">note</span>Layer ${layerNumber.toString().padStart(2, '0')}
-                </label>
-                <select name="layer-${layerNumber.toString().padStart(2, '0')}" class="layer-dropdown">
-                    <option value="" selected disabled>Select Layer ${layerNumber.toString().padStart(2, '0')}</option>
-                    ${dropdownOptions}
-                </select>
-            </div>
-        `;
-    }
+        if (modal && modal instanceof HTMLDialogElement && layerDiv) {
+            setNewComponentLayers(1)
+            layerDiv.innerHTML = ''; // Clear layer HTML content
+            modal.close();
+        } else {
+            console.warn("The provided modal or layer div wasn't found.");
+        }
+    };
+    
+    
+
     return(
         
            <div className="page">
@@ -245,7 +316,7 @@ export function ComponentsPage(props: Props) {
                     <input
                         name="name"
                         type="text"
-                        placeholder="What's the name of your project?"
+                        placeholder="Name of the component..."
                     />
                     <p
                         style={{
@@ -257,6 +328,19 @@ export function ComponentsPage(props: Props) {
                     >
                         TIP: Give it a short name
                     </p>
+                    </div>
+                    <div className="form-field-container">
+                        <label>
+                            <span className="material-symbols-rounded">note</span>Subtype
+                        </label>
+                        <select name="subtype">
+                            <option value="" selected disabled>Select Subtype</option>
+                            {Object.values(ComponentSubtype).map(subtype => (
+                                <option key={subtype} value={subtype}>
+                                    {subtype}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div id="component-layers">
                         {/* <div className="form-field-container" >
@@ -284,7 +368,10 @@ export function ComponentsPage(props: Props) {
                             id="close-new-project-modal-btn"
                             type="button"
                             style={{ backgroundColor: "transparent" }}
-                            className="btn-secondary" >
+                            className="btn-secondary" 
+                            onClick={onCancelClick}
+                            >
+                            
                             Cancel
                         </button>
                     <button type="submit" className="positive">

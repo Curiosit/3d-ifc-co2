@@ -3,20 +3,25 @@ export interface IComponent {
 
   }
 
-  export class Component implements IComponent {
+  export enum ComponentSubtype {
+    Wall = "wall",
+    Roof = "roof",
+    Slab = "slab",
+    Ceiling = "ceiling",
+    Door = "door",
+    Window = "window",
+    Foundation = "foundation",
+    Stair = "stair",
+    Other = "other"
+}
 
-    //From interface
+export class Component implements IComponent {
     name: string;
-
-
-
-    //
     id: string;
     layers: string;
-    subtype: string;
+    subtype: ComponentSubtype;
 
-
-      constructor(name: string, id: string, layers: string, subtype: string) {
+    constructor(name: string, id: string, layers: string, subtype: ComponentSubtype) {
         this.name = name;
         this.id = id;
         this.layers = layers;
@@ -24,11 +29,11 @@ export interface IComponent {
     }
 
     toPlainObject(): { [key: string]: any } {
-      return {
-          name: this.name,
-          id: this.id,
-          layers: this.layers,
-          subtype: this.subtype
-      };
-  }
-  }
+        return {
+            name: this.name,
+            id: this.id,
+            layers: this.layers,
+            subtype: this.subtype
+        };
+    }
+}
