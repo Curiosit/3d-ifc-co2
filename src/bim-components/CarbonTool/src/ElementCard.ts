@@ -122,13 +122,45 @@ export class ElementCard extends OBC.SimpleUIComponent {
         //this.dispose()
     }
 
-    async setupOnClick(materialForm, constructionComponents) {
+    async setupOnClick(materialForm: OBC.FloatingWindow, constructionComponents) {
         this.onCardClick.add(() => {
             console.log("Setup onclick");
             console.log(materialForm);
-    
+            console.log(constructionComponents);
+            const content = materialForm.slots
+            console.log(content);
+            const text = new OBC.UIElement()
+            
+            const annot = new OBC.TextArea(this._components)
+            annot.label = "Text"
+            
+
+            const divElement = document.createElement('div');
+
+            // Create a select element
+            const selectElement = document.createElement('select');
+
+            // Iterate through the components and add options to the select element
+            constructionComponents.forEach(component => {
+                const optionElement = document.createElement('option');
+                optionElement.textContent = component.name;
+                optionElement.value = component.id; // Assuming you want to use the component's ID as the value
+                selectElement.appendChild(optionElement);
+            });
+
+            // Append the select element to the div
+            divElement.appendChild(selectElement);
+            // Append the div to the body or any other desired container
+            
+
+            materialForm.slots.content.domElement.appendChild(divElement)
+
+            const acceptComponentBtn = new OBC.Button(this._components, {name: "Apply"})
+            materialForm.addChild(acceptComponentBtn)
+
+
             // Ensure dropdownList is initialized
-            if (!materialForm.innerElements.dropdownList) {
+            /* if (!materialForm.innerElements.dropdownList) {
                 materialForm.innerElements.dropdownList = document.createElement('ul');
                 materialForm.slots.content.appendChild(materialForm.innerElements.dropdownList);
             }
@@ -144,7 +176,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 listItem.dataset.value = component.id;
                 listItem.textContent = component.name;
                 materialForm.innerElements.dropdownList.appendChild(listItem);
-            });
+            }); */
     
             materialForm.visible = true;
         });
