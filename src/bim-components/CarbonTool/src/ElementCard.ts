@@ -122,16 +122,32 @@ export class ElementCard extends OBC.SimpleUIComponent {
         //this.dispose()
     }
 
-    async setupOnClick(materialForm) {
+    async setupOnClick(materialForm, constructionComponents) {
         this.onCardClick.add(() => {
-
-            console.log("Setup onclick")
-            console.log(materialForm)
-            //this.setupEditForm(materialForm)  
-            materialForm.visible = true
-        })
-        
-        
+            console.log("Setup onclick");
+            console.log(materialForm);
+    
+            // Ensure dropdownList is initialized
+            if (!materialForm.innerElements.dropdownList) {
+                materialForm.innerElements.dropdownList = document.createElement('ul');
+                materialForm.slots.content.appendChild(materialForm.innerElements.dropdownList);
+            }
+    
+            // Clear any previous options in the dropdown
+            while (materialForm.innerElements.dropdownList.firstChild) {
+                materialForm.innerElements.dropdownList.removeChild(materialForm.innerElements.dropdownList.firstChild);
+            }
+    
+            // Add construction components to the dropdown
+            constructionComponents.forEach(component => {
+                const listItem = document.createElement('li');
+                listItem.dataset.value = component.id;
+                listItem.textContent = component.name;
+                materialForm.innerElements.dropdownList.appendChild(listItem);
+            });
+    
+            materialForm.visible = true;
+        });
     }
     calculateGWP(set) {
         console.log("Calculating GWP")

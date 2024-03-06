@@ -12,6 +12,8 @@ import { ElementQtyCard } from "./src/ElementQtyCard"
 import { ElementSetNameCard } from "./src/ElementSetNameCard"
 import { ResultsCard } from "./src/ResultsCard"
 import { getFirestoreComponents } from "../../utils/materialdata"
+import { Component } from "../../classes/Component"
+
 
 //const todosCollection = getCollection<ToDoData>("/todos")
 type QtoResult = {
@@ -28,6 +30,8 @@ type QtoResultByElementName = {
 }
 
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
+    
+
     materialForm: OBC.Modal
     GWPInput
     resultsCard: ResultsCard
@@ -42,6 +46,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     private _qtoList: { [key: string]: any }[] = [];
     enabled: boolean = true
     private _components: OBC.Components
+    constructionComponents: Component[] = [];
+    constructionSetWindow
     
     uiElement = new OBC.UIElement<
     {
@@ -68,21 +74,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.getQuantities()
         
     }
-    private async loadConstructions() {
+    async loadConstructions() {
         try {
-            
-            const components = await getFirestoreComponents();
-    
-            
-            components.forEach(component => {
-                
-                const listItem = document.createElement('li');
-                listItem.dataset.value = component.id;
-                listItem.textContent = component.name;
-    
-                
-                this.GWPInput.innerElements.dropdownList.appendChild(listItem);
-            });
+            this.constructionComponents = await getFirestoreComponents();
         } catch (error) {
             console.error("Error loading components:", error);
         }
@@ -107,6 +101,19 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this._components.ui.add(carbonWindow)
         carbonWindow.visible = false
 
+        const constructionListWindow = new OBC.FloatingWindow(this._components)
+        constructionListWindow.title = "Components List"
+        this._components.ui.add(constructionListWindow)
+        constructionListWindow.visible = false
+
+        const constructionSetWindow = new OBC.FloatingWindow(this._components)
+        constructionSetWindow.title = "Set Component"
+        this._components.ui.add(constructionSetWindow)
+        constructionSetWindow.visible = false
+        
+        
+        this.constructionSetWindow = constructionSetWindow
+
         activationBtn.onClick.add(() => {
 
             activationBtn.active = !activationBtn.active
@@ -118,6 +125,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         const carbonWindowBtn = new OBC.Button(this._components, {name: "Results"})
         activationBtn.addChild(carbonWindowBtn)
+
+        const constructionListWindowBtn = new OBC.Button(this._components, {name: "Components"})
+        activationBtn.addChild(constructionListWindowBtn)
 
         this.uiElement.set({activationBtn, qtoWindow, carbonWindow})
         
@@ -138,51 +148,30 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             console.log(carbonWindow.visible)
         })
 
-        await this.loadConstructions()
-        this.materialForm = new OBC.Modal(this._components)
-        this._components.ui.add(this.materialForm)
-        this.materialForm.title = "Set predefined component:"
 
-        const GWPInput = new OBC.Dropdown(this._components);
-        this.materialForm.slots.content.addChild(GWPInput)
-        GWPInput.label = "Select component"
-        GWPInput.innerElements.dropdownList = document.createElement('ul');
-        console.log("Loaded components: ")
-        console.log (this.definedComponents)
-        let dropdownOptions = ''; // Define dropdownOptions variable
-
-        this.definedComponents.forEach(entry => {
-            const listItem = document.createElement('li');
-            listItem.dataset.value = entry.id;
-            listItem.textContent = entry.name;
+        constructionListWindowBtn.onClick.add(() => {
             
-            dropdownOptions += listItem.outerHTML; // Append listItem HTML to dropdownOptions
-        });
-        console.log(dropdownOptions)
-        
-        GWPInput.addOption("Option 1", "Option 2", "Option 3")
-        // Set the innerHTML of dropdownList to dropdownOptions
-        //GWPInput.innerElements.dropdownList.innerHTML = dropdownOptions;
-        // Append dropdownHTML to the .layer-dropdown element inside dropdownList
-        //GWPInput.innerElements.dropdownList.querySelector('.layer-dropdown').innerHTML += dropdownHTML;
-
-        console.log(GWPInput.innerElements.dropdownList)
-
-        GWPInput.label = "Component"
-        this.GWPInput = GWPInput
-        this.materialForm.slots.content.addChild(GWPInput)
+            constructionListWindowBtn.active = !constructionListWindowBtn.active
+            constructionListWindow.visible = constructionListWindow.active
 
 
+        })
 
-
-
-        this.materialForm.slots.content.get().style.padding = "20px"
-        this.materialForm.slots.content.get().style.display = "flex"
-        this.materialForm.slots.content.get().style.flexDirection = "column"
-        this.materialForm.slots.content.get().style.rowGap = "20px"
+        await this.loadConstructions()
         
 
-        this.materialForm.onAccept.add(() => {
+        
+        
+        
+
+
+
+
+
+        
+        
+
+        /* this.materialForm.onAccept.add(() => {
             //elementCard.updateGWP(GWPInput.value)
             console.log("Modifying")
             console.log(this.currentElementCard.elementData)
@@ -197,12 +186,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             this.updateUI()
             this.materialForm.visible = false
 
-        })
+        }) */
 
-        this.materialForm.onCancel.add(() => {
-            this.materialForm.visible = false
-        })
-        console.log(this.materialForm)
+        
     }
     async updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
@@ -216,8 +202,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             elementCard.data = this._qtoResultByElementName[elementName]
             elementCard.elementName = elementName
             console.log(this.materialForm)
-            await elementCard.setupOnClick(this.materialForm)
-
+            await elementCard.setupOnClick(this.constructionSetWindow, this.constructionComponents)
+            
             
             qtoList.addChild(elementCard)
             const set = this._qtoResultByElementName[elementName]
