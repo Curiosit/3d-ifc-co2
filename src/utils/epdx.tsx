@@ -4,6 +4,28 @@ import { Source, Conversion, EPD, ImpactCategory, Standard, SubType, Unit } from
 import { DateTime } from "chrono";
 import { v4 as uuidv4 } from "uuid";
 import { roundNumber } from "./utils";
+
+export function calculateTotalComponentGWP (layers, epdxData) {
+    let totalGWP = 0;
+    const layersList = JSON.parse(layers)
+    layersList.forEach((layer) => {
+        console.log(layer.value)
+        console.log(layer.amount)
+        const epdxEntry = epdxData.find(entry => entry.id === layer.value);
+        if (epdxEntry && epdxEntry.gwp) {
+            const entryGWP = calculateTotalEPDGWP(epdxEntry)
+            
+            totalGWP += entryGWP * layer.amount
+        }
+    });
+
+    return totalGWP;
+};
+
+
+
+
+
 export function convertToEpdx(data) {
     //console.log(data)
     const epdArray: EPD[] = [];

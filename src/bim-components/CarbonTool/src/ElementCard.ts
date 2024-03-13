@@ -10,6 +10,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
     //elementData
     elementDataset
     elementGWP
+    elementComponentID
     result: number
     setList: HTMLParagraphElement
     private _qtyElement: HTMLParagraphElement
@@ -20,6 +21,10 @@ export class ElementCard extends OBC.SimpleUIComponent {
     set elementName(value: string) {
         const elementNameHTML = this.getInnerElement("ElementName") as HTMLParagraphElement
         elementNameHTML.textContent = value
+    }
+    set elementComponent(value: string) {
+        const elementComponentHTML = this.getInnerElement("ElementComponent") as HTMLParagraphElement
+        elementComponentHTML.textContent = value
     }
     get elementData() {
         return this.elementDataset
@@ -71,7 +76,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
             <div class="element-item" >
             
             <div class="" >
-                <div style="display: flex; column-gap: 15px; align-items: center;">
+                <div style="column-gap: 15px; align-items: center;">
                 
                     <div>
                         <h3 id="ElementName">
@@ -79,7 +84,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                         </h3>
                     </div>
                     <div>
-                        <h4 id="ElementResult">
+                        <h4 id="ElementComponent">
                         
                         </h4>
                     </div>
@@ -125,40 +130,48 @@ export class ElementCard extends OBC.SimpleUIComponent {
     async setupOnClick(materialForm: OBC.FloatingWindow, constructionComponents) {
         this.onCardClick.add(() => {
             console.log("Setup onclick");
-            console.log(materialForm);
-            console.log(constructionComponents);
-            const content = materialForm.slots
-            console.log(content);
-            const text = new OBC.UIElement()
             
-            const annot = new OBC.TextArea(this._components)
-            annot.label = "Text"
-            
-
-            const divElement = document.createElement('div');
-
-            // Create a select element
+            // Clear existing content in materialForm if any
+            var parentElement = materialForm.slots.content.domElement;
+            while (parentElement.firstChild) {
+                parentElement.removeChild(parentElement.firstChild);
+            }
+    
+            // Create a select element for construction components
             const selectElement = document.createElement('select');
-
-            // Iterate through the components and add options to the select element
             constructionComponents.forEach(component => {
                 const optionElement = document.createElement('option');
                 optionElement.textContent = component.name;
-                optionElement.value = component.id; // Assuming you want to use the component's ID as the value
+                optionElement.value = component.id; // Use the component's ID as the value
                 selectElement.appendChild(optionElement);
             });
-
-            // Append the select element to the div
-            divElement.appendChild(selectElement);
-            // Append the div to the body or any other desired container
+    
+            // Append the select element to materialForm's content
+            materialForm.slots.content.domElement.appendChild(selectElement);
+    
+            // Create and add the "Apply" button to materialForm
+            const acceptComponentBtn = new OBC.Button(this._components, {name: "Apply"});
+            materialForm.addChild(acceptComponentBtn);
+    
+            // Set up the onClick event handler for the "Apply" button
+            acceptComponentBtn.onClick.add(() => {
+                // Access the selected value from the select element
+                const selectedComponentID = selectElement.value;
+    
+                // Update the elementComponentID with the selected value
+                this.elementComponentID = selectedComponentID;
+    
+                // Optional: Update UI or other properties as needed
+                this.elementComponent = constructionComponents.find(c => c.id === selectedComponentID)?.name;
+    
+                console.log("Selected Component ID:", this.elementComponentID);
+            });
+    
             
-
-            materialForm.slots.content.domElement.appendChild(divElement)
-
-            const acceptComponentBtn = new OBC.Button(this._components, {name: "Apply"})
-            materialForm.addChild(acceptComponentBtn)
-
-
+            materialForm.visible = true;
+        });
+    }
+    
             // Ensure dropdownList is initialized
             /* if (!materialForm.innerElements.dropdownList) {
                 materialForm.innerElements.dropdownList = document.createElement('ul');
@@ -178,9 +191,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 materialForm.innerElements.dropdownList.appendChild(listItem);
             }); */
     
-            materialForm.visible = true;
-        });
-    }
+            
     calculateGWP(set) {
         console.log("Calculating GWP")
         
