@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Assuming `env` is defined elsewhere in your application
 const env = 'p'; // Placeholder value
@@ -10,10 +10,16 @@ const fullApiPath = apiAIUrl
 export const AskAI: React.FC<{ question: string, show: boolean }> = ({ question, show }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [response, setResponse] = useState('');
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = '0px'; // Reset height to recalculate correctly below
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      textAreaRef.current.style.height = `${scrollHeight}px`;
+    }
+  }, [response]); 
 
 
-
-  // Adjusted `eventAskAI` function to fit React component
   const eventAskAI = async () => {
     let description = question
     const apiAIUrl = `${fullApiPath}askai`;
@@ -45,7 +51,7 @@ export const AskAI: React.FC<{ question: string, show: boolean }> = ({ question,
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div >
       <button className="btn-ai" type="button" onClick={handleButtonClick}>
         <span className="material-symbols-rounded">
           smart_toy
@@ -53,9 +59,14 @@ export const AskAI: React.FC<{ question: string, show: boolean }> = ({ question,
         Ask AI
       </button>
       {isModalOpen && show && (
-        <div style={{ margin: '10px' }}>
-          <p>{response}</p>
-        </div>
+        <textarea
+          name="response"
+          ref={textAreaRef}
+          placeholder="Response will be shown here..."
+          value={response}
+          readOnly
+          style={{ marginTop: '10px', width: '100%', boxSizing: 'border-box'}}
+        />
       )}
     </div>
   );

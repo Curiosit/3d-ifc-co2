@@ -310,7 +310,7 @@ export function ComponentsPage(props: Props) {
         if (selectedLayers.length === 0) {
             return "Please add layers to see the question.";
         }
-        return `What can be improved in this material combination to lower carbon footprint?: ${selectedLayers.join(', ')} - write a short answer listing possible replacements`;
+        return `What can be improved in this material combination to lower carbon footprint?: ${selectedLayers.join(', ')}. Write opinion on each layer, and suggest replacement. Be short`;
     };
 
 
@@ -318,8 +318,8 @@ export function ComponentsPage(props: Props) {
     return (
 
         <div className="page">
-            <dialog id="new-component-modal">
-                <form onSubmit={(e) => onFormSubmit(e)} id="new-component-form">
+            <dialog id="new-component-modal" >
+                <form onSubmit={(e) => onFormSubmit(e)} id="new-component-form" style={{ width: '700px' }}>
                     <h2>New component</h2>
                     <div className="input-list">
                         <div className="form-field-container">
@@ -394,11 +394,7 @@ export function ComponentsPage(props: Props) {
                             
                         </div>
                         <div
-                            style={{
-                                display: "flex",
-                                margin: "10px 0px 10px auto",
-                                columnGap: 10
-                            }}
+                            
                         ><AskAI question={constructQuestionFromLayers()} show={showQuestion}></AskAI></div>
                     </div>
                 </form>
