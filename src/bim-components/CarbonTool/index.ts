@@ -11,8 +11,10 @@ import { ElementCard } from "./src/ElementCard"
 import { ElementQtyCard } from "./src/ElementQtyCard"
 import { ElementSetNameCard } from "./src/ElementSetNameCard"
 import { ResultsCard } from "./src/ResultsCard"
-import { getFirestoreComponents } from "../../utils/materialdata"
+import { getFirestoreComponents, getFirestoreMaterials } from "../../utils/materialdata"
 import { Component } from "../../classes/Component"
+import { convertToEpdx } from "../../utils/epdx"
+import { EPD } from "epdx"
 
 
 //const todosCollection = getCollection<ToDoData>("/todos")
@@ -47,6 +49,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     enabled: boolean = true
     private _components: OBC.Components
     constructionComponents: Component[] = [];
+    epdxData: EPD[] = []
     constructionSetWindow
     
     uiElement = new OBC.UIElement<
@@ -74,9 +77,18 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.getQuantities()
         
     }
-    async loadConstructions() {
+    async loadData() {
         try {
             this.constructionComponents = await getFirestoreComponents();
+            console.log(this.constructionComponents)
+        } catch (error) {
+            console.error("Error loading components:", error);
+        }
+        try {
+            const data = await getFirestoreMaterials()
+            const epdData = convertToEpdx(data)
+            this.epdxData = epdData
+            console.log(this.epdxData)
         } catch (error) {
             console.error("Error loading components:", error);
         }
@@ -157,7 +169,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         })
 
-        await this.loadConstructions()
+        await this.loadData()
         
 
         
@@ -198,11 +210,11 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         for (const elementName in this._qtoResultByElementName) {
             console.log(this._qtoResultByElementName[elementName])
             
-            const elementCard = new ElementCard(this.components)
+            const elementCard = new ElementCard(this.components, this.epdxData, this.constructionComponents);
             elementCard.data = this._qtoResultByElementName[elementName]
             elementCard.elementName = elementName
             console.log(this.materialForm)
-            await elementCard.setupOnClick(this.constructionSetWindow, this.constructionComponents)
+            await elementCard.setupOnClick(this.constructionSetWindow)
             
             
             qtoList.addChild(elementCard)

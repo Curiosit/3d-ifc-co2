@@ -1,6 +1,9 @@
 import * as OBC from "openbim-components"
 import { ElementQtyCard } from "./ElementQtyCard"
 import { ElementSetNameCard } from "./ElementSetNameCard"
+import { calculateTotalComponentGWP } from "../../../utils/epdx"
+import { EPD } from "epdx"
+import { Component } from "../../../classes/Component"
 
 
 
@@ -8,9 +11,13 @@ export class ElementCard extends OBC.SimpleUIComponent {
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
     //elementData
+    elementSet
+    epdxData: EPD[];
+    constructionComponents: Component[];
     elementDataset
     elementGWP
     elementComponentID
+    
     result: number
     setList: HTMLParagraphElement
     private _qtyElement: HTMLParagraphElement
@@ -30,6 +37,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
         return this.elementDataset
     }
     set elementData(object) {
+        this.elementSet = object
         console.log("setting elementData")
         this.elementDataset = object
         this.calculateGWP(object)
@@ -69,7 +77,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
 
     
 
-    constructor(components: OBC.Components) {
+    constructor(components: OBC.Components, epdxData, constructionComponents) {
+        
         
         const template = `
         
@@ -101,6 +110,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
         super(components, template)
         
         
+        this.epdxData = epdxData;
+        this.constructionComponents = constructionComponents;
 
         this._qtyElement = this.getInnerElement("ElementName") as HTMLParagraphElement
         this.setList = this.getInnerElement("setList") as HTMLParagraphElement
@@ -127,10 +138,11 @@ export class ElementCard extends OBC.SimpleUIComponent {
         //this.dispose()
     }
 
-    async setupOnClick(materialForm: OBC.FloatingWindow, constructionComponents) {
+    async setupOnClick(materialForm: OBC.FloatingWindow) {
         this.onCardClick.add(() => {
             console.log("Setup onclick");
-            
+            console.log(this.constructionComponents);
+            const constructionComponents = this.constructionComponents
             // Clear existing content in materialForm if any
             var parentElement = materialForm.slots.content.domElement;
             while (parentElement.firstChild) {
@@ -165,6 +177,10 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 this.elementComponent = constructionComponents.find(c => c.id === selectedComponentID)?.name;
     
                 console.log("Selected Component ID:", this.elementComponentID);
+
+
+                this.elementData = this.elementSet
+                //this.calculateGWP(this.elementSet)
             });
     
             
@@ -192,7 +208,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
             }); */
     
             
-    calculateGWP(set) {
+    calculateGWPold(set) {
         console.log("Calculating GWP")
         
         for (const setName in set) {
@@ -203,6 +219,50 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 console.log(set["CF values"]["Element GWP / unit"])
                 set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
                 set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
+            }
+        }
+
+
+    }
+    calculateGWP(set) {
+        console.log("Calculating GWP")
+        let compGWP = 0
+        console.log("Component GWP:")
+        if (this.elementComponentID) {
+
+        
+            const component = this.constructionComponents.find(comp => comp.id === this.elementComponentID);
+
+            if (!component) {
+                console.error("Component not found");
+                
+            } else {
+                // Assuming the component's layers field is in the correct format for calculateTotalComponentGWP
+                // or you might need to adjust it based on your application's needs
+                const layers = component.layers; // Assuming layers is a JSON string or an object/array
+
+                // If layers is not a string but an object/array, you might need to stringify it
+                
+
+                compGWP = calculateTotalComponentGWP(layers,this.epdxData)
+                console.log(compGWP)
+
+            }
+        }
+        
+        for (const setName in set) {
+            console.log(setName)
+            if(setName == "CF values") {
+                console.log(set["CF values"])
+                //console.log(set["CF values"]["Amount"])
+                //console.log(set["CF values"]["Element GWP / unit"])
+                //set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
+                set["CF values"]["Element GWP / unit"] = compGWP
+                set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * compGWP
+                //set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
+
+
+                console.log(set["CF values"])
             }
         }
 

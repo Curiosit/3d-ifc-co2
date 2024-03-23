@@ -17,6 +17,7 @@ import { getFirestoreComponents, getFirestoreMaterials } from "../utils/material
 import { ComponentCard } from "./ComponentCard"
 
 import { ComponentSubtype } from "../classes/Component"
+import { AskAI } from "./AskAI"
 const componentsCollection = getCollection<IComponent>("/components")
 interface Props {
 
@@ -24,6 +25,8 @@ interface Props {
 
 export function ComponentsPage(props: Props) {
 
+    const [selectedLayers, setSelectedLayers] = React.useState<string[]>([]);
+    const [showQuestion, setShowQuestion] = React.useState(false);
     const [initialized, setInitialized] = React.useState(false);
     const [epdxData, setEpdxData] = React.useState<EPD[]>([]);
 
@@ -257,8 +260,12 @@ export function ComponentsPage(props: Props) {
         const select = event.target as HTMLSelectElement;
         const selectedOption = select.options[select.selectedIndex];
         const unit = selectedOption.getAttribute('data-unit');
+        const value = selectedOption.value;
         console.log('Selected unit:', unit);
-
+        let newSelectedLayers = [...selectedLayers];
+        newSelectedLayers[parseInt(select.name.split('-')[1]) - 1] = selectedOption.text;
+        setSelectedLayers(newSelectedLayers);
+        setShowQuestion(newSelectedLayers.length > 0);
         const unitPlaceholder = select.closest('.form-field-container').querySelector('.unit-placeholder') as HTMLElement;
 
         if (unitPlaceholder) {
@@ -297,6 +304,13 @@ export function ComponentsPage(props: Props) {
         } else {
             console.warn("The provided modal or layer div wasn't found.");
         }
+    };
+
+    const constructQuestionFromLayers = () => {
+        if (selectedLayers.length === 0) {
+            return "Please add layers to see the question.";
+        }
+        return `What can be improved in this material combination to lower carbon footprint?: ${selectedLayers.join(', ')} - write a short answer listing possible replacements`;
     };
 
 
@@ -376,7 +390,16 @@ export function ComponentsPage(props: Props) {
                             <button type="submit" className="positive">
                                 Accept
                             </button>
+                            
+                            
                         </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                margin: "10px 0px 10px auto",
+                                columnGap: 10
+                            }}
+                        ><AskAI question={constructQuestionFromLayers()} show={showQuestion}></AskAI></div>
                     </div>
                 </form>
             </dialog>

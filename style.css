@@ -385,7 +385,16 @@ input:focus, textarea:focus, select:focus {
    
   text-align: center;
 }
-
+.btn-ai {
+  outline: none;
+  background-color: #00cecf; 
+   
+  text-align: center;
+}
+.btn-ai:hover {
+  background-color: transparent; 
+  outline: 2px solid #969696; 
+}
 .btn-red:hover {
   background-color: transparent; 
   outline: 2px solid #969696; 

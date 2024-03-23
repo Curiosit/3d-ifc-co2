@@ -8,7 +8,6 @@ import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage"
 import { ViewerProvider } from "./react-components/IFCViewer"
 import { ProjectsManager } from "./classes/ProjectsManager"
 import { E404 } from "./react-components/E404"
-import { Modal } from "./react-components/Modal"
 import { MaterialsPage } from "./react-components/MaterialsPage"
 import { MaterialPage } from "./react-components/MaterialPage"
 import { ComponentsPage } from "./react-components/ComponentsPage"
@@ -26,7 +25,7 @@ appRoot.render(
       <ViewerProvider>
       
       <Sidebar />
-      <Modal />
+      
       <Router.Routes>
         <Router.Route path="/3d-ifc-co2/404" element={<E404 message="" />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/" element={<ProjectsPage projectsManager = {projectsManager} />}></Router.Route>

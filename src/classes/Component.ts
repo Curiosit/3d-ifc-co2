@@ -36,4 +36,6 @@ export class Component implements IComponent {
             subtype: this.subtype
         };
     }
+
+    
 }
