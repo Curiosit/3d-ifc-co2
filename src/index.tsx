@@ -33,6 +33,7 @@ appRoot.render(
         <Router.Route path="/3d-ifc-co2/materials" element={<MaterialsPage />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/materials/:id" element={<MaterialPage />}></Router.Route>
         <Router.Route path="/3d-ifc-co2/components" element={<ComponentsPage />}></Router.Route>
+        <Router.Route path="/3d-ifc-co2/components/:id" element={<ComponentsPage />}></Router.Route>
       </Router.Routes>
       </ViewerProvider>
     </Router.BrowserRouter>

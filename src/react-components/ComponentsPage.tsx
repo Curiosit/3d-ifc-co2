@@ -24,7 +24,11 @@ interface Props {
 }
 
 export function ComponentsPage(props: Props) {
-
+    const [showSingle, setShowSingle] = React.useState(false);
+    
+    const [componentID, setComponentID] = React.useState('');
+    const routeParams = Router.useParams<{id: string}>()
+    /* if (routeParams.id) { setShowSingle(true); setComponentID(routeParams.id) } */
     const [selectedLayers, setSelectedLayers] = React.useState<string[]>([]);
     const [showQuestion, setShowQuestion] = React.useState(false);
     const [initialized, setInitialized] = React.useState(false);
@@ -35,6 +39,7 @@ export function ComponentsPage(props: Props) {
     const [showComponentData, setShowComponentData] = React.useState<Component[]>([]);
     const [newComponentLayers, setNewComponentLayers] = React.useState(1);
 
+    const [pickedComponent, setPickedComponent] = React.useState<Component | null>(null);
     let num = 0
 
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -51,13 +56,32 @@ export function ComponentsPage(props: Props) {
 
         num += 1
         console.log(component)
-        return <Router.Link to={`/3d-ifc-co2/component/${component.id}`} key={component.id}>
+        return <Router.Link to={`/3d-ifc-co2/components/${component.id}`} key={component.id}>
             <ComponentCard component={component} epdxData={epdxData} />
         </Router.Link>
 
     })
 
+    const fetchComponentDetailsById = (componentID: string): Component | undefined  => {
 
+        const componentDetails = componentData.find(component => component.id === componentID);
+      
+        
+        return componentDetails;
+    };
+
+    React.useEffect(() => {
+        if (routeParams.id) {
+            setShowSingle(true);
+            const componentDetail = fetchComponentDetailsById(routeParams.id);
+            console.log (componentDetail)
+            setPickedComponent(componentDetail ?? null);
+        }
+    }, [routeParams.id, componentData]); 
+    
+    React.useEffect(() => {
+        console.log(pickedComponent);
+      }, [pickedComponent]);
 
     React.useEffect(() => {
         const getData = async () => {
@@ -79,11 +103,14 @@ export function ComponentsPage(props: Props) {
             getData()
         }
         else {
-            //console.log(materialData)
+            console.log("Show data")
         }
         return () => {
         }
     }, [initialized])
+
+
+
 
     const onNewComponentClick = () => {
         const modal = document.getElementById("new-component-modal");
@@ -313,8 +340,7 @@ export function ComponentsPage(props: Props) {
         return `What can be improved in this material combination to lower carbon footprint?: ${selectedLayers.join(', ')}. Write opinion on each layer, and suggest replacement. Be short`;
     };
 
-
-
+    
     return (
 
         <div className="page">
@@ -413,18 +439,23 @@ export function ComponentsPage(props: Props) {
             </header>
 
 
-            {
+            { 
+            showSingle && componentID !== null ?
+                <div id="component-details">
+
+                     { <ComponentCard component={pickedComponent} epdxData={epdxData} detailed={true} /> }
+                </div>
+            :
                 componentData.length > 0 ?
                     <div id="material-list">
-                        {componentCards}
+                            {componentCards}
                     </div>
-                    :
+                        :
                     <div id="material-list">
-                        No components found!
+                            No components found!
                     </div>
-
             }
-        </div>
+            </div>
 
     )
 }

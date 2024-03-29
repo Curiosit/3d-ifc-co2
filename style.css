@@ -250,7 +250,7 @@ header {
     gap: 30px;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
-  #material-details {
+  #material-details, #component-details {
     
     padding: 20px 40px;
     gap: 30px;
