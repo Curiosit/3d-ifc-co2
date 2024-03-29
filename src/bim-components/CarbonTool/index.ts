@@ -74,7 +74,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this._qtoResultByElementName = {}
         this._qtoResult = {}
         this.setUI()
-        this.getQuantities()
+        //this.getQuantities()
         
     }
     async loadData() {
@@ -340,11 +340,13 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         let idMap = new Array()
         let qtoResultByElementName: QtoResultByElementName
+        let qtoResultByElementFamily: QtoResultByElementName
         let result
         
         qtoResultByElementName = {}
+        qtoResultByElementFamily = {}
         console.log(qtoResultByElementName)
-
+        console.log(qtoResultByElementFamily)
         console.log("________________________________________________________________________")
         console.log("________________________________________________________________________")
         console.log("________________________________________________________________________")
@@ -357,26 +359,36 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             }
         }
         console.log(elements)
+        const byInstance = false
         for (const elementID in elements) {
             idMap = []
-            console.log("________________________________________________________________________")
-            console.log(elementID)
-            console.log(elements[elementID])
+            //console.log("________________________________________________________________________")
+            //console.log(elementID)
+            //console.log(elements[elementID])
             const name = properties[elements[elementID].expressID].Name.value
-            const nameWithID = name + '#' + elements[elementID].expressID
+            
+            let nameValue
+            if (byInstance) {
+                const nameWithID = name + '#' + elements[elementID].expressID
+                nameValue = nameWithID
+            }
+            else {
+                const family = properties[elements[elementID].expressID].ObjectType.value
+                nameValue = family
+            }
             idMap.push(elements[elementID].expressID)
             
-            qtoResultByElementName[nameWithID] = {}
-            const resultRow = qtoResultByElementName[nameWithID]
-            console.log(qtoResultByElementName[nameWithID])
-            console.log("________________________________________________________________________")
+            qtoResultByElementName[nameValue] = {}
+            const resultRow = qtoResultByElementName[nameValue]
+            //console.log(qtoResultByElementName[nameWithID])
+            //console.log("________________________________________________________________________")
 
-            console.log(resultRow)
+            //console.log(resultRow)
             OBC.IfcPropertiesUtils.getRelationMap(
                 properties, 
                 WEBIFC.IFCRELDEFINESBYPROPERTIES,
                 (setID, relatedIDs) => {
-                    console.log("GET RELATION MAP")
+                    //console.log("GET RELATION MAP")
                     
                     const set = properties[setID]
                     if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
@@ -406,9 +418,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         (qtoID) => {
                             //console.log(properties[qtoID])
                             const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
-                            console.log(qtoName)
+                            //console.log(qtoName)
                             const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
-                            console.log(value)
+                            //console.log(value)
                             if(!qtoName || !value) {return}
                             //console.log(qtoName)
                             if (!(qtoName in resultRow[setName])) {
@@ -422,23 +434,72 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             //resultRow[setName][qtoName] = value
                         }
                     )
-                    console.log("Element thickness: ")
-                    const thickness = resultRow["BaseQuantities"]["Width"] / 1000
-                    console.log(thickness)
-                    console.log("Element volume: ")
-                    const volume = resultRow["BaseQuantities"]["NetVolume"]
-                    console.log(volume)
+                    console.log(nameValue)
+                    console.log(qtoResultByElementFamily)
 
-                    console.log("Element area: ")
-                    const area = volume / thickness
-                    console.log(area)
-                    //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
-                    //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
-                    qtoResultByElementName[nameWithID]["CF values"] =   {
-                        "Amount": area,
-                        "Element GWP / unit": 0,
-                        "Carbon Footprint": 0
-                    } 
+                    if (!(nameValue in qtoResultByElementFamily)) {
+                        qtoResultByElementFamily[nameValue] = {}; // Initialize if not exists
+                    }
+                    console.log(qtoResultByElementFamily[nameValue])
+
+                    if (!("CF values" in qtoResultByElementFamily[nameValue])) {
+                        qtoResultByElementFamily[nameValue]["CF values"] = {
+                            "Amount": 0, // Initialize with 0
+                            "Element GWP / unit": 0,
+                            "Carbon Footprint": 0
+                        };
+                    }
+                    
+                    if (!("CF values" in qtoResultByElementName[nameValue])) {
+                        qtoResultByElementName[nameValue]["CF values"] = {
+                            "Amount": 0, // Initialize with 0
+                            "Element GWP / unit": 0,
+                            "Carbon Footprint": 0
+                        };
+                    }
+
+                    console.log(qtoResultByElementName[nameValue])
+                    console.log(elementType)
+                    console.log(resultRow["BaseQuantities"])
+                    let area
+                    if(elementType == "windows" || elementType == "doors") {
+                        
+                        console.log("Element width: ")
+                        const width = resultRow["BaseQuantities"]["Width"] / 1000
+                        console.log(width)
+                        console.log("Element height: ")
+                        const height = resultRow["BaseQuantities"]["Height"] / 1000
+                        console.log(height)
+                        
+
+
+                        console.log("Element area: ")
+                        area = height * width
+                        console.log(area)
+                        //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
+                        //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
+                        
+                    }
+
+                    else {
+
+                    
+                        console.log("Element thickness: ")
+                        const thickness = resultRow["BaseQuantities"]["Width"] / 1000
+                        console.log(thickness)
+                        console.log("Element volume: ")
+                        const volume = resultRow["BaseQuantities"]["NetVolume"]
+                        console.log(volume)
+
+                        console.log("Element area: ")
+                        area = volume / thickness
+                        console.log(area)
+                        //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
+                        //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
+                        
+                    }
+                    qtoResultByElementName[nameValue]["CF values"]["Amount"] += area;
+                    qtoResultByElementFamily[nameValue]["CF values"]["Amount"] += area;
                 }
                 
             )
@@ -446,7 +507,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
             
         }
-        return qtoResultByElementName
+        return qtoResultByElementFamily
         
     }
     
@@ -475,13 +536,27 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         properties,
                         WEBIFC.IFCDOOR
         )
+        const windows = OBC.IfcPropertiesUtils.getAllItemsOfType(
+            properties,
+            WEBIFC.IFCWINDOW
+        )
+        
          
         const elements = typeList
                     
         //const elements = slabs
         console.log(elements)
                     
-        this._qtoResultByElementName = this.calculateQuantities(properties, walls, "walls")
+        const wallResults = this.calculateQuantities(properties, walls, "walls")
+        console.log(wallResults)
+        const slabResults = this.calculateQuantities(properties, slabs, "slabs")
+        console.log(slabResults)
+        const doorResults = this.calculateQuantities(properties, doors, "doors")
+        console.log(doorResults)
+        const windowResults = this.calculateQuantities(properties, windows, "windows")
+        console.log(windowResults)
+
+        this._qtoResultByElementName = { ...wallResults, ...slabResults , ...windowResults, ...doorResults};
         
         console.log(this._qtoResultByElementName)
         this.resetWindow()

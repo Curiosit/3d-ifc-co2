@@ -38,16 +38,16 @@ export class ElementCard extends OBC.SimpleUIComponent {
     }
     set elementData(object) {
         this.elementSet = object
-        console.log("setting elementData")
+        //console.log("setting elementData")
         this.elementDataset = object
         this.calculateGWP(object)
-        console.log(this.elementDataset)
+        //console.log(this.elementDataset)
         const set = object
-        console.log(set)
+        //console.log(set)
         if (this.setList) {
             while (this.setList.firstChild) {
-                console.log("clearing children:")
-                console.log(this.setList.firstChild)
+                //console.log("clearing children:")
+                //console.log(this.setList.firstChild)
                 const setCard = this.setList.firstChild
                 
                 this.setList.removeChild(this.setList.firstChild)
@@ -57,16 +57,16 @@ export class ElementCard extends OBC.SimpleUIComponent {
         }
         
         for (const setName in set) {
-            console.log(setName)
+            //console.log(setName)
             if(setName == "CF values") {
-                console.log(set[setName])
+                //console.log(set[setName])
                 if (set.hasOwnProperty(setName)) {
                     const setCard = new ElementSetNameCard(this.components)
                 
                     setCard.setName = setName
                     setCard.setData = set[setName]
                     
-                    console.log(setCard)
+                    //console.log(setCard)
                     this.setList.appendChild(setCard.domElement)
                     //this.addChild(setCard)
                 }
@@ -115,7 +115,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
 
         this._qtyElement = this.getInnerElement("ElementName") as HTMLParagraphElement
         this.setList = this.getInnerElement("setList") as HTMLParagraphElement
-        console.log(this._qtyElement)
+        //console.log(this._qtyElement)
 
         
         const cardElement = this.get()
@@ -130,8 +130,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
     async dispose () {
         
         while (this._qtyElement.firstChild) {
-            console.log("child:")
-            console.log(this._qtyElement.firstChild)
+            //console.log("child:")
+            //console.log(this._qtyElement.firstChild)
             this._qtyElement.removeChild(this._qtyElement.firstChild)
         }
         
@@ -140,8 +140,8 @@ export class ElementCard extends OBC.SimpleUIComponent {
 
     async setupOnClick(materialForm: OBC.FloatingWindow) {
         this.onCardClick.add(() => {
-            console.log("Setup onclick");
-            console.log(this.constructionComponents);
+            //console.log("Setup onclick");
+            //console.log(this.constructionComponents);
             const constructionComponents = this.constructionComponents
             // Clear existing content in materialForm if any
             var parentElement = materialForm.slots.content.domElement;
@@ -176,7 +176,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 // Optional: Update UI or other properties as needed
                 this.elementComponent = constructionComponents.find(c => c.id === selectedComponentID)?.name;
     
-                console.log("Selected Component ID:", this.elementComponentID);
+                //console.log("Selected Component ID:", this.elementComponentID);
 
 
                 this.elementData = this.elementSet
@@ -209,14 +209,14 @@ export class ElementCard extends OBC.SimpleUIComponent {
     
             
     calculateGWPold(set) {
-        console.log("Calculating GWP")
+        //console.log("Calculating GWP")
         
         for (const setName in set) {
-            console.log(setName)
+            //console.log(setName)
             if(setName == "CF values") {
-                console.log(set["CF values"])
-                console.log(set["CF values"]["Amount"])
-                console.log(set["CF values"]["Element GWP / unit"])
+                //console.log(set["CF values"])
+                //console.log(set["CF values"]["Amount"])
+                //console.log(set["CF values"]["Element GWP / unit"])
                 set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
                 set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
             }
@@ -225,9 +225,9 @@ export class ElementCard extends OBC.SimpleUIComponent {
 
     }
     calculateGWP(set) {
-        console.log("Calculating GWP")
+        //console.log("Calculating GWP")
         let compGWP = 0
-        console.log("Component GWP:")
+        //console.log("Component GWP:")
         if (this.elementComponentID) {
 
         
@@ -245,15 +245,15 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 
 
                 compGWP = calculateTotalComponentGWP(layers,this.epdxData)
-                console.log(compGWP)
+                //console.log(compGWP)
 
             }
         }
         
         for (const setName in set) {
-            console.log(setName)
+            //console.log(setName)
             if(setName == "CF values") {
-                console.log(set["CF values"])
+                //console.log(set["CF values"])
                 //console.log(set["CF values"]["Amount"])
                 //console.log(set["CF values"]["Element GWP / unit"])
                 //set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
@@ -262,7 +262,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
                 //set["CF values"]["Carbon Footprint"] = set["CF values"]["Amount"] * set["CF values"]["Element GWP / unit"]
 
 
-                console.log(set["CF values"])
+                //console.log(set["CF values"])
             }
         }
 

@@ -85,16 +85,16 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         
     }
     calculateGWP(list) {
-        console.log("Calculating GWP")
+        //console.log("Calculating GWP")
         let tempResult = 0
         for (const item in list) {
             const sets = list[item]
             for(const setName in sets) {
-                console.log(setName)
+                //console.log(setName)
                 if(setName == "CF values") {
                     const element = sets[setName]
-                    console.log(element)
-                    console.log(element["Carbon Footprint"])
+                    //console.log(element)
+                    //console.log(element["Carbon Footprint"])
                     const result = element["Carbon Footprint"]
                     tempResult += result
     
@@ -105,6 +105,6 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         
 
         this.totalResult = tempResult
-        console.log(tempResult)
+        //console.log(tempResult)
     }
 }

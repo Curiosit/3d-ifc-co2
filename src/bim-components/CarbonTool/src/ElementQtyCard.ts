@@ -9,7 +9,7 @@ export class ElementQtyCard extends OBC.SimpleUIComponent {
     qtyDataset
     
     set qtyValuePairData (object: QtyValuePairData) {
-        console.log(object)
+        //console.log(object)
         this.qtyDataset = object
         
         const [name, value] = Object.entries(object)[0]

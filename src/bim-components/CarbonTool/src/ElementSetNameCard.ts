@@ -23,32 +23,32 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
     }
     set setData(values: any) {
         this.setDataset = values
-        console.log(values)
-        console.log(this._qtyValueListElement)
+        //console.log(values)
+        //console.log(this._qtyValueListElement)
         while (this._qtyValueListElement.firstChild) {
-            console.log("clearing children:")
-            console.log(this._qtyValueListElement.firstChild)
+            //console.log("clearing children:")
+            //console.log(this._qtyValueListElement.firstChild)
             this._qtyValueListElement.removeChild(this._qtyValueListElement.firstChild)
 
         }
-        console.log("reading values")
-        console.log(values)
+        //console.log("reading values")
+        //console.log(values)
         
         for (let key in values) {
             if (values.hasOwnProperty(key)) {
                 const value = values[key];
-                console.log(`${key}: ${value}`);
+                //console.log(`${key}: ${value}`);
                 const qtyValueCard = new ElementQtyCard(this.components)
 
-                console.log(key)
-                console.log(value)
+                //console.log(key)
+                //console.log(value)
                 qtyValueCard.qtyValuePairData = {[key]: value}
-                console.log(qtyValueCard)
+                //console.log(qtyValueCard)
                 this._qtyValueListElement.appendChild(qtyValueCard.domElement)
             }
         }
         
-        console.log(this._qtyValueListElement)
+        //console.log(this._qtyValueListElement)
     }
 
     
@@ -78,7 +78,7 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
         
         
         this._qtyValueListElement = this.getInnerElement("qtyValueList") as HTMLParagraphElement
-        console.log(this._qtyValueListElement)
+        //console.log(this._qtyValueListElement)
 
         
         const cardElement = this.get()
@@ -93,8 +93,8 @@ export class ElementSetNameCard extends OBC.SimpleUIComponent {
     async dispose () {
         
         while (this._qtyValueListElement.firstChild) {
-            console.log("child:")
-            console.log(this._qtyValueListElement.firstChild)
+            //console.log("child:")
+            //console.log(this._qtyValueListElement.firstChild)
             this._qtyValueListElement.removeChild(this._qtyValueListElement.firstChild)
         }
         
