@@ -505,6 +505,16 @@ text-align: center;
   outline: 1px solid #969696; 
 }
 
+
+.element-component {
+  padding: 10px;
+  background-color:  var(--background-200);
+  border-radius: 10px;
+  margin-bottom: 5px;
+  
+  
+}
+
 .qtyValueList {
   padding: 10px;
   background-color:  var(--background-200);

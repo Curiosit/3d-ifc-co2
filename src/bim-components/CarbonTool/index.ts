@@ -73,6 +73,10 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         components.scene
         this._qtoResultByElementName = {}
         this._qtoResult = {}
+
+        this.callback = this.callback.bind(this);
+        this.sumGWP = this.sumGWP.bind(this);
+
         this.setUI()
         //this.getQuantities()
         
@@ -155,6 +159,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             
             carbonWindowBtn.active = !carbonWindowBtn.active
             carbonWindow.visible = carbonWindowBtn.active
+            if(carbonWindow.visible) {
+                
+            }
 
             console.log(carbonWindowBtn.active)
             console.log(carbonWindow.visible)
@@ -202,6 +209,51 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
         
     }
+    callback() {
+        console.log("Calling back from card")
+        this.sumGWP()
+        
+    }
+
+    sumGWP() {
+        // Initialize the total sum of GWP (Global Warming Potential)
+        let totalGWP = 0;
+    
+        // Iterate through each ElementCard in the elementCardList
+        this.elementCardList.forEach((elementCard) => {
+            // Check if the elementData and 'CF values' exist to avoid runtime errors
+            if (elementCard.elementData && elementCard.elementData['CF values']) {
+                // Access the 'Carbon Footprint' value and add it to the totalGWP
+                const carbonFootprint = elementCard.elementData['CF values']['Carbon Footprint'];
+                if (typeof carbonFootprint === 'number') {
+                    totalGWP += carbonFootprint;
+                }
+            }
+        });
+    
+        // Optionally, you can log or perform further actions with the totalGWP
+        console.log(`Total Carbon Footprint: ${totalGWP} kg CO2eq`);
+    
+        // Return the total GWP if needed
+
+
+
+
+        const resultsWindow = this.uiElement.get("carbonWindow")
+        if(this.resultsCard) {
+            this.resultsCard.removeFromParent()
+        }
+        const resultsCard = new ResultsCard(this.components)
+        this.resultsCard = resultsCard
+
+        resultsCard.totalResult = totalGWP
+
+        resultsWindow.addChild(resultsCard)
+
+
+
+        return totalGWP;
+    }
     async updateUI () {
         const qtoList = this.uiElement.get("qtoWindow")
         console.log(this._qtoResultByElementName)
@@ -210,7 +262,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         for (const elementName in this._qtoResultByElementName) {
             console.log(this._qtoResultByElementName[elementName])
             
-            const elementCard = new ElementCard(this.components, this.epdxData, this.constructionComponents);
+            const elementCard = new ElementCard(this.components, this.epdxData, this.constructionComponents, this.callback);
+            //elementCard.callback = this.callback()
             elementCard.data = this._qtoResultByElementName[elementName]
             elementCard.elementName = elementName
             console.log(this.materialForm)
@@ -244,6 +297,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         console.log(elementData)
         console.log("UPDATING RESULTS")
         resultsCard.resultData=elementData
+        console.log(elementData)
+        console.log(resultsCard.totalResult)
         resultsWindow.addChild(resultsCard)
     }
     resetWindow() {
@@ -364,7 +419,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             idMap = []
             //console.log("________________________________________________________________________")
             //console.log(elementID)
-            //console.log(elements[elementID])
+            console.log(elements[elementID])
             const name = properties[elements[elementID].expressID].Name.value
             
             let nameValue
@@ -383,7 +438,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             //console.log(qtoResultByElementName[nameWithID])
             //console.log("________________________________________________________________________")
 
-            //console.log(resultRow)
+            console.log(resultRow)
             OBC.IfcPropertiesUtils.getRelationMap(
                 properties, 
                 WEBIFC.IFCRELDEFINESBYPROPERTIES,
@@ -391,16 +446,82 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     //console.log("GET RELATION MAP")
                     
                     const set = properties[setID]
-                    if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return}
+                    //console.log(setID)
+                    //console.log(set)
+                    //console.log(relatedIDs)
+                    /* if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return} */
+                    
+                    // PROPERTYSETSINGLEVALUE DIMENSIONS (PANELS)
+                    if(elementType == 'curtainPanels') {
 
+                        console.log("PANELS")
+                        if ( set.type == WEBIFC.IFCPROPERTYSET) { 
+                            console.log(set) 
+                            const expressIDs = idMap
+                            const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
+                            if (workingIDs.length > 0) {
+                                console.log('Working IDs:', workingIDs);
+                                } else {
+                                console.log('No common IDs found between expressIDs and relatedIDs');
+                            }
+                            const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
+                            console.log(setName)
+                            if ( !setName || workingIDs.length === 0 || setName != 'Dimensions') { return}
+                            
+                            if (!(setName in resultRow)) {
+                                resultRow[setName] = {}
+                            }
+                            // setName = dimensions
+                            console.log(workingIDs[0])
+                            OBC.IfcPropertiesUtils.getPsetProps(properties, workingIDs[0], (foundID) => {
+                                console.log(`Property found with expressID: ${foundID}`);
+                            })
+                            
+
+                            OBC.IfcPropertiesUtils.getQsetQuantities(
+                                properties,
+                                setID,
+                                (qtoID) => {
+                                    console.log(properties[qtoID])
+                                    const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
+                                    console.log(qtoName)
+                                    const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
+                                    console.log(value)
+                                    if(!qtoName || !value) {return}
+                                    console.log(qtoName)
+                                    if (!(qtoName in resultRow[setName])) {
+                                        resultRow[setName][qtoName] = value
+                                    
+                                    }
+                                    if ((qtoName in resultRow[setName])) {
+                                        resultRow[setName][qtoName] = Math.min(resultRow[setName][qtoName], value) //find a lower value, as there are multiple netVolumes !!!!!!
+                                    
+                                    }
+                                    //resultRow[setName][qtoName] = value
+
+
+                                    console.log(resultRow)
+                                }
+                            )
+                        
+                        }
+                        console.log(resultRow)
+                    }
+                    
+                    
+                    
+                    // BASE QUANTITIES
+                    if ( set.type !== WEBIFC.IFCELEMENTQUANTITY) { return }
                     const expressIDs = idMap
 
                     const workingIDs = expressIDs.filter(id => relatedIDs.includes(id));
+                    //console.log(workingIDs)
+                    
 
                     if (workingIDs.length > 0) {
-                    //console.log('Working IDs:', workingIDs);
+                    console.log('Working IDs:', workingIDs);
                     } else {
-                    //console.log('No common IDs found between expressIDs and relatedIDs');
+                    console.log('No common IDs found between expressIDs and relatedIDs');
                     }
 
                     const { name: setName} = OBC.IfcPropertiesUtils.getEntityName(properties, setID)
@@ -416,9 +537,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         properties,
                         setID,
                         (qtoID) => {
-                            //console.log(properties[qtoID])
+                            console.log(properties[qtoID])
                             const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
-                            //console.log(qtoName)
+                            console.log(qtoName)
                             const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
                             //console.log(value)
                             if(!qtoName || !value) {return}
@@ -434,13 +555,13 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             //resultRow[setName][qtoName] = value
                         }
                     )
-                    console.log(nameValue)
-                    console.log(qtoResultByElementFamily)
+                    //console.log(nameValue)
+                    //console.log(qtoResultByElementFamily)
 
                     if (!(nameValue in qtoResultByElementFamily)) {
                         qtoResultByElementFamily[nameValue] = {}; // Initialize if not exists
                     }
-                    console.log(qtoResultByElementFamily[nameValue])
+                    //console.log(qtoResultByElementFamily[nameValue])
 
                     if (!("CF values" in qtoResultByElementFamily[nameValue])) {
                         qtoResultByElementFamily[nameValue]["CF values"] = {
@@ -460,6 +581,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
 
                     console.log(qtoResultByElementName[nameValue])
                     console.log(elementType)
+                    console.log(resultRow)
                     console.log(resultRow["BaseQuantities"])
                     let area
                     if(elementType == "windows" || elementType == "doors") {
@@ -540,7 +662,16 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
             properties,
             WEBIFC.IFCWINDOW
         )
-        
+        const curtainWalls = OBC.IfcPropertiesUtils.getAllItemsOfType(
+            properties,
+            WEBIFC.IFCCURTAINWALL
+        )
+        console.log(curtainWalls)
+
+        const curtainPanels = OBC.IfcPropertiesUtils.getAllItemsOfType(
+            properties,
+            WEBIFC.IFCPLATE
+        )
          
         const elements = typeList
                     
@@ -555,6 +686,8 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         console.log(doorResults)
         const windowResults = this.calculateQuantities(properties, windows, "windows")
         console.log(windowResults)
+        const curtainWallsRes = this.calculateQuantities(properties, curtainPanels, "curtainPanels")
+        console.log(curtainWallsRes)
 
         this._qtoResultByElementName = { ...wallResults, ...slabResults , ...windowResults, ...doorResults};
         

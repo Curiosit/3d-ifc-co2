@@ -21,6 +21,7 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         return this.resultDataset
     }
     set resultData(object) {
+        console.log("Set result")
         this.calculateGWP(object)
     }
     set totalResult(value) {
@@ -54,6 +55,7 @@ export class ResultsCard extends OBC.SimpleUIComponent {
                     </div>
                 <div id=""> </ div>
                 <div data-tooeen-slot="actionButtons"></div>
+                
             </div>
             
             </div>
@@ -64,7 +66,6 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         this.resultContainer = this.getInnerElement("resultsContainer") as HTMLParagraphElement 
         
         
-
         
         
 
@@ -72,6 +73,8 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         
         
     }
+    
+
     async dispose () {
         this.dispose()
        
@@ -85,16 +88,16 @@ export class ResultsCard extends OBC.SimpleUIComponent {
         
     }
     calculateGWP(list) {
-        //console.log("Calculating GWP")
+        console.log("Calculating GWP")
         let tempResult = 0
         for (const item in list) {
             const sets = list[item]
             for(const setName in sets) {
-                //console.log(setName)
+                console.log(setName)
                 if(setName == "CF values") {
                     const element = sets[setName]
-                    //console.log(element)
-                    //console.log(element["Carbon Footprint"])
+                    console.log(element)
+                    console.log(element["Carbon Footprint"])
                     const result = element["Carbon Footprint"]
                     tempResult += result
     

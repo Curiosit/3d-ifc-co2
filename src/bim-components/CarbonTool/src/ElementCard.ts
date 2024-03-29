@@ -8,6 +8,7 @@ import { Component } from "../../../classes/Component"
 
 
 export class ElementCard extends OBC.SimpleUIComponent {
+    callback: VoidFunction
     onDelete = new OBC.Event()
     onCardClick = new OBC.Event()
     //elementData
@@ -74,10 +75,12 @@ export class ElementCard extends OBC.SimpleUIComponent {
             
         }
     }
-
+    setCallback(callbackFunction) {
+        this.callback = callbackFunction;
+    }
     
 
-    constructor(components: OBC.Components, epdxData, constructionComponents) {
+    constructor(components: OBC.Components, epdxData, constructionComponents, callback) {
         
         
         const template = `
@@ -93,9 +96,9 @@ export class ElementCard extends OBC.SimpleUIComponent {
                         </h3>
                     </div>
                     <div>
-                        <h4 id="ElementComponent">
-                        
-                        </h4>
+                        <div class="element-component" id="ElementComponent">
+                        ...select a component
+                        </div>
                     </div>
                     
                 </div>
@@ -124,7 +127,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
         })
         this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
         
-
+        this.callback = callback
         
     }
     async dispose () {
@@ -181,6 +184,9 @@ export class ElementCard extends OBC.SimpleUIComponent {
 
                 this.elementData = this.elementSet
                 //this.calculateGWP(this.elementSet)
+
+
+                this.callback()
             });
     
             
