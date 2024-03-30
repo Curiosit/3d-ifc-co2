@@ -92,7 +92,7 @@ export const colors = ["--accent1", "--accent2", "--accent3", "--accent4"];
 
 export function uppercaseInitials(inputString: string): string {
   // Remove parentheses, curly braces, and square brackets from the input string
-  const sanitizedString = inputString.replace(/[(){}\[\]]/g, ' ');
+  const sanitizedString = inputString.replace(/[(){}\[\]-]/g, ' ');
 
   // Split the sanitized input string into words
   const words = sanitizedString.split(" ");

@@ -18,7 +18,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
     elementDataset
     elementGWP
     elementComponentID
-    
+    name
     result: number
     setList: HTMLParagraphElement
     private _qtyElement: HTMLParagraphElement
@@ -29,6 +29,7 @@ export class ElementCard extends OBC.SimpleUIComponent {
     set elementName(value: string) {
         const elementNameHTML = this.getInnerElement("ElementName") as HTMLParagraphElement
         elementNameHTML.textContent = value
+        this.name = value
     }
     set elementComponent(value: string) {
         const elementComponentHTML = this.getInnerElement("ElementComponent") as HTMLParagraphElement

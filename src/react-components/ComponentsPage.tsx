@@ -427,7 +427,7 @@ export function ComponentsPage(props: Props) {
             </dialog>
             <header>
                 <h2>
-                    <span className="material-symbols-rounded">folder_copy</span> Material Library
+                    <span className="material-symbols-rounded">folder_copy</span> Component Library
                 </h2>
                 <SearchBox onChange={(value) => onComponentSearch(value)} />
                 <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>

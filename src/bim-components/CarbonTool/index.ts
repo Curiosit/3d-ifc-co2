@@ -33,7 +33,7 @@ type QtoResultByElementName = {
 
 export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implements OBC.UI, OBC.Disposable {
     
-
+    GWPElementsTable: any
     materialForm: OBC.Modal
     GWPInput
     resultsCard: ResultsCard
@@ -218,14 +218,17 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     sumGWP() {
         // Initialize the total sum of GWP (Global Warming Potential)
         let totalGWP = 0;
-    
+        const componentsGWPtable = new Array()
+        const componentLabels = new Array()
         // Iterate through each ElementCard in the elementCardList
         this.elementCardList.forEach((elementCard) => {
+            componentLabels.push(elementCard.name)
             // Check if the elementData and 'CF values' exist to avoid runtime errors
             if (elementCard.elementData && elementCard.elementData['CF values']) {
                 // Access the 'Carbon Footprint' value and add it to the totalGWP
                 const carbonFootprint = elementCard.elementData['CF values']['Carbon Footprint'];
                 if (typeof carbonFootprint === 'number') {
+                    componentsGWPtable.push(carbonFootprint)
                     totalGWP += carbonFootprint;
                 }
             }
@@ -233,11 +236,12 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
     
         // Optionally, you can log or perform further actions with the totalGWP
         console.log(`Total Carbon Footprint: ${totalGWP} kg CO2eq`);
-    
+        console.log(componentLabels)
+        console.log(componentsGWPtable)
         // Return the total GWP if needed
+        const zippedGWP: [string, number][] = componentLabels.map((key, index) => [key, componentsGWPtable[index]]);
 
-
-
+        this.GWPElementsTable = zippedGWP
 
         const resultsWindow = this.uiElement.get("carbonWindow")
         if(this.resultsCard) {
@@ -247,7 +251,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.resultsCard = resultsCard
 
         resultsCard.totalResult = totalGWP
-
+        resultsCard.generateElementGWPChart(zippedGWP)
         resultsWindow.addChild(resultsCard)
 
 
@@ -292,7 +296,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
         this.resultsCard = resultsCard
         let elementData = new Array()
         for (const card in this.elementCardList) {
-            elementData.push(this.elementCardList[card].elementData)
+            elementData.push(this.elementCardList[card])
         }
         console.log(elementData)
         console.log("UPDATING RESULTS")
@@ -541,9 +545,9 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             const { name: qtoName} = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
                             console.log(qtoName)
                             const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
-                            //console.log(value)
+                            console.log(value)
                             if(!qtoName || !value) {return}
-                            //console.log(qtoName)
+                            console.log(qtoName)
                             if (!(qtoName in resultRow[setName])) {
                                 resultRow[setName][qtoName] = value
                             
@@ -555,13 +559,13 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                             //resultRow[setName][qtoName] = value
                         }
                     )
-                    //console.log(nameValue)
-                    //console.log(qtoResultByElementFamily)
+                    console.log(nameValue)
+                    console.log(qtoResultByElementFamily)
 
                     if (!(nameValue in qtoResultByElementFamily)) {
                         qtoResultByElementFamily[nameValue] = {}; // Initialize if not exists
                     }
-                    //console.log(qtoResultByElementFamily[nameValue])
+                    console.log(qtoResultByElementFamily[nameValue])
 
                     if (!("CF values" in qtoResultByElementFamily[nameValue])) {
                         qtoResultByElementFamily[nameValue]["CF values"] = {
@@ -604,8 +608,16 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                     }
 
                     else {
+                        if(elementType == 'slabs') {
+                            console.log(resultRow["BaseQuantities"])
+                            console.log("Element area: ")
+                            area = resultRow["BaseQuantities"]["GrossArea"]
+                            console.log(area)
+                        }
+                        else{
 
-                    
+                        
+                        console.log(resultRow["BaseQuantities"])
                         console.log("Element thickness: ")
                         const thickness = resultRow["BaseQuantities"]["Width"] / 1000
                         console.log(thickness)
@@ -618,7 +630,7 @@ export class CarbonTool extends OBC.Component<BuildingCarbonFootprint> implement
                         console.log(area)
                         //qtoResultByElementName[nameWithID]["CF values"]["Area"] = area
                         //qtoResultByElementName[nameWithID]["CF values"]["Element GWP"] = 0
-                        
+                        }
                     }
                     qtoResultByElementName[nameValue]["CF values"]["Amount"] += area;
                     qtoResultByElementFamily[nameValue]["CF values"]["Amount"] += area;
